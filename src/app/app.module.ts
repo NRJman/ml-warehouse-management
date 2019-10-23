@@ -31,6 +31,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts';
 import { StoreModule } from '@ngrx/store';
 import { reducers, metaReducers } from './store/app.reducers';
+import { CustomValidatorsService } from './custom-ui/shared/services/custom-validators.service';
 
 @NgModule({
   imports: [
@@ -61,10 +62,13 @@ import { reducers, metaReducers } from './store/app.reducers';
     P404Component,
     P500Component
   ],
-  providers: [{
-    provide: LocationStrategy,
-    useClass: PathLocationStrategy
-  }],
+  providers: [
+    {
+      provide: LocationStrategy,
+      useClass: PathLocationStrategy
+    },
+    CustomValidatorsService
+  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
