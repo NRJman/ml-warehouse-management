@@ -1,30 +1,18 @@
 const mongoose = require('mongoose');
-const uniquenessValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
-const adminSchema = new Schema({
-    userInfo: userInfoSchema,
-    subordinates: [userInfoSchema],
-    tasksList: [taskSchema]
-});
-
-const userInfoSchema = new Schema({
-    name: String,
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phone: { type: Number, required: true },
-    isAdmin: Boolean,
-    warehouseId: String
-});
-
-const adminSchema = new Schema({
+const taskSchema = new Schema({
     creationDate: String,
     resolvingDate: String,
     isResolved: Boolean,
     description: String,
-    assignee: String
+    assigneeId: String
 });
 
-userSchema.plugin(uniquenessValidator);
+const adminSchema = new Schema({
+    userId: String,
+    subordinatesIds: [String],
+    tasksList: [taskSchema]
+});
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('Admin', adminSchema)

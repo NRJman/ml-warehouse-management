@@ -30,8 +30,11 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts';
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './store/app.reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { reducers } from './store/app.reducers';
 import { CustomValidatorsService } from './custom-ui/shared/services/custom-validators.service';
+import { AuthEffects } from './custom-ui/auth/store/auth.effects';
 
 @NgModule({
   imports: [
@@ -48,12 +51,10 @@ import { CustomValidatorsService } from './custom-ui/shared/services/custom-vali
     ChartsModule,
     AuthModule,
     AppRoutingModule,
-    StoreModule.forRoot(reducers, {
-      metaReducers,
-      runtimeChecks: {
-        strictStateImmutability: true,
-        strictActionImmutability: true
-      }
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot([AuthEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 15
     })
   ],
   declarations: [
