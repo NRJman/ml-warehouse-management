@@ -17,7 +17,7 @@ const userInfoSchema = new Schema({
     warehouseId: String
 });
 
-const taskSchema = new Schema({
+const adminSchema = new Schema({
     creationDate: String,
     resolvingDate: String,
     isResolved: Boolean,
