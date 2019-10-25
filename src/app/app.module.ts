@@ -35,6 +35,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { reducers } from './store/app.reducers';
 import { CustomValidatorsService } from './custom-ui/shared/services/custom-validators.service';
 import { AuthEffects } from './custom-ui/auth/store/auth.effects';
+import { USERS_API_SERVER_URL_TOKEN, USERS_API_SERVER_URL } from './app.config';
 
 @NgModule({
   imports: [
@@ -67,6 +68,10 @@ import { AuthEffects } from './custom-ui/auth/store/auth.effects';
     {
       provide: LocationStrategy,
       useClass: PathLocationStrategy
+    },
+    {
+      provide: USERS_API_SERVER_URL_TOKEN,
+      useValue: USERS_API_SERVER_URL
     },
     CustomValidatorsService
   ],
