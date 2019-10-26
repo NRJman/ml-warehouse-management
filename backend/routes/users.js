@@ -6,42 +6,57 @@ const Admin = require('./../models/admin');
 const router = express.Router();
 
 router.post('/signup', (req, res, next) => {
-    const isAdmin = (req.query.isAdmin === 'true') ? true : false;
+    const isAdmin = (req.body.isAdmin === true) ? true : false;
+
+    console.log(isAdmin);
 
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
+            console.log(`hash: ${hash}`)
+
             if (isAdmin) {
-                let createdUserId;
+                const userName = req.body.name;
+                const userPhone = req.body.phone;
+                let userId;
 
                 const user = new User({
-                    name: req.body.name,
+                    name: userName,
                     email: req.body.email,
                     password: hash,
-                    phone: req.body.phone,
-                    isAdmin: true
+                    phone: userPhone,
+                    isAdmin
                 });
 
                 user.save()
                     .then(userCreationResult => {
-                        createdUserId = result._id;
-
+                        userId = userCreationResult._id;
+                        
                         const admin = new Admin({
-                            userId: createdUserId,
+                            userId,
                             subordinatesIds: [],
                             tasksList: []
                         });
 
+                        console.log(`saved user: ${userId}`);
+                        
                         return admin.save();
                     })
                     .then(adminCreationResult => {
                         res.status(201).json({
                             message: 'User has been created successfuly!',
                             result: {
-                                userId: createdUserId
+                                name: userName,
+                                phone: userPhone,
+                                userId: userId,
+                                adminId: adminCreationResult._id
                             }
                         })
+                        
+                        console.log(`saved admin: ${adminCreationResult._id}`);                        
                     })
                     .catch(error => {
+                        console.log(`error: ${error}`);
+
                         res.status(500).json({
                             message: 'An error has been caught while creating a user!',
                             error

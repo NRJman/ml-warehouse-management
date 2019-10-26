@@ -1,9 +1,19 @@
 import { createAction, props } from '@ngrx/store';
 import { RegistrationData } from '../../shared/models/registration-data.model';
 
-export const startSignUp = createAction('[Auth] Start Sign Up', props<RegistrationData>());
-export const finishSignUp = createAction('[Auth] Finish Sign Up', props<{ accessToken: string }>());
+export const startSignUpAsAdmin = createAction(
+    '[Auth] Start Signing Up As Admin',
+    props<{ payload: RegistrationData}>()
+);
+export const finishSignUpAsAdmin = createAction(
+    '[Auth] Finish Signing Up As Admin',
+    props<{ payload: string }>()
+);
+export const failSignUpAsAdmin = createAction(
+    '[Auth] Fail Signing Up As Admin',
+    props<{ payload: { message: string, error: object } }>()
+);
 export const navigateAfterSuccessfulAuthorization = createAction(
     '[Auth] Navigate After Successful Authorization',
-    props<{ path: string }>()
+    props<{ payload: string }>()
 );

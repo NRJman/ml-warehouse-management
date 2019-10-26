@@ -6,15 +6,17 @@ export interface State {
     name: string;
     phone: number;
     userId: string;
+    adminId: string;
     warehouseId: string;
     subordinatesIds: string[];
-    tasksList: Task[]
+    tasksList: Task[];
 }
 
 export const initialState: State = {
     name: null,
     phone: null,
     userId: null,
+    adminId: null,
     warehouseId: null,
     subordinatesIds: null,
     tasksList: null
@@ -25,7 +27,7 @@ export function adminReducer(authState: State | undefined, authAction: Action) {
         initialState,
         on(fromAuthActions.createAdmin, (state, action) => ({
             ...state,
-            ...action.adminInfo
+            ...action.payload
         }))
     )(authState, authAction);
 }

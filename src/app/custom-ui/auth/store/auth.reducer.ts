@@ -14,9 +14,9 @@ export const initialState: State = {
 export function authReducer(authState: State | undefined, authAction: Action) {
     return createReducer(
         initialState,
-        on(fromAuthActions.finishSignUp, (state, action) => ({
+        on(fromAuthActions.finishSignUpAsAdmin, (state, action) => ({
             ...state,
-            accessToken: action.accessToken,
+            accessToken: '',
             isAuthenticated: true
         }))
     )(authState, authAction);
