@@ -4,4 +4,5 @@ export interface AdminInfo {
     userId: string;
     adminId: string;
     warehouseId?: string;
+    subordinateIds?: string[];
 }

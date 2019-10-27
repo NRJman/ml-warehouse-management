@@ -8,7 +8,7 @@ export interface State {
     userId: string;
     adminId: string;
     warehouseId: string;
-    subordinatesIds: string[];
+    subordinateIds: string[];
     tasksList: Task[];
 }
 
@@ -18,7 +18,7 @@ export const initialState: State = {
     userId: null,
     adminId: null,
     warehouseId: null,
-    subordinatesIds: null,
+    subordinateIds: null,
     tasksList: null
 };
 

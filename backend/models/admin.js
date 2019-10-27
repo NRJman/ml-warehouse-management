@@ -11,7 +11,7 @@ const taskSchema = new Schema({
 
 const adminSchema = new Schema({
     userId: String,
-    subordinatesIds: [String],
+    subordinateIds: [String],
     tasksList: [taskSchema]
 });
 

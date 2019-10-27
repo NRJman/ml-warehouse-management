@@ -27,13 +27,16 @@ export class AuthEffects {
                 this.http.post(`${this.usersApiServerUrl}/signup`, {
                     ...registrationData
                 }).pipe(
-                    switchMap((adminInfo: AdminInfo) => {
-                        return [
-                            fromAdminActions.createAdmin({ payload: adminInfo }),
-                            fromAuthActions.finishSignUpAsAdmin({ payload: '' }),
-                            fromAuthActions.navigateAfterSuccessfulAuthorization({ payload: '/dashboard' })
-                        ];
-                    }),
+                    switchMap(({ result }: {
+                        result: {
+                            token: string,
+                            adminInfo: AdminInfo
+                        }
+                    }) => [
+                        fromAdminActions.createAdmin({ payload: result.adminInfo }),
+                        fromAuthActions.finishSignUpAsAdmin({ payload: result.token }),
+                        fromAuthActions.navigateAfterSuccessfulAuthorization({ payload: '/dashboard' })
+                    ]),
                     catchError(error => {
                         return of(fromAuthActions.failSignUpAsAdmin(error));
                     })
