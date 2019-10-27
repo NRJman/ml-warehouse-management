@@ -9,7 +9,6 @@ export interface State {
     adminId: string;
     warehouseId: string;
     subordinateIds: string[];
-    tasksList: Task[];
 }
 
 export const initialState: State = {
@@ -19,7 +18,6 @@ export const initialState: State = {
     adminId: null,
     warehouseId: null,
     subordinateIds: null,
-    tasksList: null
 };
 
 export function adminReducer(authState: State | undefined, authAction: Action) {
