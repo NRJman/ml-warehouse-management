@@ -8,6 +8,7 @@ import { P404Component } from './core-ui/views/error/404.component';
 import { P500Component } from './core-ui/views/error/500.component';
 import { LoginComponent } from './custom-ui/auth/login/login.component';
 import { RegisterComponent } from './custom-ui/auth/register/register.component';
+import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
 
 export const routes: Routes = [
   {
@@ -34,7 +35,8 @@ export const routes: Routes = [
     component: LoginComponent,
     data: {
       title: 'Login Page'
-    }
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: 'register',

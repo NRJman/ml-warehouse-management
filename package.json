@@ -26,6 +26,10 @@
     "e2e": "ng e2e"
   },
   "private": true,
+  "browser": {
+    "crypto": false,
+    "stream": false
+  },
   "dependencies": {
     "@angular/animations": "^8.0.2",
     "@angular/common": "^8.0.2",
@@ -56,6 +60,7 @@
     "mutationobserver-shim": "^0.3.3",
     "ng2-charts": "^2.3.0",
     "ngx-bootstrap": "^5.0.0",
+    "ngx-cookie-service": "^2.2.0",
     "ngx-perfect-scrollbar": "^8.0.0",
     "rxjs": "^6.5.2",
     "simple-line-icons": "^2.4.1",

@@ -9,7 +9,11 @@ const router = express.Router();
 
 router.post('/signup', async (req, res, next) => {
     const isAdmin = (req.body.isAdmin === true) ? true : false;
-    let user, userName, userEmail, userPhone, userId;
+    const userWarehouseId = req.body.warehouseId;
+    const userName = req.body.name;
+    const userEmail = req.body.email;
+    const userPhone = req.body.phone;
+    let user, userId;
 
     try {
         const hash = await bcrypt.hash(req.body.password, 10);
@@ -30,12 +34,6 @@ router.post('/signup', async (req, res, next) => {
     }
 
     function createUser(hash) {
-        const warehouseId = req.body.warehouseId;
-
-        userName = req.body.name;
-        userEmail = req.body.email;
-        userPhone = req.body.phone;
-
         if (isAdmin) {
             user = new User({
                 name: userName,
@@ -48,8 +46,8 @@ router.post('/signup', async (req, res, next) => {
             return user.save();
         }
 
-        if (!warehouseId || typeof warehouseId !== 'string') {
-            throw new Error('The warehouse')
+        if (!userWarehouseId || typeof userWarehouseId !== 'string') {
+            throw new Error('The warehouse id is invalid or not specified!')
         }
 
         user = new User({
@@ -58,7 +56,7 @@ router.post('/signup', async (req, res, next) => {
             password: hash,
             phone: userPhone,
             isAdmin,
-            warehouseId
+            warehouseId: userWarehouseId
         });
 
         return user.save()
@@ -78,6 +76,9 @@ router.post('/signup', async (req, res, next) => {
 
     function sendResponse(adminId) {
         const adminInfo = (adminId) ? { adminId } : { };
+        const warehouseInfo = (userWarehouseId && typeof userWarehouseId === 'string') ? {
+            warehouseId: userWarehouseId
+        } : { };
         const token = jwt.sign(
             { email: userEmail, userId },
             jwtSecret,
@@ -92,7 +93,8 @@ router.post('/signup', async (req, res, next) => {
                     name: userName,
                     phone: userPhone,
                     userId: userId,
-                    ...adminInfo
+                    ...warehouseInfo,
+                    ...adminInfo,
                 }
             }
         });   
@@ -126,6 +128,10 @@ router.post('/login', (req, res, next) => {
                 jwtSecret,
                 { expiresIn: '1h' }
             )
+            const adminInfo = (foundUser.isAdmin) ? {
+                adminId: foundUser.userId,
+                warehouseId: foundUser.warehouseId
+            } : { };
 
             return res.status(200).json({
                 token,
@@ -133,7 +139,8 @@ router.post('/login', (req, res, next) => {
                     name: foundUser.name,
                     phone: foundUser.phone,
                     userId: foundUser.userId,
-                    adminId: foundUser.userId
+                    isAdmin: foundUser.isAdmin,
+                    ...adminInfo
                 }
             });
         })
@@ -143,6 +150,8 @@ router.post('/login', (req, res, next) => {
                 error
             })
         })
-})
+});
+
+
 
 module.exports = router;
