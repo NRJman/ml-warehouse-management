@@ -22,7 +22,7 @@ export class RegisterComponent implements OnInit {
     const registrationFormValue = this.registrationForm.value;
 
     this.store.dispatch(
-      fromAuthActions.startSignUpAsAdmin({
+      fromAuthActions.startSigningUpAsAdmin({
         payload: {
           name: registrationFormValue.name,
           phone: registrationFormValue.phone,

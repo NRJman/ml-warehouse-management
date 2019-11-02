@@ -89,6 +89,7 @@ router.post('/signup', async (req, res, next) => {
                     name: userName,
                     phone: userPhone,
                     userId: userId,
+                    isAdmin,
                     ...warehouseInfo,
                     ...adminInfo,
                 }
@@ -97,48 +98,62 @@ router.post('/signup', async (req, res, next) => {
     }
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/signin', async (req, res, next) => {
     let foundUser;
 
-    User.findOne({ email: req.body.email })
-        .then(user => {
-            if (!user) {
-                return req.status(401).json({
-                    message: `Couldn't find a user with such an email!`
-                });
+    try {
+        console.log('email:', req.body.email);
+        foundUser = await User.findOne({ email: req.body.email });
+        console.log('foundUser', foundUser);
+
+
+        if (!foundUser) {
+            throw new Error(`Couldn't find a user with such an email!`);
+        }
+
+        console.log('foundUser', foundUser);
+
+        if (!arePasswordsEqual()) {
+            throw new Error('The password is incorrect!');
+        }
+
+        return sendResponse();
+    } catch (error) {
+        return res.status(401).json({
+            message: 'An authentication failed!',
+            error
+        })
+    }
+
+    async function arePasswordsEqual() {
+        return await bcrypt.compare(req.body.password, foundUser.password)
+    }
+
+    async function sendResponse() {
+        const foundUserId = foundUser._id;
+        const warehouseInfo = (foundUser.warehouseId) ? { warehouseId: foundUser.warehouseId } : { };
+        let adminInfo;
+
+        if (foundUser.isAdmin) {
+            var { adminId, subordinateIds } = adminInfo = await Admin.findOne({ userId: foundUserId });
+        }
+
+        console.log('ADMIN_ID:', adminId);
+        console.log('SUBORDINATE_IDS:', subordinateIds);
+
+        return res.status(200).json({
+            tokenInfo: getNewToken(foundUser.email, foundUser.userId, 1),
+            user: {
+                name: foundUser.name,
+                phone: foundUser.phone,
+                userId: foundUserId,
+                isAdmin: foundUser.isAdmin,
+                ...warehouseInfo,
+                ...((adminId) ? { adminId } : { }),
+                ...((subordinateIds) ? { subordinateIds } : { })
             }
-
-            foundUser = user;
-
-            return bcrypt.compare(req.body.password, user.password)
-        })
-        .then(comparisonResult => {
-            if (!comparisonResult) {
-                return req.status(401).json({
-                    message: 'The password is incorrect!'
-                });
-            }
-
-            const adminInfo = (foundUser.isAdmin) ? { adminId: foundUser.userId } : { };
-            const warehouseInfo = (foundUser.warehouseId) ? { warehouseId: foundUser.warehouseId } : { };
-
-            return res.status(200).json({
-                tokenInfo: getNewToken(foundUser.email, foundUser.userId, 1),
-                user: {
-                    name: foundUser.name,
-                    phone: foundUser.phone,
-                    userId: foundUser.userId,
-                    ...adminInfo,
-                    ...warehouseInfo
-                }
-            });
-        })
-        .catch(error => {
-            return req.status(401).json({
-                message: 'An authentication failed!',
-                error
-            })
-        })
+        });
+    }
 });
 
 module.exports = router;

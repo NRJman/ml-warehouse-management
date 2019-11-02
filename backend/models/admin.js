@@ -11,8 +11,7 @@ const taskSchema = new Schema({
 
 const adminSchema = new Schema({
     userId: String,
-    subordinateIds: [String],
-    tasksList: [taskSchema]
+    subordinateIds: [String]
 });
 
 module.exports = mongoose.model('Admin', adminSchema)

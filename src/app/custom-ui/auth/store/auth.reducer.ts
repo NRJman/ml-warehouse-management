@@ -18,7 +18,7 @@ export const initialState: State = {
 export function authReducer(authState: State | undefined, authAction: Action) {
     return createReducer(
         initialState,
-        on(fromAuthActions.finishSignUpAsAdmin, (state, action) => ({
+        on(fromAuthActions.finishSigningUpAsAdmin, (state, action) => ({
             ...state,
             accessToken: action.payload.token,
             expirationTime: action.payload.expirationTime,
