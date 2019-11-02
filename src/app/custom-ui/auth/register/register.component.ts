@@ -21,15 +21,17 @@ export class RegisterComponent implements OnInit {
   onRegistrationFormSubmit(): void {
     const registrationFormValue = this.registrationForm.value;
 
-    this.store.dispatch(fromAuthActions.startSignUpAsAdmin({
-      payload: {
-        name: registrationFormValue.name,
-        phone: registrationFormValue.phone,
-        email: registrationFormValue.email,
-        password: registrationFormValue.password,
-        isAdmin: true
-      }
-    }));
+    this.store.dispatch(
+      fromAuthActions.startSignUpAsAdmin({
+        payload: {
+          name: registrationFormValue.name,
+          phone: registrationFormValue.phone,
+          email: registrationFormValue.email,
+          password: registrationFormValue.password,
+          isAdmin: true
+        }
+      })
+    );
   }
 
   ngOnInit(): void {

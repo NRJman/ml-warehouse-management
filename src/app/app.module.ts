@@ -39,6 +39,7 @@ import { USERS_API_SERVER_URL_TOKEN, USERS_API_SERVER_URL } from './app.config';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './custom-ui/shared/interceptors/auth.interceptor';
 import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   imports: [
@@ -83,7 +84,8 @@ import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
       multi: true
     },
     AuthGuard,
-    CustomValidatorsService
+    CustomValidatorsService,
+    CookieService
   ],
   bootstrap: [ AppComponent ]
 })

@@ -11,8 +11,27 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    const token = this.cookieService.get('access_token');
+    const doesTokenExist: boolean = this.cookieService.check('Token');
+
+    if (!doesTokenExist) {
+      this.declinePageLoading();
+    }
+
+    const expirationTime: number = Number(this.cookieService.get('ExpirationTime'));
+
+    if (Date.now() > expirationTime) {
+      this.cookieService.delete('Token');
+      this.cookieService.delete('ExpirationTime');
+
+      this.declinePageLoading();
+    }
 
     return true;
+  }
+
+  private declinePageLoading(): Observable<boolean> | Promise<boolean> | boolean {
+    this.router.navigate(['/login']);
+
+    return false;
   }
 }

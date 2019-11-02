@@ -35,8 +35,7 @@ export const routes: Routes = [
     component: LoginComponent,
     data: {
       title: 'Login Page'
-    },
-    canActivate: [AuthGuard]
+    }
   },
   {
     path: 'register',
@@ -66,7 +65,8 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        loadChildren: () => import('./custom-ui/admin/dashboard/dashboard.module').then(m => m.DashboardModule)
+        loadChildren: () => import('./custom-ui/admin/dashboard/dashboard.module').then(m => m.DashboardModule),
+        canActivate: [AuthGuard]
       },
       {
         path: 'icons',

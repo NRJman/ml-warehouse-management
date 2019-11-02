@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./../models/user');
 const Admin = require('./../models/admin');
 const jwtSecret = require('./../sensitive/jwt-secret');
+const getNewToken = require('./../utils/get-new-token');
 
 const router = express.Router();
 
@@ -79,16 +80,11 @@ router.post('/signup', async (req, res, next) => {
         const warehouseInfo = (userWarehouseId && typeof userWarehouseId === 'string') ? {
             warehouseId: userWarehouseId
         } : { };
-        const token = jwt.sign(
-            { email: userEmail, userId },
-            jwtSecret,
-            { expiresIn: '1h' }
-        );
-        
+
         return res.status(201).json({
             message: 'User has been created successfuly!',
             result: {
-                token,
+                tokenInfo: getNewToken(userEmail, userId, 1),
                 user: {
                     name: userName,
                     phone: userPhone,
@@ -123,24 +119,17 @@ router.post('/login', (req, res, next) => {
                 });
             }
 
-            const token = jwt.sign(
-                { email: foundUser.email, userId: foundUser.userId },
-                jwtSecret,
-                { expiresIn: '1h' }
-            )
-            const adminInfo = (foundUser.isAdmin) ? {
-                adminId: foundUser.userId,
-                warehouseId: foundUser.warehouseId
-            } : { };
+            const adminInfo = (foundUser.isAdmin) ? { adminId: foundUser.userId } : { };
+            const warehouseInfo = (foundUser.warehouseId) ? { warehouseId: foundUser.warehouseId } : { };
 
             return res.status(200).json({
-                token,
+                tokenInfo: getNewToken(foundUser.email, foundUser.userId, 1),
                 user: {
                     name: foundUser.name,
                     phone: foundUser.phone,
                     userId: foundUser.userId,
-                    isAdmin: foundUser.isAdmin,
-                    ...adminInfo
+                    ...adminInfo,
+                    ...warehouseInfo
                 }
             });
         })
@@ -151,7 +140,5 @@ router.post('/login', (req, res, next) => {
             })
         })
 });
-
-
 
 module.exports = router;

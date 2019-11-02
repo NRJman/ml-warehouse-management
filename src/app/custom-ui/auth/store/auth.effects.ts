@@ -9,6 +9,8 @@ import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { AdminInfo } from '../../shared/models/admin-info.model';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
+import { TokenInfo } from '../../shared/models/token-info.model';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable()
 export class AuthEffects {
@@ -16,6 +18,7 @@ export class AuthEffects {
         private actions$: Actions,
         private http: HttpClient,
         private router: Router,
+        private cookieService: CookieService,
         @Inject(USERS_API_SERVER_URL_TOKEN) private usersApiServerUrl: string
     ) {}
 
@@ -29,14 +32,19 @@ export class AuthEffects {
                 }).pipe(
                     switchMap(({ result }: {
                         result: {
-                            token: string,
+                            tokenInfo: TokenInfo,
                             adminInfo: AdminInfo
                         }
-                    }) => [
-                        fromAdminActions.createAdmin({ payload: result.adminInfo }),
-                        fromAuthActions.finishSignUpAsAdmin({ payload: result.token }),
-                        fromAuthActions.navigateAfterSuccessfulAuthorization({ payload: '/dashboard' })
-                    ]),
+                    }) => {
+                        this.cookieService.set('Token', `${result.tokenInfo.token}`);
+                        this.cookieService.set('ExpirationTime', `${result.tokenInfo.expirationTime}`);
+
+                        return [
+                            fromAdminActions.createAdmin({ payload: result.adminInfo }),
+                            fromAuthActions.finishSignUpAsAdmin({ payload: result.tokenInfo }),
+                            fromAuthActions.navigateAfterSuccessfulAuthorization({ payload: '/dashboard' })
+                        ];
+                    }),
                     catchError(error => {
                         return of(fromAuthActions.failSignUpAsAdmin(error));
                     })

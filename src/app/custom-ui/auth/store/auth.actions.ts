@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { RegistrationData } from '../../shared/models/registration-data.model';
+import { TokenInfo } from '../../shared/models/token-info.model';
 
 export const startSignUpAsAdmin = createAction(
     '[Auth] Start Signing Up As Admin',
@@ -7,7 +8,7 @@ export const startSignUpAsAdmin = createAction(
 );
 export const finishSignUpAsAdmin = createAction(
     '[Auth] Finish Signing Up As Admin',
-    props<{ payload: string }>()
+    props<{ payload: TokenInfo }>()
 );
 export const failSignUpAsAdmin = createAction(
     '[Auth] Fail Signing Up As Admin',
