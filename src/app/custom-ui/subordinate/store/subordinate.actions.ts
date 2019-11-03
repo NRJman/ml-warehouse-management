@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { SubordinateInfo } from '../../shared/models/subordinate-info.model';
+import { Subordinate } from '../../shared/models/users/subordinate.model';
 
-export const storeSubordinateInfo = createAction(
+export const storeSubordinate = createAction(
     '[Admin] Store Subordinate Information',
-    props<{ payload: SubordinateInfo }>()
+    props<{ payload: Subordinate }>()
 );

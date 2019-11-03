@@ -1,4 +1,4 @@
 import { createAction, props } from '@ngrx/store';
-import { AdminInfo } from '../../shared/models/admin-info.model';
+import { Admin } from '../../shared/models/users/admin.model';
 
-export const storeAdminInfo = createAction('[Admin] Store Admin Information', props<{ payload: AdminInfo }>());
+export const storeAdmin = createAction('[Admin] Store Admin Information', props<{ payload: Admin }>());

@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const mongodbAccessKey = require('./sensitive/mongodb-access-key');
 const app = express();
 // const adminsRoutes = require('./routes/admins');
-const usersRoutes = require('./routes/users');
+const userRoutes = require('./routes/users');
+const initRoute = require('./routes/init');
 
 mongoose.connect(`mongodb+srv://Vadym:${mongodbAccessKey}@wms-cluster-xayjt.mongodb.net/test?retryWrites=true&w=majority`)
     .then(() => {
@@ -32,7 +33,8 @@ app.use((req, res, next) => {
 });
 
 //app.use('/api/clients', adminsRoutes);
-app.use('/api/users', usersRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/init', initRoute);
 
 app.get('/', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');

@@ -1,9 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('./../models/user');
 const Admin = require('./../models/admin');
-const jwtSecret = require('./../sensitive/jwt-secret');
 const getNewToken = require('./../utils/get-new-token');
 
 const router = express.Router();
@@ -68,8 +66,7 @@ router.post('/signup', async (req, res, next) => {
 
         const admin = new Admin({
             userId,
-            subordinateIds: [],
-            tasksList: []
+            subordinateIds: []
         });
         
         return admin.save();
@@ -85,7 +82,7 @@ router.post('/signup', async (req, res, next) => {
             message: 'User has been created successfuly!',
             result: {
                 tokenInfo: getNewToken(userEmail, userId, 1),
-                userInfo: {
+                user: {
                     name: userName,
                     phone: userPhone,
                     userId: userId,
@@ -136,8 +133,8 @@ router.post('/signin', async (req, res, next) => {
         return res.status(200).json({
             message: 'User has been successfully signed in!',
             result: {
-                tokenInfo: getNewToken(foundUser.email, foundUser.userId, 1),
-                userInfo: {
+                tokenInfo: getNewToken(foundUser.email, foundUserId, 1),
+                user: {
                     name: foundUser.name,
                     phone: foundUser.phone,
                     userId: foundUserId,

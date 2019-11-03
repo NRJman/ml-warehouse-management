@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import * as fromAdminActions from './admin.actions';
-import { Task } from '../../shared/models/task.model';
+import { Task } from '../../shared/models/warehouse/task.model';
 
 export interface State {
     name: string;
@@ -23,7 +23,7 @@ export const initialState: State = {
 export function adminReducer(adminState: State | undefined, adminAction: Action) {
     return createReducer(
         initialState,
-        on(fromAdminActions.storeAdminInfo, (state, action) => ({
+        on(fromAdminActions.storeAdmin, (state, action) => ({
             ...state,
             name: action.payload.name,
             phone: action.payload.phone,

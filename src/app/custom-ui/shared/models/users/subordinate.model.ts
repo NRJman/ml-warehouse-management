@@ -1,4 +1,4 @@
-export interface SubordinateInfo {
+export interface Subordinate {
     name: string;
     phone: number;
     userId: string;

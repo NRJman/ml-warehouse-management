@@ -1,8 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { RegistrationData } from '../../shared/models/registration-data.model';
-import { TokenInfo } from '../../shared/models/token-info.model';
-import { AuthenticationData } from '../../shared/models/authentication-data.model';
-import { AuthenticationResponse } from '../../shared/models/authentication-response.model';
+import { RegistrationData } from '../../shared/models/auth/registration-data.model';
+import { TokenInfo } from '../../shared/models/auth/token-info.model';
+import { AuthenticationData } from '../../shared/models/auth/authentication-data.model';
+import { AuthenticationResponse } from '../../shared/models/auth/authentication-response.model';
 
 export const startSigningUp = createAction(
     '[Auth] Start Signing Up As Admin',

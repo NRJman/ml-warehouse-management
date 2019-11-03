@@ -4,7 +4,7 @@ import { CustomValidatorsService } from '../../shared/services/custom-validators
 import { Store } from '@ngrx/store';
 import * as fromApp from './../../../store/app.reducers';
 import * as fromAuthActions from './../../auth/store/auth.actions';
-import { RegistrationData } from '../../shared/models/registration-data.model';
+import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 
 @Component({
   selector: 'app-dashboard',

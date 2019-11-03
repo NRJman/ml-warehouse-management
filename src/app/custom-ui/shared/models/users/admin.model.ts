@@ -1,4 +1,4 @@
-export interface AdminInfo {
+export interface Admin {
     name: string;
     phone: number;
     userId: string;

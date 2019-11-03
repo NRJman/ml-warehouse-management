@@ -35,11 +35,12 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { reducers } from './store/app.reducers';
 import { CustomValidatorsService } from './custom-ui/shared/services/custom-validators.service';
 import { AuthEffects } from './custom-ui/auth/store/auth.effects';
-import { USERS_API_SERVER_URL_TOKEN, USERS_API_SERVER_URL } from './app.config';
+import { USERS_API_SERVER_URL_TOKEN, USERS_API_SERVER_URL, INIT_API_SERVER_URL_TOKEN, INIT_API_SERVER_URL } from './app.config';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './custom-ui/shared/interceptors/auth.interceptor';
 import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
 import { CookieService } from 'ngx-cookie-service';
+import { AppDataInitResolver } from './custom-ui/shared/services/app-data-init.resolver';
 
 @NgModule({
   imports: [
@@ -79,11 +80,16 @@ import { CookieService } from 'ngx-cookie-service';
       useValue: USERS_API_SERVER_URL
     },
     {
+      provide: INIT_API_SERVER_URL_TOKEN,
+      useValue: INIT_API_SERVER_URL
+    },
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
     },
     AuthGuard,
+    AppDataInitResolver,
     CustomValidatorsService,
     CookieService
   ],

@@ -5,15 +5,15 @@ import * as fromAuthActions from './auth.actions';
 import * as fromAdminActions from './../../admin/store/admin.actions';
 import * as fromSubordinateActions from './../../subordinate/store/subordinate.actions';
 import { switchMap, catchError, tap, map } from 'rxjs/operators';
-import { RegistrationData } from '../../shared/models/registration-data.model';
+import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
-import { AdminInfo } from '../../shared/models/admin-info.model';
+import { Admin } from '../../shared/models/users/admin.model';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
-import { TokenInfo } from '../../shared/models/token-info.model';
+import { TokenInfo } from '../../shared/models/auth/token-info.model';
 import { CookieService } from 'ngx-cookie-service';
-import { AuthenticationData } from '../../shared/models/authentication-data.model';
-import { SubordinateInfo } from '../../shared/models/subordinate-info.model';
+import { AuthenticationData } from '../../shared/models/auth/authentication-data.model';
+import { Subordinate } from '../../shared/models/users/subordinate.model';
 import { Action } from '@ngrx/store';
 
 @Injectable()
@@ -34,21 +34,21 @@ export class AuthEffects {
                 this.http.post(`${this.usersApiServerUrl}/signup`, {
                     ...registrationData
                 }).pipe(
-                    switchMap(({ result: { tokenInfo, userInfo } }: {
+                    switchMap(({ result: { tokenInfo, user } }: {
                         result: {
                             tokenInfo: TokenInfo,
-                            userInfo: AdminInfo | SubordinateInfo
+                            user: Admin | Subordinate
                         }
                     }) => {
-                        const isAdmin: boolean = userInfo.isAdmin;
-                        const targetUserInfoStoringAction = (isAdmin)
-                            ? fromAdminActions.storeAdminInfo({ payload: userInfo as AdminInfo })
-                            : fromSubordinateActions.storeSubordinateInfo({ payload: userInfo as SubordinateInfo });
+                        const isAdmin: boolean = user.isAdmin;
+                        const targetuserStoringAction = (isAdmin)
+                            ? fromAdminActions.storeAdmin({ payload: user as Admin })
+                            : fromSubordinateActions.storeSubordinate({ payload: user as Subordinate });
 
                         this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            targetUserInfoStoringAction,
+                            targetuserStoringAction,
                             fromAuthActions.finishSigningUp({
                                 payload: {
                                     tokenInfo,
@@ -74,21 +74,21 @@ export class AuthEffects {
                 this.http.post(`${this.usersApiServerUrl}/signin`, {
                     ...authenticationData
                 }).pipe(
-                    switchMap(({ result: { tokenInfo, userInfo } }: {
+                    switchMap(({ result: { tokenInfo, user } }: {
                         result: {
                             tokenInfo: TokenInfo,
-                            userInfo: AdminInfo | SubordinateInfo
+                            user: Admin | Subordinate
                         }
                     }) => {
-                        const isAdmin: boolean = userInfo.isAdmin;
-                        const targetUserInfoStoringAction: Action = (isAdmin)
-                            ? fromAdminActions.storeAdminInfo({ payload: userInfo as AdminInfo })
-                            : fromSubordinateActions.storeSubordinateInfo({ payload: userInfo as SubordinateInfo });
+                        const isAdmin: boolean = user.isAdmin;
+                        const targetuserStoringAction: Action = (isAdmin)
+                            ? fromAdminActions.storeAdmin({ payload: user as Admin })
+                            : fromSubordinateActions.storeSubordinate({ payload: user as Subordinate });
 
                         this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            targetUserInfoStoringAction,
+                            targetuserStoringAction,
                             fromAuthActions.finishSigningIn({
                                 payload: {
                                     tokenInfo: tokenInfo,
