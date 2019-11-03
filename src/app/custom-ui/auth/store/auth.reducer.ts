@@ -4,26 +4,30 @@ import * as fromAuthActions from './auth.actions';
 export interface State {
     accessToken: string;
     expirationTime: number;
-    isAuthenticated: boolean;
     isAdmin: boolean;
+    isAuthenticated: boolean;
 }
 
 export const initialState: State = {
     accessToken: null,
     expirationTime: null,
-    isAuthenticated: false,
-    isAdmin: null
+    isAdmin: null,
+    isAuthenticated: false
 };
 
 export function authReducer(authState: State | undefined, authAction: Action) {
     return createReducer(
         initialState,
-        on(fromAuthActions.finishSigningUpAsAdmin, (state, action) => ({
-            ...state,
-            accessToken: action.payload.token,
-            expirationTime: action.payload.expirationTime,
-            isAuthenticated: true,
-            isAdmin: true,
-        }))
+        on(
+            fromAuthActions.finishSigningUp,
+            fromAuthActions.finishSigningIn,
+            (state, action) => ({
+                ...state,
+                accessToken: action.payload.tokenInfo.token,
+                expirationTime: action.payload.tokenInfo.expirationTime,
+                isAdmin: action.payload.isAdmin,
+                isAuthenticated: true,
+            })
+        )
     )(authState, authAction);
 }

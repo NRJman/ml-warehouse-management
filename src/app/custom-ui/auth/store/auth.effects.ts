@@ -26,30 +26,40 @@ export class AuthEffects {
         @Inject(USERS_API_SERVER_URL_TOKEN) private usersApiServerUrl: string
     ) {}
 
-    startSigningUpAsAdmin$ = createEffect(() =>
+    startSigningUp$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(fromAuthActions.startSigningUpAsAdmin),
+            ofType(fromAuthActions.startSigningUp),
             map(action => action.payload),
             switchMap((registrationData: RegistrationData) =>
                 this.http.post(`${this.usersApiServerUrl}/signup`, {
                     ...registrationData
                 }).pipe(
-                    switchMap(({ result }: {
+                    switchMap(({ result: { tokenInfo, userInfo } }: {
                         result: {
                             tokenInfo: TokenInfo,
-                            adminInfo: AdminInfo
+                            userInfo: AdminInfo | SubordinateInfo
                         }
                     }) => {
-                        this.saveTokenInformation(result.tokenInfo.token, result.tokenInfo.expirationTime);
+                        const isAdmin: boolean = userInfo.isAdmin;
+                        const targetUserInfoStoringAction = (isAdmin)
+                            ? fromAdminActions.storeAdminInfo({ payload: userInfo as AdminInfo })
+                            : fromSubordinateActions.storeSubordinateInfo({ payload: userInfo as SubordinateInfo });
+
+                        this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            fromAdminActions.storeAdminInfo({ payload: result.adminInfo }),
-                            fromAuthActions.finishSigningUpAsAdmin({ payload: result.tokenInfo }),
+                            targetUserInfoStoringAction,
+                            fromAuthActions.finishSigningUp({
+                                payload: {
+                                    tokenInfo,
+                                    isAdmin
+                                }
+                            }),
                             fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
                         ];
                     }),
                     catchError(error => {
-                        return of(fromAuthActions.failSigningUpAsAdmin(error));
+                        return of(fromAuthActions.failSigningUp(error));
                     })
                 )
             )
@@ -64,32 +74,24 @@ export class AuthEffects {
                 this.http.post(`${this.usersApiServerUrl}/signin`, {
                     ...authenticationData
                 }).pipe(
-                    switchMap(({ result }: {
+                    switchMap(({ result: { tokenInfo, userInfo } }: {
                         result: {
                             tokenInfo: TokenInfo,
                             userInfo: AdminInfo | SubordinateInfo
                         }
                     }) => {
-                        const isAdmin: boolean = result.userInfo.isAdmin;
-                        let targetUserInfoStoringAction: Action;
+                        const isAdmin: boolean = userInfo.isAdmin;
+                        const targetUserInfoStoringAction: Action = (isAdmin)
+                            ? fromAdminActions.storeAdminInfo({ payload: userInfo as AdminInfo })
+                            : fromSubordinateActions.storeSubordinateInfo({ payload: userInfo as SubordinateInfo });
 
-                        if (isAdmin) {
-                            targetUserInfoStoringAction = fromAdminActions.storeAdminInfo({
-                                payload: result.userInfo as AdminInfo
-                            });
-                        } else {
-                            targetUserInfoStoringAction = fromSubordinateActions.storeSubordinateInfo({
-                                payload: result.userInfo as SubordinateInfo
-                            });
-                        }
-
-                        this.saveTokenInformation(result.tokenInfo.token, result.tokenInfo.expirationTime);
+                        this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
                             targetUserInfoStoringAction,
                             fromAuthActions.finishSigningIn({
                                 payload: {
-                                    tokenInfo: result.tokenInfo,
+                                    tokenInfo: tokenInfo,
                                     isAdmin
                                 }
                             }),

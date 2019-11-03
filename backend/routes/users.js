@@ -76,16 +76,16 @@ router.post('/signup', async (req, res, next) => {
     }
 
     function sendResponse(adminId) {
-        const adminInfo = (adminId) ? { adminId } : { };
+        const adminInfo = (adminId) ? { adminId } : null;
         const warehouseInfo = (userWarehouseId && typeof userWarehouseId === 'string') ? {
             warehouseId: userWarehouseId
-        } : { };
+        } : null;
 
         return res.status(201).json({
             message: 'User has been created successfuly!',
             result: {
                 tokenInfo: getNewToken(userEmail, userId, 1),
-                user: {
+                userInfo: {
                     name: userName,
                     phone: userPhone,
                     userId: userId,
@@ -102,16 +102,11 @@ router.post('/signin', async (req, res, next) => {
     let foundUser;
 
     try {
-        console.log('email:', req.body.email);
         foundUser = await User.findOne({ email: req.body.email });
-        console.log('foundUser', foundUser);
-
 
         if (!foundUser) {
             throw new Error(`Couldn't find a user with such an email!`);
         }
-
-        console.log('foundUser', foundUser);
 
         if (!arePasswordsEqual()) {
             throw new Error('The password is incorrect!');
@@ -131,26 +126,26 @@ router.post('/signin', async (req, res, next) => {
 
     async function sendResponse() {
         const foundUserId = foundUser._id;
-        const warehouseInfo = (foundUser.warehouseId) ? { warehouseId: foundUser.warehouseId } : { };
-        let adminInfo;
+        const warehouseInfo = (foundUser.warehouseId) ? { warehouseId: foundUser.warehouseId } : null;
 
         if (foundUser.isAdmin) {
-            var { adminId, subordinateIds } = adminInfo = await Admin.findOne({ userId: foundUserId });
+            const adminInfo = await Admin.findOne({ userId: foundUserId });
+            var { _id: adminId, subordinateIds } = adminInfo;
         }
 
-        console.log('ADMIN_ID:', adminId);
-        console.log('SUBORDINATE_IDS:', subordinateIds);
-
         return res.status(200).json({
-            tokenInfo: getNewToken(foundUser.email, foundUser.userId, 1),
-            user: {
-                name: foundUser.name,
-                phone: foundUser.phone,
-                userId: foundUserId,
-                isAdmin: foundUser.isAdmin,
-                ...warehouseInfo,
-                ...((adminId) ? { adminId } : { }),
-                ...((subordinateIds) ? { subordinateIds } : { })
+            message: 'User has been successfully signed in!',
+            result: {
+                tokenInfo: getNewToken(foundUser.email, foundUser.userId, 1),
+                userInfo: {
+                    name: foundUser.name,
+                    phone: foundUser.phone,
+                    userId: foundUserId,
+                    isAdmin: foundUser.isAdmin,
+                    ...warehouseInfo,
+                    ...((adminId) ? { adminId } : null),
+                    ...((subordinateIds) ? { subordinateIds } : null)
+                }
             }
         });
     }
