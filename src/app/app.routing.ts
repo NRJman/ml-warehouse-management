@@ -9,7 +9,6 @@ import { P500Component } from './core-ui/views/error/500.component';
 import { LoginComponent } from './custom-ui/auth/login/login.component';
 import { RegisterComponent } from './custom-ui/auth/register/register.component';
 import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
-import { AppDataInitResolver } from './custom-ui/shared/services/app-data-init.resolver';
 
 export const routes: Routes = [
   {
@@ -67,10 +66,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: () => import('./custom-ui/admin/dashboard/dashboard.module').then(m => m.DashboardModule),
-        canActivate: [AuthGuard],
-        resolve: {
-          initData: AppDataInitResolver
-        }
+        canActivate: [AuthGuard]
       },
       {
         path: 'icons',

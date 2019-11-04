@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { createEffect, Actions, ofType, Effect } from '@ngrx/effects';
+import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { HttpClient } from '@angular/common/http';
 import * as fromAuthActions from './auth.actions';
 import * as fromAdminActions from './../../admin/store/admin.actions';
@@ -12,9 +12,11 @@ import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { TokenInfo } from '../../shared/models/auth/token-info.model';
 import { CookieService } from 'ngx-cookie-service';
-import { AuthenticationData } from '../../shared/models/auth/authentication-data.model';
+import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authenticated.model';
 import { Subordinate } from '../../shared/models/users/subordinate.model';
 import { Action } from '@ngrx/store';
+import { ApiResponse } from '../../shared/models/api/api-response.model';
+import { UserDataInitType } from '../../shared/models/app/app-data-init-type.model';
 
 @Injectable()
 export class AuthEffects {
@@ -34,12 +36,7 @@ export class AuthEffects {
                 this.http.post(`${this.usersApiServerUrl}/signup`, {
                     ...registrationData
                 }).pipe(
-                    switchMap(({ result: { tokenInfo, user } }: {
-                        result: {
-                            tokenInfo: TokenInfo,
-                            user: Admin | Subordinate
-                        }
-                    }) => {
+                    switchMap(({ result: { tokenInfo, user } }: ApiResponse<UserDataInitType>) => {
                         const isAdmin: boolean = user.isAdmin;
                         const targetuserStoringAction = (isAdmin)
                             ? fromAdminActions.storeAdmin({ payload: user as Admin })
@@ -58,9 +55,7 @@ export class AuthEffects {
                             fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
                         ];
                     }),
-                    catchError(error => {
-                        return of(fromAuthActions.failSigningUp(error));
-                    })
+                    catchError(error => of(fromAuthActions.failSigningUp(error)))
                 )
             )
         )
@@ -70,16 +65,11 @@ export class AuthEffects {
         () => this.actions$.pipe(
             ofType(fromAuthActions.startSigningIn),
             map(action => action.payload),
-            switchMap((authenticationData: AuthenticationData) =>
+            switchMap((authenticationData: DataToBeAuthenticated) =>
                 this.http.post(`${this.usersApiServerUrl}/signin`, {
                     ...authenticationData
                 }).pipe(
-                    switchMap(({ result: { tokenInfo, user } }: {
-                        result: {
-                            tokenInfo: TokenInfo,
-                            user: Admin | Subordinate
-                        }
-                    }) => {
+                    switchMap(({ result: { tokenInfo, user } }: ApiResponse<UserDataInitType>) => {
                         const isAdmin: boolean = user.isAdmin;
                         const targetuserStoringAction: Action = (isAdmin)
                             ? fromAdminActions.storeAdmin({ payload: user as Admin })
@@ -98,9 +88,7 @@ export class AuthEffects {
                             fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
                         ];
                     }),
-                    catchError(error => {
-                        return of(fromAuthActions.failSigningIn(error));
-                    })
+                    catchError(error => of(fromAuthActions.failSigningIn(error)))
                 )
             )
         )

@@ -1,8 +1,8 @@
 import { createAction, props } from '@ngrx/store';
 import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 import { TokenInfo } from '../../shared/models/auth/token-info.model';
-import { AuthenticationData } from '../../shared/models/auth/authentication-data.model';
-import { AuthenticationResponse } from '../../shared/models/auth/authentication-response.model';
+import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authenticated.model';
+import { AuthenticationResult } from '../../shared/models/auth/authentication-result.model';
 
 export const startSigningUp = createAction(
     '[Auth] Start Signing Up As Admin',
@@ -10,7 +10,7 @@ export const startSigningUp = createAction(
 );
 export const finishSigningUp = createAction(
     '[Auth] Finish Signing Up As Admin',
-    props<{ payload: AuthenticationResponse }>()
+    props<{ payload: AuthenticationResult }>()
 );
 export const failSigningUp = createAction(
     '[Auth] Fail Signing Up As Admin',
@@ -18,11 +18,11 @@ export const failSigningUp = createAction(
 );
 export const startSigningIn = createAction(
     '[Auth] Start Signing In',
-    props<{ payload: AuthenticationData}>()
+    props<{ payload: DataToBeAuthenticated}>()
 );
 export const finishSigningIn = createAction(
     '[Auth] Finish Signing In',
-    props<{ payload: AuthenticationResponse }>()
+    props<{ payload: AuthenticationResult }>()
 );
 export const failSigningIn = createAction(
     '[Auth] Fail Signing In',
