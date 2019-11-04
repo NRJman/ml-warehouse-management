@@ -3,9 +3,11 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const mongodbAccessKey = require('./sensitive/mongodb-access-key');
 const app = express();
-// const adminsRoutes = require('./routes/admins');
+
 const userRoutes = require('./routes/users');
 const initRoute = require('./routes/init');
+const adminRoutes = require('./routes/admins');
+const warehouseRoutes = require('./routes/warehouses');
 
 mongoose.connect(`mongodb+srv://Vadym:${mongodbAccessKey}@wms-cluster-xayjt.mongodb.net/test?retryWrites=true&w=majority`)
     .then(() => {
@@ -32,9 +34,10 @@ app.use((req, res, next) => {
     next();
 });
 
-//app.use('/api/clients', adminsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/init', initRoute);
+app.use('/api/users', adminRoutes);
+app.use('/api/init', warehouseRoutes);
 
 app.get('/', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');

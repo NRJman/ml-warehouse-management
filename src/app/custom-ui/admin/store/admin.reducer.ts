@@ -8,7 +8,7 @@ export interface State {
     userId: string;
     adminId: string;
     warehouseId: string;
-    subordinateIds: string[];
+    subordinates: string[];
 }
 
 export const initialState: State = {
@@ -17,7 +17,7 @@ export const initialState: State = {
     userId: null,
     adminId: null,
     warehouseId: null,
-    subordinateIds: null,
+    subordinates: null,
 };
 
 export function adminReducer(adminState: State | undefined, adminAction: Action) {
@@ -30,7 +30,7 @@ export function adminReducer(adminState: State | undefined, adminAction: Action)
             userId: action.payload.userId,
             adminId: action.payload.adminId,
             warehouseId: action.payload.warehouseId,
-            subordinateIds: action.payload.subordinateIds
+            subordinates: action.payload.subordinateIds
         }))
     )(adminState, adminAction);
 }

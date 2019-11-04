@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = require('./../sensitive/jwt-secret');
 const User = require('./../models/user');
 const Admin = require('./../models/admin');
-const Warehouse = require('./../models/warehouse');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -16,14 +15,10 @@ router.get('/', async (req, res, next) => {
         const foundUser = await User.findById(userId);
         const isAdmin = foundUser.isAdmin;
         const warehouseId = foundUser.warehouseId;
-        let adminInfo, warehouseInfo;
+        let adminInfo;
 
         if (isAdmin) {
             adminInfo = getAdminInfo(foundUser, userId);
-        }
-
-        if (warehouseId) {
-            warehouseInfo = getWarehouseInfo(warehouseId)
         }
 
         return res.status(200).json({
@@ -34,7 +29,7 @@ router.get('/', async (req, res, next) => {
                 userId,
                 isAdmin,
                 ...adminInfo,
-                ...warehouseInfo
+                warehouseId
             }
         })
     } catch (error) {
@@ -53,20 +48,6 @@ router.get('/', async (req, res, next) => {
         }
 
         return null;
-    }
-
-    async
-
-    async function getWarehouseInfo(warehouseId) {
-        try {
-            const foundWarehouse = await Warehouse.findById(warehouseId);
-
-            return (
-                ({areas, products, tasks, adminId }) => ({ areas, products, tasks, adminId })
-            )(foundWarehouse);           
-        } catch (error) {
-            return null;
-        }
     }
 });
 

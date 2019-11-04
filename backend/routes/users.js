@@ -124,10 +124,11 @@ router.post('/signin', async (req, res, next) => {
     async function sendResponse() {
         const foundUserId = foundUser._id;
         const warehouseInfo = (foundUser.warehouseId) ? { warehouseId: foundUser.warehouseId } : null;
+        let adminId;
 
         if (foundUser.isAdmin) {
             const adminInfo = await Admin.findOne({ userId: foundUserId });
-            var { _id: adminId, subordinateIds } = adminInfo;
+            adminId = adminInfo._id;
         }
 
         return res.status(200).json({
@@ -141,7 +142,6 @@ router.post('/signin', async (req, res, next) => {
                     isAdmin: foundUser.isAdmin,
                     ...warehouseInfo,
                     ...((adminId) ? { adminId } : null),
-                    ...((subordinateIds) ? { subordinateIds } : null)
                 }
             }
         });
