@@ -47,6 +47,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './custom-ui/shared/interceptors/auth.interceptor';
 import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
 import { CookieService } from 'ngx-cookie-service';
+import { AdminEffects } from './custom-ui/admin/store/admin.effects';
 
 @NgModule({
   imports: [
@@ -64,7 +65,7 @@ import { CookieService } from 'ngx-cookie-service';
     AuthModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, AdminEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 15
     }),

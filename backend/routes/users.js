@@ -73,10 +73,7 @@ router.post('/signup', async (req, res, next) => {
     }
 
     function sendResponse(adminId) {
-        const adminInfo = (adminId) ? { adminId } : null;
-        const warehouseInfo = (userWarehouseId && typeof userWarehouseId === 'string') ? {
-            warehouseId: userWarehouseId
-        } : null;
+        const warehouseId = userWarehouseId;
 
         return res.status(201).json({
             message: 'User has been created successfuly!',
@@ -86,8 +83,7 @@ router.post('/signup', async (req, res, next) => {
                     name: userName,
                     phone: userPhone,
                     userId: userId,
-                    ...warehouseInfo,
-                    ...adminInfo,
+                    ...(warehouseId ? { warehouseId } : null)
                 },
                 isAdmin
             }
@@ -122,12 +118,12 @@ router.post('/signin', async (req, res, next) => {
     }
 
     async function sendResponse() {
+        const warehouseId = foundUser.warehouseId;
         const foundUserId = foundUser._id;
-        const warehouseInfo = (foundUser.warehouseId) ? { warehouseId: foundUser.warehouseId } : null;
-        let adminId;
 
         if (foundUser.isAdmin) {
             const adminInfo = await Admin.findOne({ userId: foundUserId });
+
             adminId = adminInfo._id;
         }
 
@@ -139,8 +135,7 @@ router.post('/signin', async (req, res, next) => {
                     name: foundUser.name,
                     phone: foundUser.phone,
                     userId: foundUserId,
-                    ...warehouseInfo,
-                    ...((adminId) ? { adminId } : null),
+                    ...(warehouseId ? { warehouseId } : null)
                 },
                 isAdmin: foundUser.isAdmin
             }

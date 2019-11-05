@@ -7,16 +7,15 @@ import * as fromSubordinateActions from './../../subordinate/store/subordinate.a
 import { switchMap, catchError, tap, map } from 'rxjs/operators';
 import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
-import { Admin } from '../../shared/models/users/admin.model';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
-import { TokenInfo } from '../../shared/models/auth/token-info.model';
 import { CookieService } from 'ngx-cookie-service';
 import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authenticated.model';
-import { Subordinate } from '../../shared/models/users/subordinate.model';
 import { Action } from '@ngrx/store';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
 import { UserDataInitType } from '../../shared/models/app/app-data-init-type.model';
+import { User } from '../../shared/models/users/user.model';
+import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 
 @Injectable()
 export class AuthEffects {
@@ -74,8 +73,8 @@ export class AuthEffects {
                 }).pipe(
                     switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
                         const targetuserStoringAction: Action = (isAdmin)
-                            ? fromAdminActions.storeAdmin({ payload: user as Admin })
-                            : fromSubordinateActions.storeSubordinate({ payload: user as Subordinate });
+                            ? fromAdminActions.storeAdmin({ payload: user })
+                            : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
 
                         this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
 

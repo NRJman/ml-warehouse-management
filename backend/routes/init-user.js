@@ -1,8 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const jwtSecret = require('./../sensitive/jwt-secret');
-const User = require('./../models/user');
-const Admin = require('./../models/admin');
+const jwtSecret = require('../sensitive/jwt-secret');
+const User = require('../models/user');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -15,11 +14,6 @@ router.get('/', async (req, res, next) => {
         const foundUser = await User.findById(userId);
         const isAdmin = foundUser.isAdmin;
         const warehouseId = foundUser.warehouseId;
-        let adminInfo;
-
-        if (isAdmin) {
-            adminInfo = getAdminInfo(foundUser, userId);
-        }
 
         return res.status(200).json({
             message: 'Successfully fetched initial data!',
@@ -28,8 +22,7 @@ router.get('/', async (req, res, next) => {
                     name: foundUser.name,
                     phone: foundUser.phone,
                     userId,
-                    ...adminInfo,
-                    warehouseId
+                    ...(warehouseId ? { warehouseId } : null)
                 },
                 isAdmin
             }
@@ -39,17 +32,6 @@ router.get('/', async (req, res, next) => {
             message: 'Failed to fetch initial data!',
             error
         })
-    }
-
-    async function getAdminInfo(foundUser, userId) {
-        const foundAdmin = await Admin.findOne({ userId });
-        const subordinateIds = foundAdmin.subordinateIds;
-
-        if (!subordinateIds || subordinateIds.length > 0) {
-            return { subordinateIds }
-        }
-
-        return null;
     }
 });
 

@@ -5,41 +5,37 @@ const User = require('./../models/user');
 const router = express.Router();
 
 router.get('/:id', async (req, res, next) => {
+    let subordinateIds;
+    
     try {
-        const foundAdmin = await Admin.findById(req.params.id);
-        const subordinateIds = foundAdmin.subordinateIds;
-        let subordinates = [];
+        console.log(req.params.id);
+
+        const foundAdmin = await Admin.findOne({ userId: req.params.id });
+
+        console.log('FOUND ADMIN', foundAdmin);
+        
+        subordinateIds = foundAdmin.subordinateIds;
         
         if (!(subordinateIds instanceof Array) || subordinateIds.length > 0) {
             return sendSuccessfullResponse([]);
         }
-        
-        for (let i = 0, len = subordinateIds; i < len; i++) {
-            const subordinate = await User.findById(subordinateIds[i]);
-
-            subordinates.push({
-                name: subordinate.name,
-                phone: subordinate.phone,
-                userId: subordinate._id,
-                isAdmin: false,
-                warehouseId: subordinate.warehouseId
-            });
-        }
-
-        return sendSuccessfullResponse(subordinates);
     } catch (error) {
         return res.status(500).json({
             message: 'Failed to fetch subordinates!',
-            result: { subordinates: null },
+            result: { subordinates: [] },
             error
-        })
+        });
     }
+
+    User.find({ _id: { $in: subordinateIds } })
+        .then(subordinates => sendSuccessfullResponse(subordinates))
+        .catch(subordinates => sendSuccessfullResponse([]));
     
     function sendSuccessfullResponse(subordinates) {
         return res.status(200).json({
-            message: 'The admin info has been fetched successfully!',
+            message: 'The admin data has been fetched successfully!',
             result: { subordinates }
-        })
+        });
     }
 });
 

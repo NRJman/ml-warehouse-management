@@ -1,10 +1,8 @@
-import { Admin } from '../users/admin.model';
-import { Subordinate } from '../users/subordinate.model';
-import { Warehouse } from '../warehouse/warehouse.model';
 import { TokenInfo } from '../auth/token-info.model';
+import { User } from '../users/user.model';
 
 export interface UserDataInitType {
     tokenInfo?: TokenInfo;
-    user: Admin | Subordinate;
+    user: User;
     isAdmin: boolean;
 }

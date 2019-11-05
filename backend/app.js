@@ -5,7 +5,7 @@ const mongodbAccessKey = require('./sensitive/mongodb-access-key');
 const app = express();
 
 const userRoutes = require('./routes/users');
-const initRoute = require('./routes/init');
+const initUserRoute = require('./routes/init-user');
 const adminRoutes = require('./routes/admins');
 const warehouseRoutes = require('./routes/warehouses');
 
@@ -35,9 +35,9 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/users', userRoutes);
-app.use('/api/init', initRoute);
-app.use('/api/users', adminRoutes);
-app.use('/api/init', warehouseRoutes);
+app.use('/api/init', initUserRoute);
+app.use('/api/admins', adminRoutes);
+app.use('/api/warehouses', warehouseRoutes);
 
 app.get('/', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');

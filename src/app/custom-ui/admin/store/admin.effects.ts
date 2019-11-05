@@ -7,7 +7,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ADMINS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
-import { Subordinate } from '../../shared/models/users/subordinate.model';
+import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
+import { User } from '../../shared/models/users/user.model';
 
 @Injectable()
 export class AdminEffects {
@@ -18,19 +19,30 @@ export class AdminEffects {
         @Inject(ADMINS_API_SERVER_URL_TOKEN) private adminsApiServerUrl: string
     ) { }
 
-    fetchAdmin$ = createEffect(() =>
+    storeAdmin$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(fromAdmin.fetchAdmin),
+            ofType(fromAdmin.storeAdmin),
             map(action => action.payload),
-            switchMap(userId => this.http.get(`${this.adminsApiServerUrl}/${userId}`, {
+            switchMap((user: User) => [
+                fromAdmin.storeGenericAdminData({ payload: user }),
+                fromAdmin.fetchSpecificAdminData({ payload: user.userId })
+            ])
+        )
+    );
+
+    fetchSpecificAdminData$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(fromAdmin.fetchSpecificAdminData),
+            map(action => action.payload),
+            switchMap(userId => this.http.get(this.adminsApiServerUrl + userId, {
                 headers: new HttpHeaders({
                     Authorization: `Bearer ${this.cookieService.get('Token')}`
                 })
             }).pipe(
-                map(({ result }: ApiResponse<{ subordinates: Subordinate[] }>) => {
-                    return fromAdmin.storeAdminProperty({ payload: result });
+                map(({ result }: ApiResponse<{ subordinates: SubordinateUser[] }>) => {
+                    return fromAdmin.storeSpecificAdminData({ payload: result });
                 }),
-                catchError(error => of(fromAdmin.failFetchingAdmin({ payload: error })))
+                catchError(error => of(fromAdmin.failFetchingSpecificAdminData({ payload: error })))
             ))
         )
     );

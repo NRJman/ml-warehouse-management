@@ -1,7 +1,7 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import * as fromAdminActions from './admin.actions';
-import { Task } from '../../shared/models/warehouse/task.model';
-import { Subordinate } from '../../shared/models/users/subordinate.model';
+import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
+
 
 export interface State {
     name: string;
@@ -9,7 +9,7 @@ export interface State {
     userId: string;
     adminId: string;
     warehouseId: string;
-    subordinates: Subordinate[];
+    subordinates: SubordinateUser[];
 }
 
 export const initialState: State = {
@@ -25,8 +25,8 @@ export function adminReducer(adminState: State | undefined, adminAction: Action)
     return createReducer(
         initialState,
         on(
-            fromAdminActions.storeAdmin,
-            fromAdminActions.storeAdminProperty,
+            fromAdminActions.storeGenericAdminData,
+            fromAdminActions.storeSpecificAdminData,
                 (state, action) => ({
                 ...state,
                 ...action.payload
