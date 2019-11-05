@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/:id', async (req, res, next) => {
     try {
-        const foundAdmin = await Admin.findOne({ userId: req.params.id });
+        const foundAdmin = await Admin.findById(req.params.id);
         const subordinateIds = foundAdmin.subordinateIds;
         let subordinates = [];
         

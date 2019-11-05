@@ -24,12 +24,14 @@ router.get('/', async (req, res, next) => {
         return res.status(200).json({
             message: 'Successfully fetched initial data!',
             result: {
-                name: foundUser.name,
-                phone: foundUser.phone,
-                userId,
-                isAdmin,
-                ...adminInfo,
-                warehouseId
+                user: {
+                    name: foundUser.name,
+                    phone: foundUser.phone,
+                    userId,
+                    ...adminInfo,
+                    warehouseId
+                },
+                isAdmin
             }
         })
     } catch (error) {

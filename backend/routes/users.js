@@ -86,10 +86,10 @@ router.post('/signup', async (req, res, next) => {
                     name: userName,
                     phone: userPhone,
                     userId: userId,
-                    isAdmin,
                     ...warehouseInfo,
                     ...adminInfo,
-                }
+                },
+                isAdmin
             }
         });   
     }
@@ -139,10 +139,10 @@ router.post('/signin', async (req, res, next) => {
                     name: foundUser.name,
                     phone: foundUser.phone,
                     userId: foundUserId,
-                    isAdmin: foundUser.isAdmin,
                     ...warehouseInfo,
                     ...((adminId) ? { adminId } : null),
-                }
+                },
+                isAdmin: foundUser.isAdmin
             }
         });
     }

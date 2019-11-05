@@ -36,16 +36,19 @@ export class AuthEffects {
                 this.http.post(`${this.usersApiServerUrl}/signup`, {
                     ...registrationData
                 }).pipe(
-                    switchMap(({ result: { tokenInfo, user } }: ApiResponse<UserDataInitType>) => {
-                        const isAdmin: boolean = user.isAdmin;
-                        const targetuserStoringAction = (isAdmin)
-                            ? fromAdminActions.storeAdmin({ payload: user as Admin })
-                            : fromSubordinateActions.storeSubordinate({ payload: user as Subordinate });
+                    switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
+                        let targetUserStoringActions: Action[];
+
+                        if (isAdmin) {
+                            targetUserStoringActions = [];
+                        } else {
+                            targetUserStoringActions = [];
+                        }
 
                         this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            targetuserStoringAction,
+                            ...targetUserStoringActions,
                             fromAuthActions.finishSigningUp({
                                 payload: {
                                     tokenInfo,
@@ -55,7 +58,7 @@ export class AuthEffects {
                             fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
                         ];
                     }),
-                    catchError(error => of(fromAuthActions.failSigningUp(error)))
+                    catchError(error => of(fromAuthActions.failSigningUp({ payload: error })))
                 )
             )
         )
@@ -69,8 +72,7 @@ export class AuthEffects {
                 this.http.post(`${this.usersApiServerUrl}/signin`, {
                     ...authenticationData
                 }).pipe(
-                    switchMap(({ result: { tokenInfo, user } }: ApiResponse<UserDataInitType>) => {
-                        const isAdmin: boolean = user.isAdmin;
+                    switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
                         const targetuserStoringAction: Action = (isAdmin)
                             ? fromAdminActions.storeAdmin({ payload: user as Admin })
                             : fromSubordinateActions.storeSubordinate({ payload: user as Subordinate });

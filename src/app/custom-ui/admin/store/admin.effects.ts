@@ -27,8 +27,10 @@ export class AdminEffects {
                     Authorization: `Bearer ${this.cookieService.get('Token')}`
                 })
             }).pipe(
-                switchMap((response: ApiResponse<{ subordinates: Subordinate[] }>) => of(null)),
-                catchError(error => of(fromAdmin.failFetchingAdmin))
+                map(({ result }: ApiResponse<{ subordinates: Subordinate[] }>) => {
+                    return fromAdmin.storeAdminProperty({ payload: result });
+                }),
+                catchError(error => of(fromAdmin.failFetchingAdmin({ payload: error })))
             ))
         )
     );
