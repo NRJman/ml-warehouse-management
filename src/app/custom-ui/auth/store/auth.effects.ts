@@ -72,17 +72,17 @@ export class AuthEffects {
                     ...authenticationData
                 }).pipe(
                     switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
-                        const targetuserStoringAction: Action = (isAdmin)
+                        const targetUserStoringAction: Action = (isAdmin)
                             ? fromAdminActions.storeAdmin({ payload: user })
                             : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
 
                         this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            targetuserStoringAction,
+                            targetUserStoringAction,
                             fromAuthActions.finishSigningIn({
                                 payload: {
-                                    tokenInfo: tokenInfo,
+                                    tokenInfo,
                                     isAdmin
                                 }
                             }),

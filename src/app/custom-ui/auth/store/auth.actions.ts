@@ -5,15 +5,15 @@ import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authe
 import { AuthenticationResult } from '../../shared/models/auth/authentication-result.model';
 
 export const startSigningUp = createAction(
-    '[Auth] Start Signing Up As Admin',
+    '[Auth] Start Signing Up',
     props<{ payload: RegistrationData}>()
 );
 export const finishSigningUp = createAction(
-    '[Auth] Finish Signing Up As Admin',
+    '[Auth] Finish Signing Up',
     props<{ payload: AuthenticationResult }>()
 );
 export const failSigningUp = createAction(
-    '[Auth] Fail Signing Up As Admin',
+    '[Auth] Fail Signing Up',
     props<{ payload: { message: string, error: object } }>()
 );
 export const startSigningIn = createAction(

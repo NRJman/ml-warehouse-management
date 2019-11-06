@@ -13,7 +13,7 @@ import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
   {

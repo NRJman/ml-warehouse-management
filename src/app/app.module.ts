@@ -48,6 +48,8 @@ import { AuthInterceptor } from './custom-ui/shared/interceptors/auth.intercepto
 import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
 import { CookieService } from 'ngx-cookie-service';
 import { AdminEffects } from './custom-ui/admin/store/admin.effects';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { SharedEffects } from './custom-ui/shared/store/shared.effects';
 
 @NgModule({
   imports: [
@@ -65,11 +67,12 @@ import { AdminEffects } from './custom-ui/admin/store/admin.effects';
     AuthModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),
-    EffectsModule.forRoot([AuthEffects, AdminEffects]),
+    EffectsModule.forRoot([AuthEffects, AdminEffects, SharedEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 15
     }),
-    HttpClientModule
+    HttpClientModule,
+    NgxSpinnerModule
   ],
   declarations: [
     AppComponent,
