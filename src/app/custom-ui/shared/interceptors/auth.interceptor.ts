@@ -10,6 +10,10 @@ export class AuthInterceptor implements HttpInterceptor {
     constructor(private store: Store<fromApp.State>) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler) {
+        if (req.url.includes('init')) {
+            return next.handle(req);
+        }
+
         return this.store.select(getAccessToken)
             .pipe(
                 take(1),

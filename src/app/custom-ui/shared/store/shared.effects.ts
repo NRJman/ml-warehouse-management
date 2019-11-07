@@ -29,7 +29,7 @@ export class SharedEffects {
             ofType(fromSharedActions.startInitializingAppState),
             map(action => action.payload),
             switchMap((tokenInfo: TokenInfo) =>
-                this.http.get(`${this.usersApiServerUrl}/init`, {
+                this.http.get(this.usersApiServerUrl + 'init', {
                     headers: new HttpHeaders({
                         authorization: `Bearer ${tokenInfo.token}`
                     })
@@ -40,6 +40,7 @@ export class SharedEffects {
                             : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
 
                         return [
+                            fromSharedActions.changeAppLoadingState({ payload: true }),
                             targetUserStoringAction,
                             fromAuthActions.finishSigningIn({
                                 payload: {
@@ -47,7 +48,6 @@ export class SharedEffects {
                                     isAdmin
                                 }
                             }),
-                            fromSharedActions.finishInitializingAppState(),
                             fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
                         ];
                     }),
@@ -56,9 +56,4 @@ export class SharedEffects {
             )
         )
     );
-
-    private saveTokenInformation(token, expirationTime): void {
-        this.cookieService.set('Token', `${token}`);
-        this.cookieService.set('ExpirationTime', `${expirationTime}`);
-    }
 }

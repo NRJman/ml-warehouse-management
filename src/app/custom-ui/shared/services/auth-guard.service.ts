@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
       this.declinePageLoading();
     }
 
-    if (!this.isItAuthFormPage(route.url)) {
+    if (!this.isItAuthFormPage(this.router.url)) {
       this.store.dispatch(fromSharedActions.startInitializingAppState({
         payload: { token, expirationTime }
       }));
@@ -51,7 +51,7 @@ export class AuthGuard implements CanActivate {
     this.cookieService.delete('ExpirationTime');
   }
 
-  private isItAuthFormPage(urlSegments: UrlSegment[]): boolean {
-    return urlSegments.some(urlSegment => Boolean(urlSegment.path.match(/login|register/g)));
+  private isItAuthFormPage(currentUrl: string): boolean {
+    return Boolean(currentUrl.match(/login|register/g));
   }
 }

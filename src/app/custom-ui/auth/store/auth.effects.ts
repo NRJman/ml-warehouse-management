@@ -3,6 +3,7 @@ import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { HttpClient } from '@angular/common/http';
 import * as fromAuthActions from './auth.actions';
 import * as fromAdminActions from './../../admin/store/admin.actions';
+import * as fromSharedActions from './../../shared/store/shared.actions';
 import * as fromSubordinateActions from './../../subordinate/store/subordinate.actions';
 import { switchMap, catchError, tap, map } from 'rxjs/operators';
 import { RegistrationData } from '../../shared/models/auth/registration-data.model';
@@ -36,18 +37,15 @@ export class AuthEffects {
                     ...registrationData
                 }).pipe(
                     switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
-                        let targetUserStoringActions: Action[];
+                        // Think about it:
+                        const targetUserStoringAction: Action = (isAdmin)
+                            ? fromAdminActions.storeAdmin({ payload: user })
+                            : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
 
-                        if (isAdmin) {
-                            targetUserStoringActions = [];
-                        } else {
-                            targetUserStoringActions = [];
-                        }
-
-                        this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
+                        this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            ...targetUserStoringActions,
+                            targetUserStoringAction,
                             fromAuthActions.finishSigningUp({
                                 payload: {
                                     tokenInfo,
@@ -76,9 +74,10 @@ export class AuthEffects {
                             ? fromAdminActions.storeAdmin({ payload: user })
                             : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
 
-                        this.saveTokenInformation(tokenInfo.token, tokenInfo.expirationTime);
+                        this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
+                            fromSharedActions.changeAppLoadingState({ payload: true }),
                             targetUserStoringAction,
                             fromAuthActions.finishSigningIn({
                                 payload: {
@@ -95,6 +94,13 @@ export class AuthEffects {
         )
     );
 
+    finishSigningIn$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromAuthActions.finishSigningIn),
+
+        )
+    );
+
     navigateAfterSuccessfulAuthentication$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromAuthActions.navigateAfterSuccessfulAuthentication),
@@ -106,7 +112,7 @@ export class AuthEffects {
         { dispatch: false }
     );
 
-    private saveTokenInformation(token, expirationTime): void {
+    private saveTokenData(token, expirationTime): void {
         this.cookieService.set('Token', `${token}`);
         this.cookieService.set('ExpirationTime', `${expirationTime}`);
     }

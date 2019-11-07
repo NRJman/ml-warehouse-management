@@ -14,17 +14,16 @@ export function sharedReducer(sharedState: State | undefined, sharedAction: Acti
     return createReducer(
         initialState,
         on(
-            fromSharedActions.startInitializingAppState,
+            fromSharedActions.finishInitializingAppState, // temporarily redundant;
             (state, action) => ({
-                ...state,
-                isAppLoading: true
+                ...state
             })
         ),
         on(
-            fromSharedActions.finishInitializingAppState,
+            fromSharedActions.changeAppLoadingState,
             (state, action) => ({
                 ...state,
-                isAppLoading: false
+                isAppLoading: action.payload
             })
         )
     )(sharedState, sharedAction);

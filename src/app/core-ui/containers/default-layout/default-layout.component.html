@@ -1,4 +1,4 @@
-<div class="app-wrapper">
+<div class="app-wrapper" [ngClass]="{'no-scroll': isAppLoading}">
   <app-header
     [navbarBrandRouterLink]="['/dashboard']"
     [fixed]="true"

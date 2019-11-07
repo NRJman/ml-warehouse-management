@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { TokenInfo } from '../models/auth/token-info.model';
+import { ApiResponseError } from '../models/api/api-response-error.model';
 
 export const startInitializingAppState = createAction(
     '[Shared] Start Initializing App State',
@@ -12,5 +13,10 @@ export const finishInitializingAppState = createAction(
 
 export const failInitializingAppState = createAction(
     '[Shared] Fail To Initialize App State',
-    props<{ payload: { message: string, error: object } }>()
+    props<{ payload: ApiResponseError }>()
+);
+
+export const changeAppLoadingState = createAction(
+    '[Shared] Change App Loading State',
+    props<{ payload: boolean }>()
 );

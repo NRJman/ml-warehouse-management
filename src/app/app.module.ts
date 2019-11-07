@@ -38,8 +38,6 @@ import { AuthEffects } from './custom-ui/auth/store/auth.effects';
 import {
   USERS_API_SERVER_URL_TOKEN,
   USERS_API_SERVER_URL,
-  INIT_API_SERVER_URL_TOKEN,
-  INIT_API_SERVER_URL,
   ADMINS_API_SERVER_URL_TOKEN,
   ADMINS_API_SERVER_URL
 } from './app.config';
@@ -88,10 +86,6 @@ import { SharedEffects } from './custom-ui/shared/store/shared.effects';
     {
       provide: USERS_API_SERVER_URL_TOKEN,
       useValue: USERS_API_SERVER_URL
-    },
-    {
-      provide: INIT_API_SERVER_URL_TOKEN,
-      useValue: INIT_API_SERVER_URL
     },
     {
       provide: ADMINS_API_SERVER_URL_TOKEN,
