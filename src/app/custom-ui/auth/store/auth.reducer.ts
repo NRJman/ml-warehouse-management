@@ -28,6 +28,12 @@ export function authReducer(authState: State | undefined, authAction: Action) {
                 isAdmin: action.payload.isAdmin,
                 isAuthenticated: true,
             })
+        ),
+        on(
+            fromAuthActions.signOut,
+            (state, action) => ({
+                ...initialState
+            })
         )
     )(authState, authAction);
 }

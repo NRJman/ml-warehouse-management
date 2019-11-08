@@ -4,10 +4,12 @@ import * as fromSharedActions from './shared.actions';
 
 export interface State {
     isAppLoading: boolean;
+    isOnAuthFormPage: boolean;
 }
 
 export const initialState: State = {
-    isAppLoading: false
+    isAppLoading: false,
+    isOnAuthFormPage: false
 };
 
 export function sharedReducer(sharedState: State | undefined, sharedAction: Action) {
@@ -24,6 +26,13 @@ export function sharedReducer(sharedState: State | undefined, sharedAction: Acti
             (state, action) => ({
                 ...state,
                 isAppLoading: action.payload
+            })
+        ),
+        on(
+            fromSharedActions.resetSharedState,
+            (state, action) => ({
+                ...state,
+                ...(action.payload ? action.payload : initialState)
             })
         )
     )(sharedState, sharedAction);

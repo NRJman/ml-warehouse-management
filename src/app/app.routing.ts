@@ -6,19 +6,15 @@ import { DefaultLayoutComponent } from './core-ui/containers';
 
 import { P404Component } from './core-ui/views/error/404.component';
 import { P500Component } from './core-ui/views/error/500.component';
-import { LoginComponent } from './custom-ui/auth/login/login.component';
-import { RegisterComponent } from './custom-ui/auth/register/register.component';
+import { SignInComponent } from './custom-ui/auth/sign-in/sign-in.component';
+import { SignUpComponent } from './custom-ui/auth/sign-up/sign-up.component';
 import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-guard.service';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
-import { AppStateResolver } from './custom-ui/shared/services/app-state-init.resolver';
 
 export const routes: Routes = [
   {
     path: '',
     component: DefaultLayoutComponent,
-    resolve: {
-      prop: AppStateResolver
-    },
     data: {
       title: 'Home'
     },
@@ -38,18 +34,18 @@ export const routes: Routes = [
         }
       },
       {
-        path: 'login',
-        component: LoginComponent,
+        path: 'sign-in',
+        component: SignInComponent,
         data: {
-          title: 'Login Page'
+          title: 'Sign In Page'
         },
         canActivate: [AuthFormsPagesGuard]
       },
       {
-        path: 'register',
-        component: RegisterComponent,
+        path: 'sign-up',
+        component: SignUpComponent,
         data: {
-          title: 'Register Page'
+          title: 'Sign Up Page'
         },
         canActivate: [AuthFormsPagesGuard]
       },

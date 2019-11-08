@@ -15,12 +15,19 @@ export const initialState: State = {
     warehouseId: null,
 };
 
-export function adminReducer(subordinateState: State | undefined, subordinateAction: Action) {
+export function subordinateReducer(subordinateState: State | undefined, subordinateAction: Action) {
     return createReducer(
         initialState,
         on(fromSubordinateActions.storeSubordinate, (state, action) => ({
             ...state,
             ...action.payload
-        }))
+        })),
+        on(
+            fromSubordinateActions.resetSubordinateState,
+            (state, action) => ({
+                ...state,
+                ...(action.payload ? action.payload : initialState)
+            })
+        )
     )(subordinateState, subordinateAction);
 }

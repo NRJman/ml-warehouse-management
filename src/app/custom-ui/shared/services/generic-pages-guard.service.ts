@@ -34,7 +34,7 @@ export class GenericPagesGuard implements CanActivate {
             return true;
           }
 
-          this.router.navigateByUrl('/login');
+          this.router.navigateByUrl('/sign-in');
 
           return false;
         }),

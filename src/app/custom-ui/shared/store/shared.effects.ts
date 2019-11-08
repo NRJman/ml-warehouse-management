@@ -50,7 +50,7 @@ export class SharedEffects {
 
                         if (this.router.url === '/') {
                             actionsToDispatch.push(
-                                fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
+                                fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
                             );
                         }
 

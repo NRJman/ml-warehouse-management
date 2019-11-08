@@ -18,7 +18,7 @@ export const initialState: State = {
     userId: null,
     adminId: null,
     warehouseId: null,
-    subordinates: null,
+    subordinates: [],
 };
 
 export function adminReducer(adminState: State | undefined, adminAction: Action) {
@@ -30,6 +30,13 @@ export function adminReducer(adminState: State | undefined, adminAction: Action)
                 (state, action) => ({
                 ...state,
                 ...action.payload
+            })
+        ),
+        on(
+            fromAdminActions.resetAdminState,
+            (state, action) => ({
+                ...state,
+                ...(action.payload ? action.payload : initialState)
             })
         )
     )(adminState, adminAction);

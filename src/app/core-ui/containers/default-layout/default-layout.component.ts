@@ -9,6 +9,7 @@ import { Unsubscriber } from '../../../custom-ui/shared/services/unsubscriber.se
 import { takeUntil, take } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
 import * as fromSharedActions from './../../../custom-ui/shared/store/shared.actions';
+import * as fromAuthActions from './../../../custom-ui/auth/store/auth.actions';
 import * as fromAuthSelectors from './../../../custom-ui/auth/store/auth.selectors';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -45,7 +46,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
   }
 
   public logUserOut(): void {
-    this.router.navigate(['/login']);
+    this.store.dispatch(fromAuthActions.signOut());
   }
 
   public initializeApp(): void {
@@ -53,7 +54,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
     const expirationTime: number = Number(this.cookieService.get('ExpirationTime'));
 
     if (!token || Date.now() > expirationTime) {
-      this.router.navigateByUrl('/login');
+      this.router.navigateByUrl('/sign-in');
 
       return;
     }

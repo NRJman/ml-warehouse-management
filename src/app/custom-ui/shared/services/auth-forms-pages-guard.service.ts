@@ -26,9 +26,14 @@ export class AuthFormsPagesGuard implements CanActivate {
                     }
 
                     const token: string = this.cookieService.get('Token');
+
+                    if (!token) {
+                        return true;
+                    }
+
                     const expirationTime: number = Number(this.cookieService.get('ExpirationTime'));
 
-                    if (token && Date.now() < expirationTime) {
+                    if (Date.now() < expirationTime) {
                         return this.declinePageLoading();
                     }
 

@@ -52,7 +52,7 @@ export class AuthEffects {
                                     isAdmin
                                 }
                             }),
-                            fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
+                            fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
                         ];
                     }),
                     catchError(error => of(fromAuthActions.failSigningUp({ payload: error })))
@@ -85,7 +85,7 @@ export class AuthEffects {
                                     isAdmin
                                 }
                             }),
-                            fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
+                            fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
                         ];
                     }),
                     catchError(error => of(fromAuthActions.failSigningIn(error)))
@@ -101,9 +101,26 @@ export class AuthEffects {
         )
     );
 
-    navigateAfterSuccessfulAuthentication$ = createEffect(
+    signOut$ = createEffect(
         () => this.actions$.pipe(
-            ofType(fromAuthActions.navigateAfterSuccessfulAuthentication),
+            ofType(fromAuthActions.signOut),
+            switchMap(() => {
+                this.cookieService.delete('Token');
+                this.cookieService.delete('ExpirationTime');
+
+                return [
+                    fromAdminActions.resetAdminState(null),
+                    fromSubordinateActions.resetSubordinateState(null),
+                    fromSharedActions.resetSharedState(null),
+                    fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/sign-in' })
+                ];
+            })
+        )
+    );
+
+    navigateAfterSuccessfulAuthActions$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromAuthActions.navigateAfterSuccessfulAuthActions),
             map(action => action.payload),
             tap(path => {
                 this.router.navigate([path]);
@@ -112,7 +129,7 @@ export class AuthEffects {
         { dispatch: false }
     );
 
-    private saveTokenData(token, expirationTime): void {
+    private saveTokenData(token: string, expirationTime: number): void {
         this.cookieService.set('Token', `${token}`);
         this.cookieService.set('ExpirationTime', `${expirationTime}`);
     }

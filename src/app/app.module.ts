@@ -49,7 +49,6 @@ import { AdminEffects } from './custom-ui/admin/store/admin.effects';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { SharedEffects } from './custom-ui/shared/store/shared.effects';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
-import { AppStateResolver } from './custom-ui/shared/services/app-state-init.resolver';
 
 @NgModule({
   imports: [
@@ -100,7 +99,6 @@ import { AppStateResolver } from './custom-ui/shared/services/app-state-init.res
     },
     GenericPagesGuard,
     AuthFormsPagesGuard,
-    AppStateResolver,
     CustomValidatorsService,
     CookieService
   ],

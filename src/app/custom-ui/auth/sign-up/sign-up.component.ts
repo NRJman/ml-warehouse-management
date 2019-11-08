@@ -2,15 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { CustomValidatorsService } from '../../shared/services/custom-validators.service';
 import { Store } from '@ngrx/store';
-import * as fromApp from './../../../store/app.reducers';
-import * as fromAuthActions from './../../auth/store/auth.actions';
+import * as fromApp from '../../../store/app.reducers';
+import * as fromAuthActions from '../store/auth.actions';
 import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: 'register.component.html'
+  templateUrl: 'sign-up.component.html'
 })
-export class RegisterComponent implements OnInit {
+export class SignUpComponent implements OnInit {
   public registrationForm: FormGroup;
 
   constructor(
