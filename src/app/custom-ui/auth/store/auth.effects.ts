@@ -77,7 +77,7 @@ export class AuthEffects {
                         this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            fromSharedActions.changeAppLoadingState({ payload: true }),
+                            fromSharedActions.changeAppLoadingStatus({ payload: true }),
                             targetUserStoringAction,
                             fromAuthActions.finishSigningIn({
                                 payload: {
@@ -97,7 +97,7 @@ export class AuthEffects {
     finishSigningIn$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromAuthActions.finishSigningIn),
-
+            map(() => fromSharedActions.changeAppLoadingStatus({ payload: false }))
         )
     );
 

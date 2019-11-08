@@ -8,49 +8,51 @@ import { P404Component } from './core-ui/views/error/404.component';
 import { P500Component } from './core-ui/views/error/500.component';
 import { LoginComponent } from './custom-ui/auth/login/login.component';
 import { RegisterComponent } from './custom-ui/auth/register/register.component';
-import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
+import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-guard.service';
+import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
+import { AppStateResolver } from './custom-ui/shared/services/app-state-init.resolver';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
-  },
-  {
-    path: '404',
-    component: P404Component,
-    data: {
-      title: 'Page 404'
-    }
-  },
-  {
-    path: '500',
-    component: P500Component,
-    data: {
-      title: 'Page 500'
-    }
-  },
-  {
-    path: 'login',
-    component: LoginComponent,
-    data: {
-      title: 'Login Page'
-    }
-  },
-  {
-    path: 'register',
-    component: RegisterComponent,
-    data: {
-      title: 'Register Page'
-    }
-  },
-  {
-    path: '',
     component: DefaultLayoutComponent,
+    resolve: {
+      prop: AppStateResolver
+    },
     data: {
       title: 'Home'
     },
     children: [
+      {
+        path: '404',
+        component: P404Component,
+        data: {
+          title: 'Page 404'
+        }
+      },
+      {
+        path: '500',
+        component: P500Component,
+        data: {
+          title: 'Page 500'
+        }
+      },
+      {
+        path: 'login',
+        component: LoginComponent,
+        data: {
+          title: 'Login Page'
+        },
+        canActivate: [AuthFormsPagesGuard]
+      },
+      {
+        path: 'register',
+        component: RegisterComponent,
+        data: {
+          title: 'Register Page'
+        },
+        canActivate: [AuthFormsPagesGuard]
+      },
       {
         path: 'base',
         loadChildren: () => import('./core-ui/views/base/base.module').then(m => m.BaseModule)
@@ -66,7 +68,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: () => import('./custom-ui/admin/dashboard/dashboard.module').then(m => m.DashboardModule),
-        canActivate: [AuthGuard]
+        canActivate: [GenericPagesGuard]
       },
       {
         path: 'icons',

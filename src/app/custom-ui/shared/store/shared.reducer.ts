@@ -20,7 +20,7 @@ export function sharedReducer(sharedState: State | undefined, sharedAction: Acti
             })
         ),
         on(
-            fromSharedActions.changeAppLoadingState,
+            fromSharedActions.changeAppLoadingStatus,
             (state, action) => ({
                 ...state,
                 isAppLoading: action.payload

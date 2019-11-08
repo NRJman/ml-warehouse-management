@@ -21,9 +21,7 @@ router.post('/signup', async (req, res, next) => {
         const userCreationResult = await createUser(hash);
         
         if (isAdmin) {
-            const adminCreationResult = await createAdmin(userCreationResult);
-
-            return sendResponse(adminCreationResult._id);
+            await createAdmin(userCreationResult);
         }
 
         return sendResponse();
@@ -74,13 +72,13 @@ router.post('/signup', async (req, res, next) => {
         return admin.save();
     }
 
-    function sendResponse(adminId) {
+    function sendResponse() {
         const warehouseId = userWarehouseId;
 
         return res.status(201).json({
             message: 'User has been created successfuly!',
             result: {
-                tokenInfo: getNewToken(userEmail, userId, 1),
+                ...(isAdmin ? { tokenInfo: getNewToken(userEmail, userId, 1) } : null),
                 user: {
                     name: userName,
                     phone: userPhone,

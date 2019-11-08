@@ -14,13 +14,14 @@ import { ApiResponse } from '../models/api/api-response.model';
 import { UserDataInitType } from '../models/app/app-data-init-type.model';
 import { SubordinateUser } from '../models/users/subordinate-user.model';
 import { TokenInfo } from '../models/auth/token-info.model';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class SharedEffects {
     constructor(
         private actions$: Actions,
         private http: HttpClient,
-        private cookieService: CookieService,
+        private router: Router,
         @Inject(USERS_API_SERVER_URL_TOKEN) private usersApiServerUrl: string
     ) {}
 
@@ -35,21 +36,25 @@ export class SharedEffects {
                     })
                 }).pipe(
                     switchMap(({ result: { user, isAdmin } }: ApiResponse<UserDataInitType>) => {
-                        const targetUserStoringAction: Action = (isAdmin)
-                            ? fromAdminActions.storeAdmin({ payload: user })
-                            : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
-
-                        return [
-                            fromSharedActions.changeAppLoadingState({ payload: true }),
-                            targetUserStoringAction,
+                        const actionsToDispatch: Action[] = [
+                            (isAdmin)
+                                ? fromAdminActions.storeAdmin({ payload: user })
+                                : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser }),
                             fromAuthActions.finishSigningIn({
                                 payload: {
                                     tokenInfo,
                                     isAdmin
                                 }
-                            }),
-                            fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
+                            })
                         ];
+
+                        if (this.router.url === '/') {
+                            actionsToDispatch.push(
+                                fromAuthActions.navigateAfterSuccessfulAuthentication({ payload: '/dashboard' })
+                            );
+                        }
+
+                        return actionsToDispatch;
                     }),
                     catchError(error => of(fromSharedActions.failInitializingAppState(error)))
                 )

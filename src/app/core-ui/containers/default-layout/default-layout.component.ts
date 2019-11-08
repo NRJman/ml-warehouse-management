@@ -5,10 +5,12 @@ import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import * as fromApp from './../../../store/app.reducers';
 import * as fromSharedSelectors from './../../../custom-ui/shared/store/shared.selectors';
-import { Observable } from 'rxjs';
 import { Unsubscriber } from '../../../custom-ui/shared/services/unsubscriber.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
+import * as fromSharedActions from './../../../custom-ui/shared/store/shared.actions';
+import * as fromAuthSelectors from './../../../custom-ui/auth/store/auth.selectors';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,6 +28,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
     private router: Router,
     private store: Store<fromApp.State>,
     private spinnerService: NgxSpinnerService,
+    private cookieService: CookieService,
     @Inject(DOCUMENT) public _document?: any
   ) {
     super();
@@ -41,8 +44,27 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
     });
   }
 
-  logUserOut(): void {
+  public logUserOut(): void {
     this.router.navigate(['/login']);
+  }
+
+  public initializeApp(): void {
+    const token = this.cookieService.get('Token');
+    const expirationTime: number = Number(this.cookieService.get('ExpirationTime'));
+
+    if (!token || Date.now() > expirationTime) {
+      this.router.navigateByUrl('/login');
+
+      return;
+    }
+
+    this.store.dispatch(fromSharedActions.changeAppLoadingStatus({
+      payload: true
+    }));
+
+    this.store.dispatch(fromSharedActions.startInitializingAppState({
+      payload: { token, expirationTime }
+    }));
   }
 
   ngOnInit(): void {
@@ -51,7 +73,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
         select(fromSharedSelectors.getIsAppLoading),
         takeUntil(this.subscriptionController$$)
       )
-      .subscribe(isAppLoading => {
+      .subscribe(async isAppLoading => {
         this.isAppLoading = isAppLoading;
 
         if (isAppLoading) {
@@ -61,6 +83,17 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
         }
 
         this.spinnerService.hide();
+      });
+
+    this.store
+      .pipe(
+        select(fromAuthSelectors.getAuthStatus),
+        take(1)
+      )
+      .subscribe(isAuthenticated => {
+        if (!isAuthenticated) {
+          this.initializeApp();
+        }
       });
   }
 

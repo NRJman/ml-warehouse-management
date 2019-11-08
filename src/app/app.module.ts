@@ -43,11 +43,13 @@ import {
 } from './app.config';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './custom-ui/shared/interceptors/auth.interceptor';
-import { AuthGuard } from './custom-ui/shared/services/auth-guard.service';
+import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-guard.service';
 import { CookieService } from 'ngx-cookie-service';
 import { AdminEffects } from './custom-ui/admin/store/admin.effects';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { SharedEffects } from './custom-ui/shared/store/shared.effects';
+import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
+import { AppStateResolver } from './custom-ui/shared/services/app-state-init.resolver';
 
 @NgModule({
   imports: [
@@ -96,7 +98,9 @@ import { SharedEffects } from './custom-ui/shared/store/shared.effects';
       useClass: AuthInterceptor,
       multi: true
     },
-    AuthGuard,
+    GenericPagesGuard,
+    AuthFormsPagesGuard,
+    AppStateResolver,
     CustomValidatorsService,
     CookieService
   ],

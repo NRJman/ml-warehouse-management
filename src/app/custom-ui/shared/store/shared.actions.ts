@@ -16,7 +16,7 @@ export const failInitializingAppState = createAction(
     props<{ payload: ApiResponseError }>()
 );
 
-export const changeAppLoadingState = createAction(
+export const changeAppLoadingStatus = createAction(
     '[Shared] Change App Loading State',
     props<{ payload: boolean }>()
 );
