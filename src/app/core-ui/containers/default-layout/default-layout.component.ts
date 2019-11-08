@@ -12,6 +12,7 @@ import * as fromSharedActions from './../../../custom-ui/shared/store/shared.act
 import * as fromAuthActions from './../../../custom-ui/auth/store/auth.actions';
 import * as fromAuthSelectors from './../../../custom-ui/auth/store/auth.selectors';
 import { CookieService } from 'ngx-cookie-service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,6 +24,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
   public sidebarMinimized = true;
   public element: HTMLElement;
   public isAppLoading: boolean;
+  public isOnAuthFormPage: boolean;
   private changes: MutationObserver;
 
   constructor(
@@ -71,10 +73,19 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
   ngOnInit(): void {
     this.store
       .pipe(
+        select(fromSharedSelectors.getIsOnAuthFormPage),
+        takeUntil(this.subscriptionController$$),
+      )
+      .subscribe(isOnAuthFormPage => {
+        this.isOnAuthFormPage = isOnAuthFormPage;
+      });
+
+    this.store
+      .pipe(
         select(fromSharedSelectors.getIsAppLoading),
         takeUntil(this.subscriptionController$$)
       )
-      .subscribe(async isAppLoading => {
+      .subscribe(isAppLoading => {
         this.isAppLoading = isAppLoading;
 
         if (isAppLoading) {

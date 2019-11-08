@@ -122,11 +122,12 @@ export class AuthEffects {
         () => this.actions$.pipe(
             ofType(fromAuthActions.navigateAfterSuccessfulAuthActions),
             map(action => action.payload),
-            tap(path => {
+            map(path => {
                 this.router.navigate([path]);
+
+                return fromSharedActions.changeAuthFormPageStatus({ payload: false });
             })
-        ),
-        { dispatch: false }
+        )
     );
 
     private saveTokenData(token: string, expirationTime: number): void {

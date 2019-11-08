@@ -18,6 +18,11 @@ export const changeAppLoadingStatus = createAction(
     props<{ payload: boolean }>()
 );
 
+export const changeAuthFormPageStatus = createAction(
+    '[Shared] Change Auth Form Page Status',
+    props<{ payload: boolean }>()
+);
+
 export const resetSharedState = createAction(
     '[Shared] Reset Shared State',
     props<{ payload: fromShared.State }>()

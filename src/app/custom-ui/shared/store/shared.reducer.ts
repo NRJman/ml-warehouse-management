@@ -16,16 +16,17 @@ export function sharedReducer(sharedState: State | undefined, sharedAction: Acti
     return createReducer(
         initialState,
         on(
-            fromSharedActions.finishInitializingAppState, // temporarily redundant;
-            (state, action) => ({
-                ...state
-            })
-        ),
-        on(
             fromSharedActions.changeAppLoadingStatus,
             (state, action) => ({
                 ...state,
                 isAppLoading: action.payload
+            })
+        ),
+        on(
+            fromSharedActions.changeAuthFormPageStatus,
+            (state, action) => ({
+                ...state,
+                isOnAuthFormPage: action.payload
             })
         ),
         on(

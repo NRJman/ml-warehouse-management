@@ -1,8 +1,9 @@
 <div class="app-wrapper" [ngClass]="{'no-scroll': isAppLoading}">
   <app-header
+    *ngIf="!isOnAuthFormPage"
     [navbarBrandRouterLink]="['/dashboard']"
     [fixed]="true"
-    [navbarBrandFull]="{src: 'assets/img/brand/logo.png', width: 155, height: 55, alt: 'CoreUI Logo'}"
+    [navbarBrandFull]="{src: 'assets/img/brand/logo.png', width: 145, height: 50, alt: 'CoreUI Logo'}"
     [navbarBrandMinimized]="{src: 'assets/img/brand/sygnet.svg', width: 30, height: 30, alt: 'CoreUI Logo'}"
     [sidebarToggler]="'lg'"
     [asideMenuToggler]="false"
@@ -30,7 +31,7 @@
   </app-header>
 
   <div class="app-body">
-    <app-sidebar [fixed]="true" [display]="false">
+    <app-sidebar [fixed]="true" *ngIf="!isOnAuthFormPage" [display]="'lg'">
       <app-sidebar-nav [navItems]="navItems" [perfectScrollbar] [disabled]="sidebarMinimized"></app-sidebar-nav>
       <app-sidebar-minimizer></app-sidebar-minimizer>
     </app-sidebar>
@@ -39,7 +40,7 @@
     <main class="main">
       <!-- Breadcrumb -->
       <!-- breaking change 'cui-breadcrumb' -->
-      <cui-breadcrumb></cui-breadcrumb>
+      <cui-breadcrumb [hidden]="isOnAuthFormPage"></cui-breadcrumb>
       <!-- deprecation warning for 'app-breadcrumb' -->
       <!--<ol class="breadcrumb">-->
         <!--<app-breadcrumb></app-breadcrumb>-->
