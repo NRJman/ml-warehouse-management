@@ -3,7 +3,6 @@ import { RegistrationData } from '../../shared/models/auth/registration-data.mod
 import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authenticated.model';
 import { AuthenticationResult } from '../../shared/models/auth/authentication-result.model';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
-import * as fromAuth from './auth.reducer';
 
 export const startSigningUp = createAction(
     '[Auth] Start Signing Up',
@@ -35,9 +34,9 @@ export const failSigningIn = createAction(
     props<{ payload: ApiResponseError }>()
 );
 
+export const signOut = createAction('[Auth] Sign Out');
+
 export const navigateAfterSuccessfulAuthActions = createAction(
     '[Auth] Navigate After Successful Auth Actions',
     props<{ payload: string }>()
 );
-
-export const signOut = createAction('[Auth] Sign Out');

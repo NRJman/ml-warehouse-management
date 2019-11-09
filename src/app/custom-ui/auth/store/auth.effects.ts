@@ -5,7 +5,7 @@ import * as fromAuthActions from './auth.actions';
 import * as fromAdminActions from './../../admin/store/admin.actions';
 import * as fromSharedActions from './../../shared/store/shared.actions';
 import * as fromSubordinateActions from './../../subordinate/store/subordinate.actions';
-import { switchMap, catchError, tap, map } from 'rxjs/operators';
+import { switchMap, catchError, map } from 'rxjs/operators';
 import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
@@ -15,7 +15,6 @@ import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authe
 import { Action } from '@ngrx/store';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
 import { UserDataInitType } from '../../shared/models/app/app-data-init-type.model';
-import { User } from '../../shared/models/users/user.model';
 import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 
 @Injectable()

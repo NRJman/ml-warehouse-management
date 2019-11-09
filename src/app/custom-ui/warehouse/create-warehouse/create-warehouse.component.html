@@ -8,7 +8,11 @@
             </div>
 
             <div class="card-body">
-                <form class="form-horizontal" [formGroup]="warehouseCreationForm">
+                <form
+                    class="form-horizontal"
+                    [formGroup]="warehouseCreationForm"
+                    (ngSubmit)="onWarehouseCreationFormSubmit()">
+
                     <ng-container formArrayName="areas">
                         <div class="form-group row" *ngFor="let area of warehouseAreas.controls; index as i">
                             <label
@@ -39,7 +43,10 @@
                         <button 
                             type="submit"
                             class="btn btn-primary"
-                            [disabled]="warehouseCreationForm.invalid || warehouseCreationForm.pending">Save changes</button>
+                            [disabled]="warehouseCreationForm.invalid ||
+                                        warehouseCreationForm.pending ||
+                                        !adminId"
+                        >Save changes</button>
 
                         <button class="btn btn-secondary" type="button">Cancel</button>
                     </div>

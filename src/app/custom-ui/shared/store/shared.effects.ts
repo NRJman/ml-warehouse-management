@@ -5,7 +5,7 @@ import * as fromSharedActions from './shared.actions';
 import * as fromAuthActions from './../../auth/store/auth.actions';
 import * as fromAdminActions from '../../admin/store/admin.actions';
 import * as fromSubordinateActions from '../../subordinate/store/subordinate.actions';
-import { switchMap, catchError, map } from 'rxjs/operators';
+import { switchMap, catchError, map, tap } from 'rxjs/operators';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
@@ -15,6 +15,7 @@ import { UserDataInitType } from '../models/app/app-data-init-type.model';
 import { SubordinateUser } from '../models/users/subordinate-user.model';
 import { TokenInfo } from '../models/auth/token-info.model';
 import { Router } from '@angular/router';
+import { ApiResponseError } from '../models/api/api-response-error.model';
 
 @Injectable()
 export class SharedEffects {
@@ -56,9 +57,22 @@ export class SharedEffects {
 
                         return actionsToDispatch;
                     }),
-                    catchError(error => of(fromSharedActions.failInitializingAppState(error)))
+                    catchError((error: ApiResponseError) =>
+                        of(fromSharedActions.failInitializingAppState({ payload: error }))
+                    )
                 )
             )
         )
+    );
+
+    navigate$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromSharedActions.navigate),
+            map(action => action.payload),
+            tap(path => {
+                this.router.navigate([path]);
+            })
+        ),
+        { dispatch: false }
     );
 }

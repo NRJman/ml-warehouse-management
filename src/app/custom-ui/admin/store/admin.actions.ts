@@ -3,6 +3,7 @@ import { User } from '../../shared/models/users/user.model';
 import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
 import * as fromAdmin from './admin.reducer';
+import { AdminSpecificDataFetchingResult } from '../../shared/models/users/admin-specific-data-fetching-result.model';
 
 export const fetchSpecificAdminData = createAction(
     '[Admin] Fetch Specific Part Of Admin Data',
@@ -26,7 +27,7 @@ export const storeGenericAdminData = createAction(
 
 export const storeSpecificAdminData = createAction(
     '[Admin] Store Specific Part Of Admin Data',
-    props<{ payload: { [property: string]: SubordinateUser[] }}>()
+    props<{ payload: AdminSpecificDataFetchingResult}>()
 );
 
 export const resetAdminState = createAction(

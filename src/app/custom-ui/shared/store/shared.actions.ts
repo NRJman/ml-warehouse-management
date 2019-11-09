@@ -27,3 +27,8 @@ export const resetSharedState = createAction(
     '[Shared] Reset Shared State',
     props<{ payload: fromShared.State }>()
 );
+
+export const navigate = createAction(
+    '[Shared] Navigate',
+    props<{ payload: string }>()
+);

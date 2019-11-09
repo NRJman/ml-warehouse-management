@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
 import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 import { User } from '../../shared/models/users/user.model';
+import { AdminSpecificDataFetchingResult } from '../../shared/models/users/admin-specific-data-fetching-result.model';
 
 @Injectable()
 export class AdminEffects {
@@ -39,7 +40,7 @@ export class AdminEffects {
                     Authorization: `Bearer ${this.cookieService.get('Token')}`
                 })
             }).pipe(
-                map(({ result }: ApiResponse<{ subordinates: SubordinateUser[] }>) => {
+                map(({ result }: ApiResponse<AdminSpecificDataFetchingResult>) => {
                     return fromAdmin.storeSpecificAdminData({ payload: result });
                 }),
                 catchError(error => of(fromAdmin.failFetchingSpecificAdminData({ payload: error })))

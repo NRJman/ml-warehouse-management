@@ -46,12 +46,15 @@ router.post('/', (req, res, next) => {
                     areaId
                 }));
 
+            console.log('areas: ', areasWithCorrectProperties);
+
             return res.status(201).json({
-                areas: areasWithCorrectProperties,
-                products: [],
-                tasks: [],
-                adminId: createdWarehouse.adminId,
-                warehouseId: createdWarehouse._id
+                message: 'The warehouse has been successfully created!',
+                result: {
+                    areas: areasWithCorrectProperties,
+                    adminId: createdWarehouse.adminId,
+                    warehouseId: createdWarehouse._id
+                }
             });
         })
         .catch(error => res.status(500).json({

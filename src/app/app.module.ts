@@ -39,7 +39,9 @@ import {
   USERS_API_SERVER_URL_TOKEN,
   USERS_API_SERVER_URL,
   ADMINS_API_SERVER_URL_TOKEN,
-  ADMINS_API_SERVER_URL
+  ADMINS_API_SERVER_URL,
+  WAREHOUSES_API_SERVER_URL_TOKEN,
+  WAREHOUSES_API_SERVER_URL
 } from './app.config';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './custom-ui/shared/interceptors/auth.interceptor';
@@ -50,6 +52,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { SharedEffects } from './custom-ui/shared/store/shared.effects';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
 import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
+import { WarehouseEffects } from './custom-ui/warehouse/store/warehouse.effects';
 
 @NgModule({
   imports: [
@@ -68,7 +71,12 @@ import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
     WarehouseModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),
-    EffectsModule.forRoot([AuthEffects, AdminEffects, SharedEffects]),
+    EffectsModule.forRoot([
+      AuthEffects,
+      AdminEffects,
+      SharedEffects,
+      WarehouseEffects
+    ]),
     StoreDevtoolsModule.instrument({
       maxAge: 15
     }),
@@ -93,6 +101,10 @@ import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
     {
       provide: ADMINS_API_SERVER_URL_TOKEN,
       useValue: ADMINS_API_SERVER_URL
+    },
+    {
+      provide: WAREHOUSES_API_SERVER_URL_TOKEN,
+      useValue: WAREHOUSES_API_SERVER_URL
     },
     {
       provide: HTTP_INTERCEPTORS,

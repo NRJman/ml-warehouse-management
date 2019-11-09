@@ -5,19 +5,17 @@ const User = require('./../models/user');
 const router = express.Router();
 
 router.get('/:id', async (req, res, next) => {
-    let subordinateIds;
+    let adminId, subordinateIds, curriedSendSuccessfullResponse;
     
     try {
-        console.log(req.params.id);
-
         const foundAdmin = await Admin.findOne({ userId: req.params.id });
 
-        console.log('FOUND ADMIN', foundAdmin);
-        
+        adminId = foundAdmin._id;
         subordinateIds = foundAdmin.subordinateIds;
+        curriedSendSuccessfullResponse = sendSuccessfullResponse.bind(this, adminId);
         
         if (!(subordinateIds instanceof Array) || subordinateIds.length > 0) {
-            return sendSuccessfullResponse([]);
+            return curriedSendSuccessfullResponse([]);
         }
     } catch (error) {
         return res.status(500).json({
@@ -28,13 +26,13 @@ router.get('/:id', async (req, res, next) => {
     }
 
     User.find({ _id: { $in: subordinateIds } })
-        .then(subordinates => sendSuccessfullResponse(subordinates))
-        .catch(subordinates => sendSuccessfullResponse([]));
+        .then(subordinates => curriedSendSuccessfullResponse(subordinates))
+        .catch(subordinates => curriedSendSuccessfullResponse([]));
     
-    function sendSuccessfullResponse(subordinates) {
+    function sendSuccessfullResponse(adminId, subordinates) {
         return res.status(200).json({
             message: 'The admin data has been fetched successfully!',
-            result: { subordinates }
+            result: { adminId, subordinates }
         });
     }
 });
