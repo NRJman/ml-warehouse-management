@@ -17,7 +17,7 @@ router.get('/:id', (req, res, next) => {
                 result: { warehouse }
             })
         })
-        .catch(sendFailedResponse)
+        .catch(sendFailedResponse);
 
     function sendFailedResponse(error) {
         return res.status(500).json({
@@ -26,6 +26,39 @@ router.get('/:id', (req, res, next) => {
             error
         })
     }
+});
+
+router.post('/', (req, res, next) => {
+    const { areas, adminId } = req.body;
+    const warehouse = new Warehouse({
+        areas,
+        products: [],
+        tasks: [],
+        adminId
+    });
+
+    warehouse.save()
+        .then((createdWarehouse) => {
+            const areasWithCorrectProperties = createdWarehouse.areas
+                .map(({ name, productIds, _id: areaId }) => ({
+                    name,
+                    productIds,
+                    areaId
+                }));
+
+            return res.status(201).json({
+                areas: areasWithCorrectProperties,
+                products: [],
+                tasks: [],
+                adminId: createdWarehouse.adminId,
+                warehouseId: createdWarehouse._id
+            });
+        })
+        .catch(error => res.status(500).json({
+            message: 'Failed to create a warehouse',
+            error
+        }));
+
 });
 
 module.exports = router;

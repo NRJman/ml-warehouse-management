@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
+const uniquenessValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
 const areaSchema = new Schema({
-    name: String,
+    name: { type: String, required: true, unique: true },
     productIds: [String]
 });
+
+areaSchema.plugin(uniquenessValidator);
 
 const productSchema = new Schema({
     brandName: String,

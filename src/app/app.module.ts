@@ -49,6 +49,7 @@ import { AdminEffects } from './custom-ui/admin/store/admin.effects';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { SharedEffects } from './custom-ui/shared/store/shared.effects';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
+import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
 
 @NgModule({
   imports: [
@@ -64,6 +65,7 @@ import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-page
     TabsModule.forRoot(),
     ChartsModule,
     AuthModule,
+    WarehouseModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),
     EffectsModule.forRoot([AuthEffects, AdminEffects, SharedEffects]),

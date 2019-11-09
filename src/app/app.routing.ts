@@ -10,6 +10,7 @@ import { SignInComponent } from './custom-ui/auth/sign-in/sign-in.component';
 import { SignUpComponent } from './custom-ui/auth/sign-up/sign-up.component';
 import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-guard.service';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
+import { CreateWarehouseComponent } from './custom-ui/warehouse/create-warehouse/create-warehouse.component';
 
 export const routes: Routes = [
   {
@@ -48,6 +49,10 @@ export const routes: Routes = [
           title: 'Sign Up Page'
         },
         canActivate: [AuthFormsPagesGuard]
+      },
+      {
+        path: 'create-warehouse',
+        component: CreateWarehouseComponent
       },
       {
         path: 'base',

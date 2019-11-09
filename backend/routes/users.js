@@ -118,26 +118,23 @@ router.post('/signin', async (req, res, next) => {
     }
 
     async function sendResponse() {
-        const warehouseId = foundUser.warehouseId;
-        const foundUserId = foundUser._id;
+        const { isAdmin, warehouseId, _id: userId} = foundUser;
 
-        if (foundUser.isAdmin) {
-            const adminInfo = await Admin.findOne({ userId: foundUserId });
-
-            adminId = adminInfo._id;
+        if (isAdmin) {
+            await Admin.findOne({ userId });
         }
 
         return res.status(200).json({
             message: 'User has been successfully signed in!',
             result: {
-                tokenInfo: getNewToken(foundUser.email, foundUserId, 1),
+                tokenInfo: getNewToken(foundUser.email, userId, 1),
                 user: {
                     name: foundUser.name,
                     phone: foundUser.phone,
-                    userId: foundUserId,
+                    userId,
                     ...(warehouseId ? { warehouseId } : null)
                 },
-                isAdmin: foundUser.isAdmin
+                isAdmin
             }
         });
     }

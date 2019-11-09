@@ -2,3 +2,9 @@
     overflow: hidden;
     max-height: 100vh;
 }
+
+.app-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
