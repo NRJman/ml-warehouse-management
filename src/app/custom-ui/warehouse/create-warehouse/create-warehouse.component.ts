@@ -36,15 +36,13 @@ export class CreateWarehouseComponent extends Unsubscriber implements OnInit, On
   }
 
   public addArea(): void {
-    const formControlsToCheckUniqueness = [...this.warehouseAreas.controls];
-
     this.warehouseAreas.push(new FormControl(
       null,
       [
         Validators.required,
         Validators.minLength(3)
       ],
-      this.сustomValidatorsService.areaUniquenessValidator(formControlsToCheckUniqueness)
+      this.сustomValidatorsService.areaUniquenessValidator(this.warehouseAreas.controls)
     ));
   }
 

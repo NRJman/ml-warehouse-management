@@ -4,8 +4,8 @@ import {
     AbstractControl,
     AsyncValidatorFn
 } from '@angular/forms';
-import { Observable, of, timer } from 'rxjs';
-import { mapTo, map } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class CustomValidatorsService {
     public passwordsEqualityValidator(controlToBeEqualWith: AbstractControl): ValidatorFn {
@@ -14,15 +14,16 @@ export class CustomValidatorsService {
         };
     }
 
-    public areaUniquenessValidator(otherAreas: AbstractControl[]): AsyncValidatorFn {
-        return ({ value: currentAreaValue }: AbstractControl): Observable<ValidationErrors | null> => {
+    public areaUniquenessValidator(allAreaControls: AbstractControl[]): AsyncValidatorFn {
+        return (): Observable<ValidationErrors | null> => {
             return timer(400).pipe(
                 map(() => {
-                    const isAreaUnique: boolean = otherAreas.every(
-                        ({ value }) => currentAreaValue !== value
+                    const allAreaControlValues = allAreaControls.map(
+                        control => control.value
                     );
+                    const numberOfUniqueValues = new Set(allAreaControlValues).size;
 
-                    return !isAreaUnique ? { areaUniqueness: true } : null;
+                    return (allAreaControlValues.length !== numberOfUniqueValues) ? { areaUniqueness: true } : null;
                 })
             );
         };

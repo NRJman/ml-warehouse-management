@@ -16,10 +16,10 @@
                     <ng-container formArrayName="areas">
                         <div class="form-group row" *ngFor="let area of warehouseAreas.controls; index as i">
                             <label
-                                class="col-md-3 col-form-label" 
+                                class="col-3 col-form-label" 
                                 [for]="i+1">Area {{i+1}}</label>
         
-                            <div class="col-md-8">
+                            <div class="col-8">
                                 <input
                                     type="text"
                                     [id]="i+1"
@@ -31,7 +31,7 @@
 
                             <button
                                 type="button"
-                                class="card-header-action btn btn-link btn-close col-md-1"
+                                class="card-header-action btn btn-link btn-close col-1"
                                 (click)="deleteArea(i)">
 
                                 <i class="icon-close"></i>
