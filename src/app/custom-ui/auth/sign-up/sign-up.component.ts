@@ -4,7 +4,6 @@ import { CustomValidatorsService } from '../../shared/services/custom-validators
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as fromAuthActions from '../store/auth.actions';
-import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,13 +21,14 @@ export class SignUpComponent implements OnInit {
     const registrationFormValue = this.registrationForm.value;
 
     this.store.dispatch(
-      fromAuthActions.startSigningUp({
+      fromAuthActions.startSigningUpAdmin({
         payload: {
-          name: registrationFormValue.name,
-          phone: registrationFormValue.phone,
-          email: registrationFormValue.email,
-          password: registrationFormValue.password,
-          isAdmin: true
+          registrationData: {
+            name: registrationFormValue.name,
+            phone: registrationFormValue.phone,
+            email: registrationFormValue.email,
+            password: registrationFormValue.password
+          }
         }
       })
     );

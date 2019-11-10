@@ -7,7 +7,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ADMINS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
-import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 import { User } from '../../shared/models/users/user.model';
 import { AdminSpecificDataFetchingResult } from '../../shared/models/users/admin-specific-data-fetching-result.model';
 

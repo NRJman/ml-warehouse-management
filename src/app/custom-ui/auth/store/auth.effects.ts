@@ -6,7 +6,6 @@ import * as fromAdminActions from './../../admin/store/admin.actions';
 import * as fromSharedActions from './../../shared/store/shared.actions';
 import * as fromSubordinateActions from './../../subordinate/store/subordinate.actions';
 import { switchMap, catchError, map } from 'rxjs/operators';
-import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
@@ -16,6 +15,8 @@ import { Action } from '@ngrx/store';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
 import { UserDataInitType } from '../../shared/models/app/app-data-init-type.model';
 import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
+import { RegistrationAdminUserData } from '../../shared/models/auth/registration-admin-user-data.model';
+import { RegistrationSubordinateUsersData } from '../../shared/models/auth/registration-subordinate-users-data.model';
 
 @Injectable()
 export class AuthEffects {
@@ -25,26 +26,50 @@ export class AuthEffects {
         private router: Router,
         private cookieService: CookieService,
         @Inject(USERS_API_SERVER_URL_TOKEN) private usersApiServerUrl: string
-    ) {}
+    ) { }
 
-    startSigningUp$ = createEffect(() =>
+    startSigningUpAdmin$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(fromAuthActions.startSigningUp),
+            ofType(fromAuthActions.startSigningUpAdmin),
             map(action => action.payload),
-            switchMap((registrationData: RegistrationData) =>
-                this.http.post(`${this.usersApiServerUrl}/signup`, {
-                    ...registrationData
+            switchMap(({ registrationData }: RegistrationAdminUserData) =>
+                this.http.post(`${this.usersApiServerUrl}/signup/admin`, {
+                    registrationData
                 }).pipe(
                     switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
-                        // Think about it:
-                        const targetUserStoringAction: Action = (isAdmin)
-                            ? fromAdminActions.storeAdmin({ payload: user })
-                            : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
-
                         this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
-                            targetUserStoringAction,
+                            fromAdminActions.storeAdmin({ payload: user }),
+                            fromAuthActions.finishSigningUp({
+                                payload: {
+                                    tokenInfo,
+                                    isAdmin
+                                }
+                            }),
+                            fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
+                        ];
+                    }),
+                    catchError(error => of(fromAuthActions.failSigningUp({ payload: error })))
+                )
+            )
+        )
+    );
+
+    startSigningUpSubordinates$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(fromAuthActions.startSigningUpSubordinates),
+            map(action => action.payload),
+            switchMap(({ registrationDataList, warehouseId }: RegistrationSubordinateUsersData) =>
+                this.http.post(`${this.usersApiServerUrl}/signup/admin`, {
+                    registrationDataList,
+                    warehouseId
+                }).pipe(
+                    switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
+                        this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
+
+                        return [
+                            fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser }),
                             fromAuthActions.finishSigningUp({
                                 payload: {
                                     tokenInfo,

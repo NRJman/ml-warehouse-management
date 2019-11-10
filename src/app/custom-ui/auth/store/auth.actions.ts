@@ -1,12 +1,18 @@
 import { createAction, props } from '@ngrx/store';
-import { RegistrationData } from '../../shared/models/auth/registration-data.model';
 import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authenticated.model';
 import { AuthenticationResult } from '../../shared/models/auth/authentication-result.model';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
+import { RegistrationSubordinateUsersData } from '../../shared/models/auth/registration-subordinate-users-data.model';
+import { RegistrationAdminUserData } from '../../shared/models/auth/registration-admin-user-data.model';
 
-export const startSigningUp = createAction(
-    '[Auth] Start Signing Up',
-    props<{ payload: RegistrationData}>()
+export const startSigningUpAdmin = createAction(
+    '[Auth] Start Signing Up Admin',
+    props<{ payload: RegistrationAdminUserData}>()
+);
+
+export const startSigningUpSubordinates = createAction(
+    '[Auth] Start Signing Up Subordinates',
+    props<{ payload: RegistrationSubordinateUsersData }>()
 );
 
 export const finishSigningUp = createAction(

@@ -1,9 +1,9 @@
 import { createAction, props } from '@ngrx/store';
 import { User } from '../../shared/models/users/user.model';
-import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
 import * as fromAdmin from './admin.reducer';
 import { AdminSpecificDataFetchingResult } from '../../shared/models/users/admin-specific-data-fetching-result.model';
+import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 
 export const fetchSpecificAdminData = createAction(
     '[Admin] Fetch Specific Part Of Admin Data',
@@ -33,4 +33,9 @@ export const storeSpecificAdminData = createAction(
 export const resetAdminState = createAction(
     '[Admin] Reset Admin State',
     props<{ payload: fromAdmin.State }>()
+);
+
+export const modifyAdminState = createAction(
+    '[Admin] Modify Admin State',
+    props<{ payload: { [key: string]: string | number | SubordinateUser[] } }>()
 );

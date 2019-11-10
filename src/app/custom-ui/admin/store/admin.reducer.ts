@@ -27,6 +27,7 @@ export function adminReducer(adminState: State | undefined, adminAction: Action)
         on(
             fromAdminActions.storeGenericAdminData,
             fromAdminActions.storeSpecificAdminData,
+            fromAdminActions.modifyAdminState,
                 (state, action) => ({
                 ...state,
                 ...action.payload
@@ -35,7 +36,6 @@ export function adminReducer(adminState: State | undefined, adminAction: Action)
         on(
             fromAdminActions.resetAdminState,
             (state, action) => ({
-                ...state,
                 ...(action.payload ? action.payload : initialState)
             })
         )

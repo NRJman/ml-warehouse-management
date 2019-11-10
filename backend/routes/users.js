@@ -8,87 +8,102 @@ const getNewToken = require('./../utils/get-new-token');
 
 const router = express.Router();
 
-router.post('/signup', async (req, res, next) => {
-    const isAdmin = (req.body.isAdmin === true) ? true : false;
-    const userWarehouseId = req.body.warehouseId;
-    const userName = req.body.name;
-    const userEmail = req.body.email;
-    const userPhone = req.body.phone;
-    let user, userId;
+router.post('/signup/admin', (req, res, next) => {
+    console.log('REGISTRATION DATA: ', req.body.registrationData);
 
-    try {
-        const hash = await bcrypt.hash(req.body.password, 10);
-        const userCreationResult = await createUser(hash);
-        
-        if (isAdmin) {
-            await createAdmin(userCreationResult);
-        }
+    const { name, email, password, phone } = req.body.registrationData;
+    let userId;
 
-        return sendResponse();
-    } catch (error) {
-        return res.status(500).json({
-            message: 'An error has been caught while creating a user!',
-            error
-        });
-    }
-
-    function createUser(hash) {
-        if (isAdmin) {
-            user = new User({
-                name: userName,
-                email: userEmail,
+    bcrypt.hash(password, 10)
+        .then(hash => {
+            const user = new User({
+                name,
+                email,
                 password: hash,
-                phone: userPhone,
-                isAdmin
+                phone,
+                isAdmin: true
             });
 
             return user.save();
-        }
+        })
+        .then(createdUser => {
+            userId = createdUser._id;
 
-        if (!userWarehouseId || typeof userWarehouseId !== 'string') {
-            throw new Error('The warehouse id is invalid or not specified!')
-        }
+            const admin = new Admin({
+                userId,
+                subordinateIds: []
+            });
 
-        user = new User({
-            name: userName,
-            email: userEmail,
-            password: hash,
-            phone: userPhone,
-            isAdmin,
-            warehouseId: userWarehouseId
-        });
-
-        return user.save()
-    }
-
-    function createAdmin(userCreationResult) {
-        userId = userCreationResult._id;
-
-        const admin = new Admin({
-            userId,
-            subordinateIds: []
-        });
-        
-        return admin.save();
-    }
-
-    function sendResponse() {
-        const warehouseId = userWarehouseId;
-
-        return res.status(201).json({
-            message: 'User has been created successfuly!',
+            return admin.save();
+        })
+        .then(createdAdmin => res.status(201).json({
+            message: 'Admin has been created successfuly!',
             result: {
-                ...(isAdmin ? { tokenInfo: getNewToken(userEmail, userId, 1) } : null),
+                tokenInfo: getNewToken(email, userId, 1),
                 user: {
-                    name: userName,
-                    phone: userPhone,
-                    userId: userId,
-                    ...(warehouseId ? { warehouseId } : null)
+                    name,
+                    phone,
+                    userId
                 },
-                isAdmin
+                isAdmin: true
             }
-        });   
+        }))
+        .catch(error => res.status(500).json({
+            message: 'Failed to create an admin!',
+            error
+        }));
+});
+
+router.post('/signup/subordinates', (req, res, next) => {
+    const warehouseId = req.body.warehouseId;
+    const registrationDataList = req.body.registrationDataList;
+    
+    if (!warehouseId || typeof warehouseId !== 'string' || !(registrationData instanceof Array)) {
+        return res.status(400).json({
+            message: 'The request body is invalid!'
+        });
     }
+
+    const passwordsHashingPromises = registrationData.map(({ password }) => {
+        return bcrypt.hash(password, 10)
+    });
+
+    Promise.all(passwordsHashingPromises)
+        .then(hashedPasswords => {
+            const subordinatesDataList = hashedPasswords.map(hashedPassword, i => {
+                const appropriateRegistrationData = registrationDataList[i];
+                
+                return {
+                    name: appropriateRegistrationData.name,
+                    email: appropriateRegistrationData.email,
+                    password: hashedPassword,
+                    phone: appropriateRegistrationData.phone,
+                    isAdmin: false,
+                    warehouseId,
+                }
+            });
+
+            return User.insertMany(subordinatesDataList);
+        })
+        .then(createdSubordinates => {
+            const mappedCreatedSubordinates = createdSubordinates.map(
+                subordinate => ({
+                    name,
+                    phone,
+                    userId: subordinate._id,
+                    warehouseId
+                })
+            );
+
+            return res.status(201).json({
+                message: 'Subordinates have been successfully created!',
+                result: mappedCreatedSubordinates,
+            });
+        })
+        .catch(error => res.status(500).json({
+            message: 'Failed to create subordinates',
+            error
+        }));
 });
 
 router.post('/signin', async (req, res, next) => {

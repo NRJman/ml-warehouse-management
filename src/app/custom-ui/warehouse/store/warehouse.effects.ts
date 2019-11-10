@@ -10,6 +10,7 @@ import { WarehouseCreationResult } from '../../shared/models/warehouse/warehouse
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
 import { of } from 'rxjs';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
+import * as fromAdminActions from './../../admin/store/admin.actions';
 
 @Injectable()
 export class WarehouseEffects {
@@ -28,6 +29,11 @@ export class WarehouseEffects {
                     switchMap(({ result }: ApiResponse<WarehouseCreationResult>) => {
                         return [
                             fromWarehouseActions.finishCreatingWarehouse({ payload: result }),
+                            fromAdminActions.modifyAdminState({
+                                payload: {
+                                    warehouseId: result.warehouseId
+                                }
+                            }),
                             fromSharedActions.navigate({ payload: '/dashboard' })
                         ];
                     }),

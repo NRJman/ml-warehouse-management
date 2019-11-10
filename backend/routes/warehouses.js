@@ -1,5 +1,7 @@
 const express = require('express');
 const Warehouse = require('./../models/warehouse');
+const Admin = require('./../models/admin');
+const User = require('./../models/user');
 
 const router = express.Router();
 
@@ -37,9 +39,12 @@ router.post('/', (req, res, next) => {
         adminId
     });
 
+    let areasWithCorrectProperties, createdWarehouse;
+
     warehouse.save()
-        .then((createdWarehouse) => {
-            const areasWithCorrectProperties = createdWarehouse.areas
+        .then((warehouse) => {
+            createdWarehouse = warehouse;
+            areasWithCorrectProperties = warehouse.areas
                 .map(({ name, productIds, _id: areaId }) => ({
                     name,
                     productIds,
@@ -47,6 +52,16 @@ router.post('/', (req, res, next) => {
                 }));
 
             console.log('areas: ', areasWithCorrectProperties);
+
+            return Admin.findById(adminId);
+        })
+        .then((foundAdmin) => User.findByIdAndUpdate(
+            foundAdmin.userId,
+            { warehouseId: warehouse._id },
+            { new: true }
+        ))
+        .then((updatedUser) => {
+            console.log('UPDATED USER: ', updatedUser);
 
             return res.status(201).json({
                 message: 'The warehouse has been successfully created!',

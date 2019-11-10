@@ -1,4 +1,4 @@
 export interface ApiResponseError {
     message: string;
-    error: object;
+    error?: object;
 }
