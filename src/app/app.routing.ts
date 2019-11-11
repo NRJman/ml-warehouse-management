@@ -11,6 +11,7 @@ import { SignUpComponent } from './custom-ui/auth/sign-up/sign-up.component';
 import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-guard.service';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
 import { CreateWarehouseComponent } from './custom-ui/warehouse/create-warehouse/create-warehouse.component';
+import { SignUpSubordinatesComponent } from './custom-ui/admin/sign-up-subordinates/sign-up-subordinates.component';
 
 export const routes: Routes = [
   {
@@ -53,6 +54,10 @@ export const routes: Routes = [
       {
         path: 'create-warehouse',
         component: CreateWarehouseComponent
+      },
+      {
+        path: 'sign-up-subordinates',
+        component: SignUpSubordinatesComponent
       },
       {
         path: 'base',

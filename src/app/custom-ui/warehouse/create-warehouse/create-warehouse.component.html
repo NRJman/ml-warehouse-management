@@ -1,56 +1,58 @@
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <span>Create a Warehouse</span>
-
-                <button class="btn btn-primary" (click)="addArea()">Add an Area</button>
-            </div>
-
-            <div class="card-body">
-                <form
-                    class="form-horizontal"
-                    [formGroup]="warehouseCreationForm"
-                    (ngSubmit)="onWarehouseCreationFormSubmit()">
-
-                    <ng-container formArrayName="areas">
-                        <div class="form-group row" *ngFor="let area of warehouseAreas.controls; index as i">
-                            <label
-                                class="col-3 col-form-label" 
-                                [for]="i+1">Area {{i+1}}</label>
-        
-                            <div class="col-8">
-                                <input
-                                    type="text"
-                                    [id]="i+1"
-                                    name="text-input"
-                                    [formControlName]="i"
-                                    class="form-control"
-                                    placeholder="Text">
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <span>Create a Warehouse</span>
+    
+                    <button class="btn btn-primary" (click)="addArea()">Add an Area</button>
+                </div>
+    
+                <div class="card-body">
+                    <form
+                        class="form-horizontal"
+                        [formGroup]="warehouseCreationForm"
+                        (ngSubmit)="onWarehouseCreationFormSubmit()">
+    
+                        <ng-container formArrayName="areas">
+                            <div class="form-group row" *ngFor="let area of warehouseAreas.controls; index as i">
+                                <label
+                                    class="col-3 col-form-label" 
+                                    [for]="i+1">Area {{i+1}}</label>
+            
+                                <div class="col-8">
+                                    <input
+                                        type="text"
+                                        [id]="i+1"
+                                        name="text-input"
+                                        [formControlName]="i"
+                                        class="form-control"
+                                        placeholder="Text">
+                                </div>
+    
+                                <button
+                                    type="button"
+                                    class="card-header-action btn btn-link btn-close col-1"
+                                    (click)="deleteArea(i)">
+    
+                                    <i class="icon-close"></i>
+                                </button>
                             </div>
-
-                            <button
-                                type="button"
-                                class="card-header-action btn btn-link btn-close col-1"
-                                (click)="deleteArea(i)">
-
-                                <i class="icon-close"></i>
-                            </button>
+                        </ng-container>
+    
+                        <div class="form-actions">
+                            <button 
+                                type="submit"
+                                class="btn btn-primary"
+                                [disabled]="warehouseCreationForm.invalid ||
+                                            warehouseCreationForm.pending ||
+                                            !adminId"
+                            >Save changes</button>
+    
+                            <button class="btn btn-secondary" type="button">Cancel</button>
                         </div>
-                    </ng-container>
-
-                    <div class="form-actions">
-                        <button 
-                            type="submit"
-                            class="btn btn-primary"
-                            [disabled]="warehouseCreationForm.invalid ||
-                                        warehouseCreationForm.pending ||
-                                        !adminId"
-                        >Save changes</button>
-
-                        <button class="btn btn-secondary" type="button">Cancel</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

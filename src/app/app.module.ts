@@ -53,6 +53,7 @@ import { SharedEffects } from './custom-ui/shared/store/shared.effects';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
 import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
 import { WarehouseEffects } from './custom-ui/warehouse/store/warehouse.effects';
+import { AdminModule } from './custom-ui/admin/admin.module';
 
 @NgModule({
   imports: [
@@ -69,6 +70,7 @@ import { WarehouseEffects } from './custom-ui/warehouse/store/warehouse.effects'
     ChartsModule,
     AuthModule,
     WarehouseModule,
+    AdminModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),
     EffectsModule.forRoot([

@@ -12,7 +12,6 @@ import * as fromSharedActions from './../../../custom-ui/shared/store/shared.act
 import * as fromAuthActions from './../../../custom-ui/auth/store/auth.actions';
 import * as fromAuthSelectors from './../../../custom-ui/auth/store/auth.selectors';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
