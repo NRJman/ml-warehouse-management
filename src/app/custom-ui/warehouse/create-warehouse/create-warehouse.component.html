@@ -3,7 +3,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <span>Create a Warehouse</span>
+                    <h5 class="card-title">Create a Warehouse</h5>
     
                     <button class="btn btn-primary" (click)="addArea()">Add an Area</button>
                 </div>
@@ -18,7 +18,7 @@
                             <div class="form-group row" *ngFor="let area of warehouseAreas.controls; index as i">
                                 <label
                                     class="col-3 col-form-label" 
-                                    [for]="i+1">Area {{i+1}}</label>
+                                    [for]="i+1">Area {{ i+1 }}</label>
             
                                 <div class="col-8">
                                     <input
@@ -33,7 +33,8 @@
                                 <button
                                     type="button"
                                     class="card-header-action btn btn-link btn-close col-1"
-                                    (click)="deleteArea(i)">
+                                    (click)="deleteArea(i)"
+                                    *ngIf="warehouseAreas.length !== 1">
     
                                     <i class="icon-close"></i>
                                 </button>
@@ -43,13 +44,11 @@
                         <div class="form-actions">
                             <button 
                                 type="submit"
-                                class="btn btn-primary"
+                                class="btn btn-primary btn-submit"
                                 [disabled]="warehouseCreationForm.invalid ||
                                             warehouseCreationForm.pending ||
                                             !adminId"
-                            >Save changes</button>
-    
-                            <button class="btn btn-secondary" type="button">Cancel</button>
+                            >Create</button>    
                         </div>
                     </form>
                 </div>

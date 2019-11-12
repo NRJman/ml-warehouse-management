@@ -10,18 +10,13 @@ export const startSigningUpAdmin = createAction(
     props<{ payload: RegistrationAdminUserData}>()
 );
 
-export const startSigningUpSubordinates = createAction(
-    '[Auth] Start Signing Up Subordinates',
-    props<{ payload: RegistrationSubordinateUsersData }>()
-);
-
-export const finishSigningUp = createAction(
-    '[Auth] Finish Signing Up',
+export const finishSigningUpAdmin = createAction(
+    '[Auth] Finish Signing Up Admin',
     props<{ payload: AuthenticationResult }>()
 );
 
-export const failSigningUp = createAction(
-    '[Auth] Fail Signing Up',
+export const failSigningUpAdmin = createAction(
+    '[Auth] Fail Signing Up Admin',
     props<{ payload: ApiResponseError }>()
 );
 

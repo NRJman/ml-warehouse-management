@@ -16,7 +16,6 @@ import { ApiResponse } from '../../shared/models/api/api-response.model';
 import { UserDataInitType } from '../../shared/models/app/app-data-init-type.model';
 import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 import { RegistrationAdminUserData } from '../../shared/models/auth/registration-admin-user-data.model';
-import { RegistrationSubordinateUsersData } from '../../shared/models/auth/registration-subordinate-users-data.model';
 
 @Injectable()
 export class AuthEffects {
@@ -41,7 +40,7 @@ export class AuthEffects {
 
                         return [
                             fromAdminActions.storeAdmin({ payload: user }),
-                            fromAuthActions.finishSigningUp({
+                            fromAuthActions.finishSigningUpAdmin({
                                 payload: {
                                     tokenInfo,
                                     isAdmin
@@ -50,36 +49,7 @@ export class AuthEffects {
                             fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
                         ];
                     }),
-                    catchError(error => of(fromAuthActions.failSigningUp({ payload: error })))
-                )
-            )
-        )
-    );
-
-    startSigningUpSubordinates$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(fromAuthActions.startSigningUpSubordinates),
-            map(action => action.payload),
-            switchMap(({ registrationDataList, warehouseId }: RegistrationSubordinateUsersData) =>
-                this.http.post(`${this.usersApiServerUrl}/signup/admin`, {
-                    registrationDataList,
-                    warehouseId
-                }).pipe(
-                    switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
-                        this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
-
-                        return [
-                            fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser }),
-                            fromAuthActions.finishSigningUp({
-                                payload: {
-                                    tokenInfo,
-                                    isAdmin
-                                }
-                            }),
-                            fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
-                        ];
-                    }),
-                    catchError(error => of(fromAuthActions.failSigningUp({ payload: error })))
+                    catchError(error => of(fromAuthActions.failSigningUpAdmin({ payload: error })))
                 )
             )
         )

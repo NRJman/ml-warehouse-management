@@ -9,8 +9,6 @@ const getNewToken = require('./../utils/get-new-token');
 const router = express.Router();
 
 router.post('/signup/admin', (req, res, next) => {
-    console.log('REGISTRATION DATA: ', req.body.registrationData);
-
     const { name, email, password, phone } = req.body.registrationData;
     let userId;
 
@@ -55,22 +53,26 @@ router.post('/signup/admin', (req, res, next) => {
 });
 
 router.post('/signup/subordinates', (req, res, next) => {
-    const warehouseId = req.body.warehouseId;
+    const { warehouseId, adminId } = req.body;
     const registrationDataList = req.body.registrationDataList;
-    
-    if (!warehouseId || typeof warehouseId !== 'string' || !(registrationData instanceof Array)) {
+    let subordinatesCreationResult;
+
+    if (!warehouseId || typeof warehouseId !== 'string'
+        || !adminId || typeof adminId !== 'string'
+        || !(registrationDataList instanceof Array)) {
+
         return res.status(400).json({
             message: 'The request body is invalid!'
         });
     }
 
-    const passwordsHashingPromises = registrationData.map(({ password }) => {
+    const passwordsHashingPromises = registrationDataList.map(({ password }) => {
         return bcrypt.hash(password, 10)
     });
 
     Promise.all(passwordsHashingPromises)
         .then(hashedPasswords => {
-            const subordinatesDataList = hashedPasswords.map(hashedPassword, i => {
+            const subordinatesDataList = hashedPasswords.map((hashedPassword, i) => {
                 const appropriateRegistrationData = registrationDataList[i];
                 
                 return {
@@ -86,18 +88,29 @@ router.post('/signup/subordinates', (req, res, next) => {
             return User.insertMany(subordinatesDataList);
         })
         .then(createdSubordinates => {
-            const mappedCreatedSubordinates = createdSubordinates.map(
-                subordinate => ({
-                    name,
-                    phone,
-                    userId: subordinate._id,
-                    warehouseId
-                })
+            let subordinateIds = [];
+
+            subordinatesCreationResult = createdSubordinates.map(
+                subordinate => {
+                    const userId = subordinate._id;
+
+                    subordinateIds.push(userId);
+
+                    return {
+                        name: subordinate.name,
+                        phone: subordinate.phone,
+                        userId,
+                        warehouseId: subordinate.warehouseId
+                    }
+                }
             );
 
+            return Admin.findByIdAndUpdate(adminId, { subordinateIds }, { new: true })
+        })
+        .then(() => {
             return res.status(201).json({
                 message: 'Subordinates have been successfully created!',
-                result: mappedCreatedSubordinates,
+                result: subordinatesCreationResult,
             });
         })
         .catch(error => res.status(500).json({
@@ -157,9 +170,6 @@ router.post('/signin', async (req, res, next) => {
 
 router.get('/init', async (req, res, next) => {
     const authHeader = req.headers.authorization;
-    
-    console.log(authHeader);
-
     const token = authHeader.slice(authHeader.indexOf('Bearer ') + 'Bearer '.length);
 
     try {

@@ -8,7 +8,6 @@ import * as fromSubordinateActions from '../../subordinate/store/subordinate.act
 import { switchMap, catchError, map, tap } from 'rxjs/operators';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
-import { CookieService } from 'ngx-cookie-service';
 import { Action } from '@ngrx/store';
 import { ApiResponse } from '../models/api/api-response.model';
 import { UserDataInitType } from '../models/app/app-data-init-type.model';
@@ -31,7 +30,7 @@ export class SharedEffects {
             ofType(fromSharedActions.startInitializingAppState),
             map(action => action.payload),
             switchMap((tokenInfo: TokenInfo) =>
-                this.http.get(this.usersApiServerUrl + 'init', {
+                this.http.get(`${this.usersApiServerUrl}/init`, {
                     headers: new HttpHeaders({
                         authorization: `Bearer ${tokenInfo.token}`
                     })

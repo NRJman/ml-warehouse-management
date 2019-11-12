@@ -19,7 +19,7 @@ export function authReducer(authState: State | undefined, authAction: Action) {
     return createReducer(
         initialState,
         on(
-            fromAuthActions.finishSigningUp,
+            fromAuthActions.finishSigningUpAdmin,
             fromAuthActions.finishSigningIn,
             (state, action) => ({
                 ...state,
@@ -31,7 +31,7 @@ export function authReducer(authState: State | undefined, authAction: Action) {
         ),
         on(
             fromAuthActions.signOut,
-            (state, action) => ({
+            () => ({
                 ...initialState
             })
         )

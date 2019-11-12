@@ -1,11 +1,31 @@
 <div class="animated fadeIn sign-up-subordinates-form-container">
-    <form class="sign-up-subordinates-form" [formGroup]="signUpSubordinatesForm">
+    <div class="form-header">
+        <h5 class="form-title">Sign Up Your Subordinates</h5>
+        <button class="btn btn-primary" (click)="addSubordinate()">Add one</button>
+    </div>
+
+    <form
+        (ngSubmit)="onSignUpSubordinatesFormSubmit()"
+        class="sign-up-subordinates-form"
+        [formGroup]="signUpSubordinatesForm">
+        
         <ng-container formArrayName="subordinates">
             <div class="card" *ngFor="let subordinate of subordinates.controls; index as i">
                 <ng-container [formGroupName]="i">
                     <div class="card-header">
-                        <strong>{{ (subordinate.get('name').valueChanges | async) || 'New' }}</strong>
-                        <small>Subordinate</small>
+                        <div class="subordinate-name-wrapper">
+                            <strong>{{ (subordinate.get('name').valueChanges | async) || 'New' }}</strong>
+                            <small>Subordinate</small>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="card-header-action btn btn-link btn-close"
+                            (click)="deleteSubordinate(i)"
+                            *ngIf="subordinates.length !== 1">
+
+                            <i class="icon-close"></i>
+                        </button>
                     </div>
             
                     <div class="card-body p-4">
@@ -77,5 +97,12 @@
                 </ng-container>
             </div>
         </ng-container>
+
+        <div class="form-action">
+            <button
+                type="submit"
+                [disabled]="signUpSubordinatesForm.invalid || !adminState.warehouseId || !adminState.adminId"
+                class="btn btn-primary btn-submit">Sign Up</button>
+        </div>
     </form>
 </div>

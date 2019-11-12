@@ -38,6 +38,13 @@ export function adminReducer(adminState: State | undefined, adminAction: Action)
             (state, action) => ({
                 ...(action.payload ? action.payload : initialState)
             })
+        ),
+        on(
+            fromAdminActions.finishSigningUpSubordinates,
+            (state, action) => ({
+                ...state,
+                subordinates: action.payload
+            })
         )
     )(adminState, adminAction);
 }
