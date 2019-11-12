@@ -5,6 +5,7 @@ import * as fromAuthActions from './auth.actions';
 import * as fromAdminActions from './../../admin/store/admin.actions';
 import * as fromSharedActions from './../../shared/store/shared.actions';
 import * as fromSubordinateActions from './../../subordinate/store/subordinate.actions';
+import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions';
 import { switchMap, catchError, map } from 'rxjs/operators';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
@@ -79,6 +80,7 @@ export class AuthEffects {
                                     isAdmin
                                 }
                             }),
+                            fromWarehouseActions.storeWarehouse({ payload: user.userId }),
                             fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
                         ];
                     }),
@@ -106,6 +108,7 @@ export class AuthEffects {
                     fromAdminActions.resetAdminState(null),
                     fromSubordinateActions.resetSubordinateState(null),
                     fromSharedActions.resetSharedState(null),
+                    fromWarehouseActions.resetWarehouseState(null),
                     fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/sign-in' })
                 ];
             })

@@ -5,29 +5,27 @@ const User = require('./../models/user');
 
 const router = express.Router();
 
-router.get('/:id', (req, res, next) => {
-    const warehouseId = req.params.id;
+router.get('', (req, res, next) => {
+    const idOfUserResponsibleForWarehouse = req.query.userId;
     
-    if (!warehouseId) {
-        return sendFailedResponse(new Error('The warehouse id was not provided!'));
-    }
-    
-    Warehouse.findById(warehouseId)
+    Admin.findOne({ userId: idOfUserResponsibleForWarehouse })
+        .then((foundAdmin) => Warehouse.findOne({ adminId: foundAdmin._id }))
         .then((warehouse) => {
             res.status(200).json({
                 message: 'The warehouse has been fetched successfully',
-                result: { warehouse }
+                result: {
+                    areas: warehouse.areas,
+                    products: warehouse.products,
+                    tasks: warehouse.tasks,
+                    adminId: warehouse.adminId,
+                    warehouseId: warehouse._id
+                }
             })
         })
-        .catch(sendFailedResponse);
-
-    function sendFailedResponse(error) {
-        return res.status(500).json({
+        .catch(error => res.status(500).json({
             message: 'Failed to fetch the warehouse!',
-            result: { warehouse: null },
             error
-        })
-    }
+        }));
 });
 
 router.post('/', (req, res, next) => {

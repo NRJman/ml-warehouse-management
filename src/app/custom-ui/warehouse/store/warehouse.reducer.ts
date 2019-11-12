@@ -23,9 +23,20 @@ export const initialState: State = {
 export function warehouseReducer(warehouseState: State | undefined, warehouseAction: Action) {
     return createReducer(
         initialState,
-        on(fromWarehouseActions.finishCreatingWarehouse, (state, action) => ({
-            ...state,
-            ...action.payload
-        }))
+        on(
+            fromWarehouseActions.finishCreatingWarehouse,
+            fromWarehouseActions.storeWarehouseData,
+            (state, action) => ({
+                ...state,
+                ...action.payload
+            })
+        ),
+        on(
+            fromWarehouseActions.resetWarehouseState,
+            (state, action) => ({
+                ...state,
+                ...(action.payload ? action.payload : initialState)
+            })
+        )
     )(warehouseState, warehouseAction);
 }

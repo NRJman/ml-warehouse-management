@@ -5,6 +5,7 @@ import * as fromSharedActions from './shared.actions';
 import * as fromAuthActions from './../../auth/store/auth.actions';
 import * as fromAdminActions from '../../admin/store/admin.actions';
 import * as fromSubordinateActions from '../../subordinate/store/subordinate.actions';
+import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions';
 import { switchMap, catchError, map, tap } from 'rxjs/operators';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
@@ -40,6 +41,7 @@ export class SharedEffects {
                             (isAdmin)
                                 ? fromAdminActions.storeAdmin({ payload: user })
                                 : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser }),
+                            fromWarehouseActions.storeWarehouse({ payload: user.userId }),
                             fromAuthActions.finishSigningIn({
                                 payload: {
                                     tokenInfo,

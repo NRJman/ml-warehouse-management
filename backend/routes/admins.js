@@ -13,8 +13,8 @@ router.get('/:id', async (req, res, next) => {
         adminId = foundAdmin._id;
         subordinateIds = foundAdmin.subordinateIds;
         curriedSendSuccessfullResponse = sendSuccessfullResponse.bind(this, adminId);
-        
-        if (!(subordinateIds instanceof Array) || subordinateIds.length > 0) {
+
+        if (!(subordinateIds instanceof Array) || subordinateIds.length === 0) {
             return curriedSendSuccessfullResponse([]);
         }
     } catch (error) {
@@ -26,9 +26,18 @@ router.get('/:id', async (req, res, next) => {
     }
 
     User.find({ _id: { $in: subordinateIds } })
-        .then(subordinates => curriedSendSuccessfullResponse(subordinates))
+        .then(subordinates => {
+            const resultingSubordinates = subordinates.map(subordinate => ({
+                name: subordinate.name,
+                phone: subordinate.phone,
+                userId: subordinate._id,
+                warehouseId: subordinate.warehouseId
+            }));
+
+            return curriedSendSuccessfullResponse(resultingSubordinates);
+        })
         .catch(subordinates => curriedSendSuccessfullResponse([]));
-    
+
     function sendSuccessfullResponse(adminId, subordinates) {
         return res.status(200).json({
             message: 'The admin data has been fetched successfully!',
