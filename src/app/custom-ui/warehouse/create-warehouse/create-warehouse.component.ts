@@ -6,7 +6,7 @@ import * as fromApp from './../../../store/app.reducers';
 import * as fromWarehouseActions from './../store/warehouse.actions';
 import * as fromAdminSelectors from './../../admin/store/admin.selectors';
 import { Unsubscriber } from '../../shared/services/unsubscriber.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-warehouse',
@@ -36,14 +36,26 @@ export class CreateWarehouseComponent extends Unsubscriber implements OnInit, On
   }
 
   public addArea(): void {
-    this.warehouseAreas.push(new FormControl(
+    const newArea: FormControl = new FormControl(
       null,
       [
         Validators.required,
         Validators.minLength(3)
       ],
       this.сustomValidatorsService.areaUniquenessValidator(this.warehouseAreas.controls)
-    ));
+    );
+
+    newArea.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.subscriptionController$$)
+      )
+      .subscribe(() => {
+        this.warehouseAreas.controls.forEach(control => control.updateValueAndValidity());
+      });
+
+    this.warehouseAreas.push(newArea);
   }
 
   public deleteArea(areaControlPosition: number): void {

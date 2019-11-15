@@ -44,7 +44,7 @@ router.post('/', (req, res, next) => {
             createdWarehouse = warehouse;
             areasWithCorrectProperties = warehouse.areas
                 .map(({ name, productIds, _id: areaId }) => ({
-                    name,
+                    name: name.toLowerCase(),
                     productIds,
                     areaId
                 }));
