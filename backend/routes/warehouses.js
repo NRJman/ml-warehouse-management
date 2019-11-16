@@ -28,6 +28,52 @@ router.get('', (req, res, next) => {
         }));
 });
 
+router.post('/products', (req, res, next) => {
+    const { warehouseId, productsDataList } = req.body;
+
+    Warehouse.findById(warehouseId)
+        .then(warehouse => {
+            for (let i = 0, len = productsDataList.length; i < len; i++) {
+                const existingProduct = warehouse.products.find(product =>
+                    product.description === productsDataList[i].description &&
+                    product.brandName === productsDataList[i].brandName
+                );
+
+                if (existingProduct) {
+                    existingProduct.count += productsDataList[i].count;
+
+                    continue;
+                }
+
+                const areaId = productsDataList[i].areaId;
+
+                const newProduct = warehouse.products.create({
+                    description: productsDataList[i].description,
+                    brandName: productsDataList[i].brandName,
+                    count: productsDataList[i].count,
+                    areaName: warehouse.areas.id(areaId).name,
+                    areaId: areaId,
+                    isInWarehouse: true
+                });
+
+                warehouse.products.push(newProduct);
+                warehouse.areas.id(areaId).productIds.push(newProduct._id);
+            }
+
+            return warehouse.save();
+        })
+        .then(({ areas, products }) => {
+            return res.status(201).json({
+                areas,
+                products
+            });
+        })
+        .catch(error => res.status(500).json({
+            message: 'Failed to add products to the warehouse!',
+            error
+        }));
+});
+
 router.post('/', (req, res, next) => {
     const { areas, adminId } = req.body;
     const warehouse = new Warehouse({

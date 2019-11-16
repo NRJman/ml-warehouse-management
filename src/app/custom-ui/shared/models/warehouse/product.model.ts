@@ -1,7 +1,8 @@
 export interface Product {
-    brandName: string;
     description: string;
-    areaName: string;
+    brandName: string;
+    count: number;
     areaId: string;
-    _id: string;
+    areaName?: string;
+    _id?: string;
 }

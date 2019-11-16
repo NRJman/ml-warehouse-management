@@ -10,6 +10,8 @@ import * as fromAdmin from './../../admin/store/admin.reducer';
 import * as fromWarehouse from './../../warehouse/store/warehouse.reducer';
 import * as fromAdminSelectors from './../../admin/store/admin.selectors';
 import * as fromWarehouseSelectors from './../../warehouse/store/warehouse.selectors';
+import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions';
+import { Product } from '../../shared/models/warehouse/product.model';
 
 @Component({
   selector: 'app-add-products',
@@ -29,7 +31,13 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   }
 
   onProductsAdditionFormSubmit(): void {
-    console.log(this.productsAdditionForm);
+    console.log(this.products.controls);
+    this.store.dispatch(fromWarehouseActions.startAddingProducts({
+      payload: {
+        productsDataList: this.products.controls.map(productControl => productControl.value),
+        warehouseId: this.warehouseState.warehouseId
+      }
+    }));
   }
 
   public addProduct(): void {
@@ -44,7 +52,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
       ),
       brandName: new FormControl(null, [Validators.required, Validators.minLength(3)]),
       count: new FormControl(null, [Validators.required]),
-      category: new FormControl('', [Validators.required])
+      areaId: new FormControl('', [Validators.required])
     });
 
     newProduct.get('description').valueChanges
@@ -66,10 +74,6 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
 
   public get products(): FormArray {
     return this.productsAdditionForm.get('products') as FormArray;
-  }
-
-  onCategorySelect(productFormGroupPosition: number): void {
-    this.products.controls[productFormGroupPosition].get('category').updateValueAndValidity();
   }
 
   ngOnInit(): void {

@@ -60,11 +60,10 @@
                             <label for="areaSelect">Category</label>
                             
                             <select
-                                formControlName="category"
+                                formControlName="areaId"
                                 id="areaSelect"
                                 name="select1"
-                                class="form-control select-category-control"
-                                (change)="onCategorySelect(i)">
+                                class="form-control select-category-control">
 
                                 <option value="">-Select one of the categories-</option>
                                 <ng-container *ngFor="let area of warehouseState.areas">
@@ -80,7 +79,9 @@
         <div class="form-action">
             <button
                 type="submit"
-                [disabled]="productsAdditionForm.invalid"
+                [disabled]="productsAdditionForm.invalid ||
+                            productsAdditionForm.pending ||
+                            !warehouseState.warehouseId"
                 class="btn btn-primary btn-submit">Add Products</button>
         </div>
     </form>

@@ -12,6 +12,8 @@ import { of } from 'rxjs';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
 import * as fromAdminActions from './../../admin/store/admin.actions';
 import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/warehouse-data-fetching-result.model';
+import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
+import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
 
 @Injectable()
 export class WarehouseEffects {
@@ -44,6 +46,24 @@ export class WarehouseEffects {
         )
     );
 
+    startAddingPorducts$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromWarehouseActions.startAddingProducts),
+            map(action => action.payload),
+            switchMap((data: DataToAddProducts) =>
+                this.http.post(`${this.warehousesApiServerUrl}/products`, data).pipe(
+                    switchMap(({ result }: ApiResponse<ProductsAdditionResult>) => [
+                        fromWarehouseActions.finishAddingProducts({ payload: result }),
+                        fromSharedActions.navigate({ payload: '/dashboard' })
+                    ]),
+                    catchError((error: ApiResponseError) =>
+                        of(fromWarehouseActions.failAddingProducts({ payload: error }))
+                    )
+                )
+            )
+        )
+    );
+
     storeWarehouse$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromWarehouseActions.storeWarehouse),
@@ -66,12 +86,12 @@ export class WarehouseEffects {
                 }).pipe(
                     map(({ result }: ApiResponse<WarehouseDataFetchingResult>) => {
                         return fromWarehouseActions.storeWarehouseData({ payload: result });
-                    })
+                    }),
+                    catchError((error: ApiResponseError) =>
+                        of(fromWarehouseActions.failCreatingWarehouse({ payload: error }))
+                    )
                 )
             ),
-            catchError((error: ApiResponseError) =>
-                of(fromWarehouseActions.failCreatingWarehouse({ payload: error }))
-            )
         )
     );
 }

@@ -10,11 +10,12 @@ const areaSchema = new Schema({
 areaSchema.plugin(uniquenessValidator);
 
 const productSchema = new Schema({
-    brandName: String,
     description: String,
-    isInWarehouse: Boolean,
+    brandName: String,
+    count: Number,
     areaId: String,
-    warehouseId: String
+    areaName: String,
+    isInWarehouse: Boolean
 });
 
 const taskSchema = new Schema({

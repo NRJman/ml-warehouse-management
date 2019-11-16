@@ -4,6 +4,8 @@ import { ApiResponseError } from '../../shared/models/api/api-response-error.mod
 import { DataToCreateWarehouse } from '../../shared/models/warehouse/data-to-create-warehouse.model';
 import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/warehouse-data-fetching-result.model';
 import * as fromWarehouse from './warehouse.reducer';
+import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
+import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
 
 export const startCreatingWarehouse = createAction(
     '[Warehouse] Start Creating Warehouse',
@@ -17,6 +19,21 @@ export const finishCreatingWarehouse = createAction(
 
 export const failCreatingWarehouse = createAction(
     '[Warehouse] Fail Creating Warehouse',
+    props<{ payload: ApiResponseError }>()
+);
+
+export const startAddingProducts = createAction(
+    '[Warehouse] Start Adding Products',
+    props<{ payload: DataToAddProducts }>()
+);
+
+export const finishAddingProducts = createAction(
+    '[Warehouse] Finish Adding Products',
+    props<{ payload: ProductsAdditionResult }>()
+);
+
+export const failAddingProducts = createAction(
+    '[Warehouse] Fail Adding Products',
     props<{ payload: ApiResponseError }>()
 );
 
