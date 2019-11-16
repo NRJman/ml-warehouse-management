@@ -60,7 +60,7 @@ export class SignUpSubordinatesComponent extends Unsubscriber implements OnInit,
     this.subordinates.controls.splice(subordinateControlPosition, 1);
   }
 
-  get subordinates(): FormArray {
+  public get subordinates(): FormArray {
     return this.signUpSubordinatesForm.get('subordinates') as FormArray;
   }
 

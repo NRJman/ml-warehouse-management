@@ -12,6 +12,7 @@ import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-gua
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
 import { CreateWarehouseComponent } from './custom-ui/warehouse/create-warehouse/create-warehouse.component';
 import { SignUpSubordinatesComponent } from './custom-ui/admin/sign-up-subordinates/sign-up-subordinates.component';
+import { AddProductsComponent } from './custom-ui/warehouse/add-products/add-products.component';
 
 export const routes: Routes = [
   {
@@ -53,11 +54,18 @@ export const routes: Routes = [
       },
       {
         path: 'create-warehouse',
-        component: CreateWarehouseComponent
+        component: CreateWarehouseComponent,
+        canActivate: [GenericPagesGuard]
       },
       {
         path: 'sign-up-subordinates',
-        component: SignUpSubordinatesComponent
+        component: SignUpSubordinatesComponent,
+        canActivate: [GenericPagesGuard]
+      },
+      {
+        path: 'add-products',
+        component: AddProductsComponent,
+        canActivate: [GenericPagesGuard]
       },
       {
         path: 'base',

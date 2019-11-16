@@ -1,0 +1,87 @@
+<div class="animated fadeIn add-product-form-container">
+    <div class="form-header">
+        <h5 class="form-title">Add Products to a Warehouse</h5>
+        <button class="btn btn-primary" (click)="addProduct()">Add one</button>
+    </div>
+
+    <form
+        (ngSubmit)="onProductsAdditionFormSubmit()"
+        class="add-product-form"
+        [formGroup]="productsAdditionForm">
+
+        <ng-container formArrayName="products">
+            <div class="card" *ngFor="let product of products.controls; index as i">
+                <ng-container [formGroupName]="i">
+                    <div class="card-header">
+                        <strong>Product {{ i+1 }}</strong>
+
+                        <button
+                            type="button"
+                            class="card-header-action btn btn-link btn-close"
+                            (click)="deleteProduct(i)"
+                            *ngIf="products.length !== 1">
+
+                            <i class="icon-close"></i>
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input
+                                formControlName="description"
+                                type="text"
+                                class="form-control"
+                                id="description"
+                                placeholder="Product description">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="brandName">Brand Name</label>
+                            <input
+                                formControlName="brandName"
+                                type="text"
+                                class="form-control"
+                                id="brandName"
+                                placeholder="Product brand name">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="count">Count</label>
+                            <input
+                                formControlName="count"
+                                type="number"
+                                class="form-control"
+                                id="count"
+                                placeholder="Products count">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="areaSelect">Category</label>
+                            
+                            <select
+                                formControlName="category"
+                                id="areaSelect"
+                                name="select1"
+                                class="form-control select-category-control"
+                                (change)="onCategorySelect(i)">
+
+                                <option value="">-Select one of the categories-</option>
+                                <ng-container *ngFor="let area of warehouseState.areas">
+                                    <option [value]="area._id">{{ area.name }}</option>
+                                </ng-container>
+                            </select>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <div class="form-action">
+            <button
+                type="submit"
+                [disabled]="productsAdditionForm.invalid"
+                class="btn btn-primary btn-submit">Add Products</button>
+        </div>
+    </form>
+</div>
