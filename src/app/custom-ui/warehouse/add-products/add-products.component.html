@@ -31,15 +31,15 @@
                             
                             <div class="ng-autocomplete">
                                 <ng-autocomplete
-                                    formControlName="description"
                                     [data]="warehouseState.products"
                                     searchKeyword="description"
                                     placeHolder="Product description"
-                                    (selected)='selectEvent($event, i)'
-                                    (inputChanged)='onChangeSearch($event)'
-                                    (inputFocused)='onFocused($event)'
+                                    debounceTime="300"
+                                    (selected)='onDescriptionSuggestionSelect($event, i)'
+                                    (inputChanged)='onDescriptionInputChange($event, product)'
+                                    (inputCleared)='onDescriptionInputClear(i)'
                                     [itemTemplate]="itemTemplate"
-                                    [notFoundTemplate]="notFoundTemplate">                                 
+                                    [notFoundTemplate]="notFoundTemplate">
                                 </ng-autocomplete>
                                     
                                 <ng-template #itemTemplate let-item>
@@ -57,6 +57,7 @@
                             <input
                                 formControlName="brandName"
                                 type="text"
+                                (focusout)="onBrandNameInputFocusOut(product)"
                                 class="form-control"
                                 id="brandName"
                                 placeholder="Product brand name">

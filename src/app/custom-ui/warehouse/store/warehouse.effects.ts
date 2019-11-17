@@ -5,7 +5,7 @@ import * as fromWarehouseActions from './warehouse.actions';
 import * as fromSharedActions from './../../shared/store/shared.actions';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { DataToCreateWarehouse } from '../../shared/models/warehouse/data-to-create-warehouse.model';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { WarehouseCreationResult } from '../../shared/models/warehouse/warehouse-creation-result.model';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
 import { of } from 'rxjs';
@@ -14,13 +14,19 @@ import * as fromAdminActions from './../../admin/store/admin.actions';
 import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/warehouse-data-fetching-result.model';
 import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
+import { DataToPredictCategory } from '../../shared/models/warehouse/data-to-predict-category.model';
+import { PREDICTING_AUTH_TOKEN, PREDICTING_URL_TOKEN } from '../../../app-sensitive.config';
+import { ProductPredictingRequestBody } from '../../shared/models/warehouse/pruduct-predicting-request-body.model';
+import { CategoryPredictionResult } from '../../shared/models/warehouse/category-prediction-result.model';
 
 @Injectable()
 export class WarehouseEffects {
     constructor(
         private actions$: Actions,
         private http: HttpClient,
-        @Inject(WAREHOUSES_API_SERVER_URL_TOKEN) private warehousesApiServerUrl: string
+        @Inject(WAREHOUSES_API_SERVER_URL_TOKEN) private warehousesApiServerUrl: string,
+        @Inject(PREDICTING_AUTH_TOKEN) private predictingAuth: string,
+        @Inject(PREDICTING_URL_TOKEN) private predictingUrl: string
     ) {}
 
     startCreatingWarehouse$ = createEffect(
@@ -46,7 +52,7 @@ export class WarehouseEffects {
         )
     );
 
-    startAddingPorducts$ = createEffect(
+    startAddingProducts$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromWarehouseActions.startAddingProducts),
             map(action => action.payload),
@@ -61,6 +67,41 @@ export class WarehouseEffects {
                     )
                 )
             )
+        )
+    );
+
+    startPredictingProductCategory$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromWarehouseActions.startPredictingProductCategory),
+            map(action => action.payload),
+            switchMap((data: DataToPredictCategory) => {
+                const requestBody: ProductPredictingRequestBody = {
+                    Inputs: {
+                        input1: {
+                            subcategory: '',
+                            item_name: data.description,
+                            merchant_brand_name: data.brandName
+                        }
+                    }
+                };
+
+                return this.http.post(this.predictingUrl, requestBody, {
+                    headers: new HttpHeaders({
+                        Authorization: `Bearer ${this.predictingAuth}`
+                    }),
+                    params: {
+                        'api-version': '2.0',
+                        'format': 'swagger'
+                    }
+                }).pipe(
+                    switchMap((result: CategoryPredictionResult) => {
+                        console.log(result);
+
+                        return [fromWarehouseActions.finishPredictingProductCategory(null)];
+                    }),
+                    catchError(error => of(fromWarehouseActions.failPredictingProductCategory({ payload: error })))
+                );
+            })
         )
     );
 

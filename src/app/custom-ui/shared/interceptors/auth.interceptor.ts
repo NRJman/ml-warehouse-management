@@ -10,7 +10,7 @@ export class AuthInterceptor implements HttpInterceptor {
     constructor(private store: Store<fromApp.State>) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler) {
-        if (req.url.includes('init')) {
+        if (req.url.match(/init|ussouthcentral.services.azureml.net/i)) {
             return next.handle(req);
         }
 

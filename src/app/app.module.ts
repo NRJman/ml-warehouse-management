@@ -54,6 +54,7 @@ import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-page
 import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
 import { WarehouseEffects } from './custom-ui/warehouse/store/warehouse.effects';
 import { AdminModule } from './custom-ui/admin/admin.module';
+import { PREDICTING_URL, PREDICTING_AUTH, PREDICTING_AUTH_TOKEN, PREDICTING_URL_TOKEN } from './app-sensitive.config';
 
 @NgModule({
   imports: [
@@ -107,6 +108,14 @@ import { AdminModule } from './custom-ui/admin/admin.module';
     {
       provide: WAREHOUSES_API_SERVER_URL_TOKEN,
       useValue: WAREHOUSES_API_SERVER_URL
+    },
+    {
+      provide: PREDICTING_AUTH_TOKEN,
+      useValue: PREDICTING_AUTH
+    },
+    {
+      provide: PREDICTING_URL_TOKEN,
+      useValue: PREDICTING_URL
     },
     {
       provide: HTTP_INTERCEPTORS,
