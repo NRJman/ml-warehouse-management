@@ -28,7 +28,7 @@ export class CreateWarehouseComponent extends Unsubscriber implements OnInit, On
     this.store.dispatch(fromWarehouseActions.startCreatingWarehouse({
       payload: {
         adminId: this.adminId,
-        areas: this.warehouseAreas.controls.map(
+        areas: this.newAreas.controls.map(
           areaFormControl => ({ name: areaFormControl.value as string })
         )
       }
@@ -42,7 +42,7 @@ export class CreateWarehouseComponent extends Unsubscriber implements OnInit, On
         Validators.required,
         Validators.minLength(3)
       ],
-      this.сustomValidatorsService.areaUniquenessValidator(this.warehouseAreas.controls)
+      this.сustomValidatorsService.areaUniquenessValidator(this.newAreas.controls)
     );
 
     newArea.valueChanges
@@ -52,17 +52,17 @@ export class CreateWarehouseComponent extends Unsubscriber implements OnInit, On
         takeUntil(this.subscriptionController$$)
       )
       .subscribe(() => {
-        this.warehouseAreas.controls.forEach(control => control.updateValueAndValidity());
+        this.newAreas.controls.forEach(control => control.updateValueAndValidity());
       });
 
-    this.warehouseAreas.push(newArea);
+    this.newAreas.push(newArea);
   }
 
   public deleteArea(areaControlPosition: number): void {
-    this.warehouseAreas.controls.splice(areaControlPosition, 1);
+    this.newAreas.controls.splice(areaControlPosition, 1);
   }
 
-  get warehouseAreas(): FormArray {
+  get newAreas(): FormArray {
     return this.warehouseCreationForm.get('areas') as FormArray;
   }
 

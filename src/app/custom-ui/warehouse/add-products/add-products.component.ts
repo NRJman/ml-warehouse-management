@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { CustomValidatorsService } from '../../shared/services/custom-validators.service';
 import { Area } from '../../shared/models/warehouse/area.model';
@@ -16,7 +16,8 @@ import { Product } from '../../shared/models/warehouse/product.model';
 @Component({
   selector: 'app-add-products',
   templateUrl: './add-products.component.html',
-  styleUrls: ['./add-products.component.scss']
+  styleUrls: ['./add-products.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AddProductsComponent extends Unsubscriber implements OnInit, OnDestroy {
   public productsAdditionForm: FormGroup;
@@ -31,10 +32,10 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   }
 
   onProductsAdditionFormSubmit(): void {
-    console.log(this.products.controls);
+    console.log(this.newProducts.controls);
     this.store.dispatch(fromWarehouseActions.startAddingProducts({
       payload: {
-        productsDataList: this.products.controls.map(productControl => productControl.value),
+        productsDataList: this.newProducts.controls.map(productControl => productControl.value),
         warehouseId: this.warehouseState.warehouseId
       }
     }));
@@ -48,7 +49,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
           Validators.required,
           Validators.minLength(3),
         ],
-        this.customValidatorsService.productDescriptionUniquenessValidator(this.products.controls as FormGroup[])
+        this.customValidatorsService.productDescriptionUniquenessValidator(this.newProducts.controls as FormGroup[])
       ),
       brandName: new FormControl(null, [Validators.required, Validators.minLength(3)]),
       count: new FormControl(null, [Validators.required]),
@@ -62,23 +63,41 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
         takeUntil(this.subscriptionController$$)
       )
       .subscribe(() => {
-        this.products.controls.forEach(productFormGroup => productFormGroup.get('description').updateValueAndValidity());
+        this.newProducts.controls.forEach(productFormGroup => productFormGroup.get('description').updateValueAndValidity());
       });
 
-    this.products.push(newProduct);
+    this.newProducts.push(newProduct);
   }
 
   public deleteProduct(productFormGroupPosition: number): void {
-    this.products.controls.splice(productFormGroupPosition, 1);
+    this.newProducts.controls.splice(productFormGroupPosition, 1);
   }
 
-  public get products(): FormArray {
-    return this.productsAdditionForm.get('products') as FormArray;
+  public get newProducts(): FormArray {
+    return this.productsAdditionForm.get('newProducts') as FormArray;
+  }
+
+  selectEvent(selectedProduct: Product, productFormGroupPosition: number) {
+    this.newProducts.controls[productFormGroupPosition].patchValue({
+      brandName: selectedProduct.brandName,
+      areaId: selectedProduct.areaId
+    });
+  }
+
+  onChangeSearch(val: string) {
+    // fetch remote data from here
+    // And reassign the 'data' which is binded to 'data' property.
+    console.log(val);
+  }
+
+  onFocused(e) {
+    // do something when input is focused
+    console.log(e);
   }
 
   ngOnInit(): void {
     this.productsAdditionForm = new FormGroup({
-      products: new FormArray([])
+      newProducts: new FormArray([])
     });
 
     this.addProduct();

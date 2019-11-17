@@ -9,8 +9,8 @@
         class="add-product-form"
         [formGroup]="productsAdditionForm">
 
-        <ng-container formArrayName="products">
-            <div class="card" *ngFor="let product of products.controls; index as i">
+        <ng-container formArrayName="newProducts">
+            <div class="card" *ngFor="let product of newProducts.controls; index as i">
                 <ng-container [formGroupName]="i">
                     <div class="card-header">
                         <strong>Product {{ i+1 }}</strong>
@@ -19,7 +19,7 @@
                             type="button"
                             class="card-header-action btn btn-link btn-close"
                             (click)="deleteProduct(i)"
-                            *ngIf="products.length !== 1">
+                            *ngIf="newProducts.length !== 1">
 
                             <i class="icon-close"></i>
                         </button>
@@ -28,12 +28,28 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="description">Description</label>
-                            <input
-                                formControlName="description"
-                                type="text"
-                                class="form-control"
-                                id="description"
-                                placeholder="Product description">
+                            
+                            <div class="ng-autocomplete">
+                                <ng-autocomplete
+                                    formControlName="description"
+                                    [data]="warehouseState.products"
+                                    searchKeyword="description"
+                                    placeHolder="Product description"
+                                    (selected)='selectEvent($event, i)'
+                                    (inputChanged)='onChangeSearch($event)'
+                                    (inputFocused)='onFocused($event)'
+                                    [itemTemplate]="itemTemplate"
+                                    [notFoundTemplate]="notFoundTemplate">                                 
+                                </ng-autocomplete>
+                                    
+                                <ng-template #itemTemplate let-item>
+                                    <a [innerHTML]="item.description"></a>
+                                </ng-template>
+                                    
+                                <ng-template #notFoundTemplate let-notFound>
+                                    <div [innerHTML]="notFound"></div>
+                                </ng-template>
+                            </div>
                         </div>
     
                         <div class="form-group">
@@ -51,6 +67,7 @@
                             <input
                                 formControlName="count"
                                 type="number"
+                                min="0"
                                 class="form-control"
                                 id="count"
                                 placeholder="Products count">

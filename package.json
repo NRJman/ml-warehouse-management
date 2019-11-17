@@ -47,6 +47,7 @@
     "@ngrx/effects": "^8.4.0",
     "@ngrx/store": "^8.4.0",
     "@ngrx/store-devtools": "^8.4.0",
+    "angular-ng-autocomplete": "^1.1.14",
     "bcrypt": "^3.0.6",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.8.0",

@@ -15,7 +15,7 @@
                         (ngSubmit)="onWarehouseCreationFormSubmit()">
     
                         <ng-container formArrayName="areas">
-                            <div class="form-group row" *ngFor="let area of warehouseAreas.controls; index as i">
+                            <div class="form-group row" *ngFor="let area of newAreas.controls; index as i">
                                 <label
                                     class="col-1 col-form-label" 
                                     [for]="i+1">Area {{ i+1 }}:</label>
@@ -34,7 +34,7 @@
                                     type="button"
                                     class="card-header-action btn btn-link btn-close col-1"
                                     (click)="deleteArea(i)"
-                                    *ngIf="warehouseAreas.length !== 1">
+                                    *ngIf="newAreas.length !== 1">
     
                                     <i class="icon-close"></i>
                                 </button>
