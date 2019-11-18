@@ -64,6 +64,7 @@
     "ngx-cookie-service": "^2.2.0",
     "ngx-perfect-scrollbar": "^8.0.0",
     "ngx-spinner": "^8.0.3",
+    "request": "^2.88.0",
     "rxjs": "^6.5.2",
     "simple-line-icons": "^2.4.1",
     "ts-helpers": "^1.1.2",

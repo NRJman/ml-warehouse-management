@@ -1,4 +1,4 @@
-export interface CategoryPredictionResult {
+export interface CategoryPredictionResult { // This till be modified.
     Results: {
         [output: string]: {
             type: string;

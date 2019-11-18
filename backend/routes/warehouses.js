@@ -2,6 +2,9 @@ const express = require('express');
 const Warehouse = require('./../models/warehouse');
 const Admin = require('./../models/admin');
 const User = require('./../models/user');
+const request = require('request');
+const predictionApiKey = require('./../sensitive/prediction-api-key');
+const predictionUri = require('./../sensitive/prediction-uri');
 
 const router = express.Router();
 
@@ -95,8 +98,6 @@ router.post('/', (req, res, next) => {
                     areaId
                 }));
 
-            console.log('areas: ', areasWithCorrectProperties);
-
             return Admin.findById(adminId);
         })
         .then((foundAdmin) => User.findByIdAndUpdate(
@@ -105,8 +106,6 @@ router.post('/', (req, res, next) => {
             { new: true }
         ))
         .then((updatedUser) => {
-            console.log('UPDATED USER: ', updatedUser);
-
             return res.status(201).json({
                 message: 'The warehouse has been successfully created!',
                 result: {
@@ -121,6 +120,55 @@ router.post('/', (req, res, next) => {
             error
         }));
 
+});
+
+router.post('/predict', (req, res, next) => {
+    const { description, brandName } = req.body;
+    console.log(description, brandName);
+    const predictionRequestBody = {
+        "Inputs": {
+            "input1": {
+                "ColumnNames": [
+                    "subcategory",
+                    "item_name",
+                    "merchant_brand_name"
+                ],
+                "Values": [
+                    [
+                        "",
+                        description,
+                        brandName
+                    ]
+                ]
+            }
+        },
+        "GlobalParameters": { }
+    };
+
+    const options = {
+        method: 'POST',
+        uri: predictionUri,
+        qs: {
+            'api-version': '2.0',
+            'details': 'true'
+        },
+        headers: {
+            'Authorization': `Bearer ${predictionApiKey}`
+        },
+        json: true,
+        body: predictionRequestBody
+    }
+
+    request(options, (error, response, body) => {
+        if (error || response.statusCode !== 200) {
+            return res.status(500).json({ type: 'error', error });
+        }
+
+        res.status(200).json({
+            message: 'Successfully predicted the category',
+            result: body
+        })
+    });
 });
 
 module.exports = router;

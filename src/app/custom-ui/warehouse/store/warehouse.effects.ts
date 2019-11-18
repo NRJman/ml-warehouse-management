@@ -15,8 +15,7 @@ import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/wareh
 import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
 import { DataToPredictCategory } from '../../shared/models/warehouse/data-to-predict-category.model';
-import { PREDICTING_AUTH_TOKEN, PREDICTING_URL_TOKEN } from '../../../app-sensitive.config';
-import { ProductPredictingRequestBody } from '../../shared/models/warehouse/pruduct-predicting-request-body.model';
+import { ProductPredictionRequestBody } from '../../shared/models/warehouse/pruduct-prediction-request-body.model';
 import { CategoryPredictionResult } from '../../shared/models/warehouse/category-prediction-result.model';
 
 @Injectable()
@@ -24,9 +23,7 @@ export class WarehouseEffects {
     constructor(
         private actions$: Actions,
         private http: HttpClient,
-        @Inject(WAREHOUSES_API_SERVER_URL_TOKEN) private warehousesApiServerUrl: string,
-        @Inject(PREDICTING_AUTH_TOKEN) private predictingAuth: string,
-        @Inject(PREDICTING_URL_TOKEN) private predictingUrl: string
+        @Inject(WAREHOUSES_API_SERVER_URL_TOKEN) private warehousesApiServerUrl: string
     ) {}
 
     startCreatingWarehouse$ = createEffect(
@@ -75,24 +72,9 @@ export class WarehouseEffects {
             ofType(fromWarehouseActions.startPredictingProductCategory),
             map(action => action.payload),
             switchMap((data: DataToPredictCategory) => {
-                const requestBody: ProductPredictingRequestBody = {
-                    Inputs: {
-                        input1: {
-                            subcategory: '',
-                            item_name: data.description,
-                            merchant_brand_name: data.brandName
-                        }
-                    }
-                };
-
-                return this.http.post(this.predictingUrl, requestBody, {
-                    headers: new HttpHeaders({
-                        Authorization: `Bearer ${this.predictingAuth}`
-                    }),
-                    params: {
-                        'api-version': '2.0',
-                        'format': 'swagger'
-                    }
+                return this.http.post(`${this.warehousesApiServerUrl}/predict`, {
+                    description: data.description,
+                    brandName: data.brandName
                 }).pipe(
                     switchMap((result: CategoryPredictionResult) => {
                         console.log(result);
