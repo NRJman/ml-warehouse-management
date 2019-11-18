@@ -120,7 +120,14 @@ router.post('/signup/subordinates', (req, res, next) => {
 });
 
 router.post('/signin', async (req, res, next) => {
+    const { password, email } = req.body;
     let foundUser;
+
+    if (!password || !email) {
+        return res.status(400).json({
+            message: 'An authentication failed due to invalid arguments!'
+        });
+    }
 
     try {
         foundUser = await User.findOne({ email: req.body.email });

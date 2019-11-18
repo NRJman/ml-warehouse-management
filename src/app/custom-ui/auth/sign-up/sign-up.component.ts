@@ -7,27 +7,28 @@ import * as fromAuthActions from '../store/auth.actions';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: 'sign-up.component.html'
+  templateUrl: 'sign-up.component.html',
+  styleUrls: ['./sign-up.component.scss']
 })
 export class SignUpComponent implements OnInit {
-  public registrationForm: FormGroup;
+  public signUpForm: FormGroup;
 
   constructor(
     private customValidatorsService: CustomValidatorsService,
     private store: Store<fromApp.State>
   ) { }
 
-  onRegistrationFormSubmit(): void {
-    const registrationFormValue = this.registrationForm.value;
+  onSignUpFormSubmit(): void {
+    const signUpFormValue = this.signUpForm.value;
 
     this.store.dispatch(
       fromAuthActions.startSigningUpAdmin({
         payload: {
           registrationData: {
-            name: registrationFormValue.name,
-            phone: registrationFormValue.phone,
-            email: registrationFormValue.email,
-            password: registrationFormValue.password
+            name: signUpFormValue.name,
+            phone: signUpFormValue.phone,
+            email: signUpFormValue.email,
+            password: signUpFormValue.password
           }
         }
       })
@@ -35,21 +36,21 @@ export class SignUpComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeRegistrationForm();
+    this.initializeSignUpForm();
   }
 
-  private initializeRegistrationForm(): void {
-    this.registrationForm = new FormGroup({
+  private initializeSignUpForm(): void {
+    this.signUpForm = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.minLength(5)]),
-      phone: new FormControl(null, [Validators.required, Validators.pattern('^\\d{9}$')]),
+      phone: new FormControl(null, [Validators.required, Validators.minLength(9)]),
       email: new FormControl(null, [Validators.required, Validators.email]),
       password: new FormControl(null, [Validators.required, Validators.minLength(5)]),
       repeatPassword: new FormControl(null)
     });
 
-    this.registrationForm.get('repeatPassword').setValidators([
+    this.signUpForm.get('repeatPassword').setValidators([
       Validators.required,
-      this.customValidatorsService.passwordsEqualityValidator(this.registrationForm.get('password'))
+      this.customValidatorsService.passwordsEqualityValidator(this.signUpForm.get('password'))
     ]);
   }
 }

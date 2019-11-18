@@ -5,7 +5,7 @@
         <div class="col-md-6 mx-auto">
           <div class="card mx-4">
             <div class="card-body p-4">
-              <form (ngSubmit)="onRegistrationFormSubmit()" [formGroup]="registrationForm">
+              <form (ngSubmit)="onSignUpFormSubmit()" [formGroup]="signUpForm">
                 <h1>Sign Up</h1>
 
                 <p class="text-muted">Create your account</p>
@@ -31,7 +31,7 @@
                   <input
                     formControlName="phone"
                     type="number"
-                    class="form-control"
+                    class="form-control phone-control"
                     placeholder="Phone Number"
                     autocomplete="phone">
                 </div>
@@ -75,7 +75,7 @@
                     autocomplete="new-password">
                 </div>
 
-                <button type="submit" class="btn btn-block btn-success" [disabled]="registrationForm.invalid">Create Account</button>
+                <button type="submit" class="btn btn-block btn-success" [disabled]="signUpForm.invalid">Create Account</button>
               </form>
             </div>
           </div>
