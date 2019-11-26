@@ -36,18 +36,13 @@
                                     placeHolder="Product description"
                                     debounceTime="300"
                                     (selected)='onDescriptionSuggestionSelect($event, i)'
-                                    (inputChanged)='onDescriptionInputChange($event, product)'
+                                    (inputChanged)='onDescriptionInputChange($event, i)'
                                     (inputCleared)='onDescriptionInputClear(i)'
-                                    [itemTemplate]="itemTemplate"
-                                    [notFoundTemplate]="notFoundTemplate">
+                                    [itemTemplate]="itemTemplate">
                                 </ng-autocomplete>
                                     
                                 <ng-template #itemTemplate let-item>
                                     <a [innerHTML]="item.description"></a>
-                                </ng-template>
-                                    
-                                <ng-template #notFoundTemplate let-notFound>
-                                    <div [innerHTML]="notFound"></div>
                                 </ng-template>
                             </div>
                         </div>
@@ -57,7 +52,7 @@
                             <input
                                 formControlName="brandName"
                                 type="text"
-                                (focusout)="onBrandNameInputFocusOut(product)"
+                                (input)="onBrandNameInputChange(i)"
                                 class="form-control"
                                 id="brandName"
                                 placeholder="Product brand name">

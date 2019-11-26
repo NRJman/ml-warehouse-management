@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl, AbstractControl } from '@angular/forms';
 import { CustomValidatorsService } from '../../shared/services/custom-validators.service';
 import { Unsubscriber } from '../../shared/services/unsubscriber.service';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil, filter, switchMap, withLatestFrom, map } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import * as fromApp from './../../../store/app.reducers';
 import * as fromAdmin from './../../admin/store/admin.reducer';
@@ -11,7 +11,8 @@ import * as fromAdminSelectors from './../../admin/store/admin.selectors';
 import * as fromWarehouseSelectors from './../../warehouse/store/warehouse.selectors';
 import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions';
 import { Product } from '../../shared/models/warehouse/product.model';
-import { Subject } from 'rxjs';
+import { Subject, of, zip } from 'rxjs';
+import { PredictionControllerInput } from '../../shared/models/warehouse/prediction-controller-input.model';
 
 @Component({
   selector: 'app-add-products',
@@ -23,7 +24,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   public productsAdditionForm: FormGroup;
   public adminState: fromAdmin.State;
   public warehouseState: fromWarehouse.State;
-  private predictionController$$: Subject<AbstractControl> = new Subject<AbstractControl>();
+  private predictionController$$: Subject<PredictionControllerInput> = new Subject<PredictionControllerInput>();
 
   constructor(
     private customValidatorsService: CustomValidatorsService,
@@ -32,8 +33,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
     super();
   }
 
-  onProductsAdditionFormSubmit(): void {
-    console.log(this.newProducts.controls);
+  public onProductsAdditionFormSubmit(): void {
     this.store.dispatch(fromWarehouseActions.startAddingProducts({
       payload: {
         productsDataList: this.newProducts.controls.map(productControl => productControl.value),
@@ -79,7 +79,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   }
 
   public onDescriptionSuggestionSelect(selectedProduct: Product, productFormGroupPosition: number) {
-    const productFormGroup: AbstractControl = this.newProducts.controls[productFormGroupPosition];
+    const productFormGroup: AbstractControl = this.getProduct(productFormGroupPosition);
 
     productFormGroup.patchValue({
       description: selectedProduct.description,
@@ -87,7 +87,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
       areaId: selectedProduct.areaId
     });
 
-    this.predictionController$$.next(productFormGroup);
+    this.startPrediction(productFormGroup, productFormGroupPosition);
   }
 
   public onDescriptionInputClear(productFormGroupPosition: number) {
@@ -98,14 +98,29 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
     });
   }
 
-  public onDescriptionInputChange(description: string, productFormGroup: AbstractControl) {
+  public onDescriptionInputChange(description: string, productFormGroupPosition: number) {
+    const productFormGroup: AbstractControl = this.getProduct(productFormGroupPosition);
+
     productFormGroup.patchValue({ description });
 
-    this.predictionController$$.next(productFormGroup);
+    this.startPrediction(productFormGroup, productFormGroupPosition);
   }
 
-  public onBrandNameInputFocusOut(productFormGroup: AbstractControl) {
-    this.predictionController$$.next(productFormGroup);
+  public onBrandNameInputChange(productFormGroupPosition: number) {
+    const productFormGroup: AbstractControl = this.getProduct(productFormGroupPosition);
+
+    this.startPrediction(productFormGroup, productFormGroupPosition);
+  }
+
+  private getProduct(productFormGroupPosition: number) {
+    return this.newProducts.controls[productFormGroupPosition];
+  }
+
+  private startPrediction(productFormGroup: AbstractControl, productFormGroupPosition: number) {
+    this.predictionController$$.next({
+      productValue: { ...productFormGroup.value },
+      productFormGroupPosition
+    });
   }
 
   ngOnInit(): void {
@@ -117,7 +132,8 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
 
     this.store
       .pipe(
-        select(fromAdminSelectors.getAdminState)
+        select(fromAdminSelectors.getAdminState),
+        takeUntil(this.subscriptionController$$)
       )
       .subscribe((state: fromAdmin.State) => {
         this.adminState = state;
@@ -125,7 +141,8 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
 
     this.store
       .pipe(
-        select(fromWarehouseSelectors.getWarehouseState)
+        select(fromWarehouseSelectors.getWarehouseState),
+        takeUntil(this.subscriptionController$$)
       )
       .subscribe((state: fromWarehouse.State) => {
         this.warehouseState = state;
@@ -134,14 +151,31 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
     this.predictionController$$
       .pipe(
         debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe((productFormGroup: FormGroup) => {
-        if (productFormGroup.get('description').invalid || productFormGroup.get('brandName').invalid) {
-          return;
-        }
+        distinctUntilChanged(({ productValue: previousValue }, { productValue: currentValue }) => {
+          const isBrandNameDifferent = previousValue.brandName === currentValue.brandName;
+          const isDescriptionDifferent = previousValue.description === currentValue.description;
 
-        const { description, brandName } = productFormGroup.value;
+          return !(isBrandNameDifferent || isDescriptionDifferent);
+        }),
+        switchMap(({ productFormGroupPosition }: PredictionControllerInput) => {
+          const productFormGroup = this.getProduct(productFormGroupPosition);
+
+          if (productFormGroup.status === 'PENDING') {
+            return zip(of(productFormGroup), productFormGroup.statusChanges);
+          }
+
+          return zip(of(productFormGroup), of(null));
+        }),
+        map(([productFormGroup]: [AbstractControl, string]) => {
+          return productFormGroup;
+        }),
+        filter((productFormGroup) => {
+          return productFormGroup.get('description').valid && productFormGroup.get('brandName').valid;
+        }),
+        takeUntil(this.subscriptionController$$)
+      )
+      .subscribe(({ value }) => {
+        const { description, brandName } = value;
 
         this.store.dispatch(fromWarehouseActions.startPredictingProductCategory({ payload: { description, brandName } }));
       });
@@ -150,5 +184,4 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-
 }
