@@ -136,7 +136,9 @@ router.post('/signin', async (req, res, next) => {
             throw new Error(`Couldn't find a user with such an email!`);
         }
 
-        if (!arePasswordsEqual()) {
+        const arePasswordsEqual = await bcrypt.compare(req.body.password, foundUser.password);
+
+        if (!arePasswordsEqual) {
             throw new Error('The password is incorrect!');
         }
 
@@ -146,10 +148,6 @@ router.post('/signin', async (req, res, next) => {
             message: 'An authentication failed!',
             error
         })
-    }
-
-    async function arePasswordsEqual() {
-        return await bcrypt.compare(req.body.password, foundUser.password)
     }
 
     async function sendResponse() {
