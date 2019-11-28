@@ -1,11 +1,11 @@
 import { Injectable, Inject } from '@angular/core';
-import { WAREHOUSES_API_SERVER_URL_TOKEN, WAREHOUSES_API_SERVER_URL } from '../../../app.config';
+import { WAREHOUSES_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { createEffect, ofType, Actions } from '@ngrx/effects';
 import * as fromWarehouseActions from './warehouse.actions';
 import * as fromSharedActions from './../../shared/store/shared.actions';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { DataToCreateWarehouse } from '../../shared/models/warehouse/data-to-create-warehouse.model';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { WarehouseCreationResult } from '../../shared/models/warehouse/warehouse-creation-result.model';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
 import { of } from 'rxjs';
@@ -14,9 +14,6 @@ import * as fromAdminActions from './../../admin/store/admin.actions';
 import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/warehouse-data-fetching-result.model';
 import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
-import { DataToPredictCategory } from '../../shared/models/warehouse/data-to-predict-category.model';
-import { ProductPredictionRequestBody } from '../../shared/models/warehouse/pruduct-prediction-request-body.model';
-import { CategoryPredictionResult } from '../../shared/models/warehouse/category-prediction-result.model';
 
 @Injectable()
 export class WarehouseEffects {
@@ -64,26 +61,6 @@ export class WarehouseEffects {
                     )
                 )
             )
-        )
-    );
-
-    startPredictingProductCategory$ = createEffect(
-        () => this.actions$.pipe(
-            ofType(fromWarehouseActions.startPredictingProductCategory),
-            map(action => action.payload),
-            switchMap((data: DataToPredictCategory) => {
-                return this.http.post(`${this.warehousesApiServerUrl}/predict`, {
-                    description: data.description,
-                    brandName: data.brandName
-                }).pipe(
-                    switchMap((result: CategoryPredictionResult) => {
-                        console.log(result);
-
-                        return [fromWarehouseActions.finishPredictingProductCategory(null)];
-                    }),
-                    catchError(error => of(fromWarehouseActions.failPredictingProductCategory({ payload: error })))
-                );
-            })
         )
     );
 

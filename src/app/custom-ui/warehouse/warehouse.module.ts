@@ -4,6 +4,7 @@ import { CreateWarehouseComponent } from './create-warehouse/create-warehouse.co
 import { SharedModule } from '../shared/shared.module';
 import { AddProductsComponent } from './add-products/add-products.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { ProductCategoryPredictionService } from './services/product-category-prediction.service';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,9 @@ import { AutocompleteLibModule } from 'angular-ng-autocomplete';
     SharedModule,
     SharedModule,
     AutocompleteLibModule
+  ],
+  providers: [
+    ProductCategoryPredictionService
   ]
 })
 export class WarehouseModule { }

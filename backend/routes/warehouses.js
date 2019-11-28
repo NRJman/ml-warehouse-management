@@ -5,6 +5,7 @@ const User = require('./../models/user');
 const request = require('request');
 const predictionApiKey = require('./../sensitive/prediction-api-key');
 const predictionUri = require('./../sensitive/prediction-uri');
+const predictionHandlingConfig = require('./../utils/prediction-handling-config');
 
 const router = express.Router();
 
@@ -124,7 +125,6 @@ router.post('/', (req, res, next) => {
 
 router.post('/predict', (req, res, next) => {
     const { description, brandName } = req.body;
-    console.log(description, brandName);
     const predictionRequestBody = {
         "Inputs": {
             "input1": {
@@ -166,9 +166,32 @@ router.post('/predict', (req, res, next) => {
 
         res.status(200).json({
             message: 'Successfully predicted the category',
-            result: body
+            result: getMostPossibleCategories(body)
         })
     });
+
+    function getMostPossibleCategories({ Results: { output1: { value: predictionResult } } }) {
+        const scoredProbabilities = predictionResult.Values[0];
+        const lengthOfFieldsPredictionInvolves = predictionHandlingConfig.fieldsPredictionInvolves.length;
+        const highestProbabilities = scoredProbabilities
+            .slice(lengthOfFieldsPredictionInvolves)
+            .sort((a, b) => Number(b) - Number(a))
+            .slice(0, 3);
+        
+
+        return highestProbabilities.reduce((mostPossibleCategories, probability) => {
+            const probabilityIndex = scoredProbabilities.indexOf(probability);
+            const productCategory = predictionResult.ColumnNames[probabilityIndex]
+                .slice(
+                    predictionHandlingConfig.lengthOfColumnNameRedundantStartingPart,
+                    -predictionHandlingConfig.lengthOfColumnNameRedundantEndingPart
+                );
+
+            mostPossibleCategories.push(productCategory);
+
+            return mostPossibleCategories;
+        }, []);
+    }
 });
 
 module.exports = router;

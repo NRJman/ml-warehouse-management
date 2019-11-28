@@ -13,6 +13,7 @@ import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions
 import { Product } from '../../shared/models/warehouse/product.model';
 import { Subject, of, zip } from 'rxjs';
 import { PredictionControllerInput } from '../../shared/models/warehouse/prediction-controller-input.model';
+import { ProductCategoryPredictionService } from '../services/product-category-prediction.service';
 
 @Component({
   selector: 'app-add-products',
@@ -24,11 +25,13 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   public productsAdditionForm: FormGroup;
   public adminState: fromAdmin.State;
   public warehouseState: fromWarehouse.State;
+  public predictionListsMap: WeakMap<AbstractControl, string[]> = new WeakMap();
   private predictionController$$: Subject<PredictionControllerInput> = new Subject<PredictionControllerInput>();
 
   constructor(
     private customValidatorsService: CustomValidatorsService,
-    private store: Store<fromApp.State>
+    private store: Store<fromApp.State>,
+    private productCategoryPredictionService: ProductCategoryPredictionService
   ) {
     super();
   }
@@ -148,14 +151,22 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
         this.warehouseState = state;
       });
 
+    this.productCategoryPredictionService.predictionListsMapUpdates$
+      .pipe(
+        takeUntil(this.subscriptionController$$)
+      )
+      .subscribe(predictionListsMapUpdates => {
+        console.log(predictionListsMapUpdates);
+      });
+
     this.predictionController$$
       .pipe(
         debounceTime(300),
         distinctUntilChanged(({ productValue: previousValue }, { productValue: currentValue }) => {
-          const isBrandNameDifferent = previousValue.brandName === currentValue.brandName;
-          const isDescriptionDifferent = previousValue.description === currentValue.description;
+          const isBrandNameRetainedSame = previousValue.brandName === currentValue.brandName;
+          const isDescriptionRetainedSame = previousValue.description === currentValue.description;
 
-          return !(isBrandNameDifferent || isDescriptionDifferent);
+          return isBrandNameRetainedSame && isDescriptionRetainedSame;
         }),
         switchMap(({ productFormGroupPosition }: PredictionControllerInput) => {
           const productFormGroup = this.getProduct(productFormGroupPosition);
@@ -174,10 +185,8 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
         }),
         takeUntil(this.subscriptionController$$)
       )
-      .subscribe(({ value }) => {
-        const { description, brandName } = value;
-
-        this.store.dispatch(fromWarehouseActions.startPredictingProductCategory({ payload: { description, brandName } }));
+      .subscribe((productFormGroup) => {
+        this.productCategoryPredictionService.predictProductCategory(productFormGroup);
       });
   }
 

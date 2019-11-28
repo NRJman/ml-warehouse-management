@@ -6,8 +6,6 @@ import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/wareh
 import * as fromWarehouse from './warehouse.reducer';
 import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
-import { DataToPredictCategory } from '../../shared/models/warehouse/data-to-predict-category.model';
-import { CategoryPredictionResult } from '../../shared/models/warehouse/category-prediction-result.model';
 
 export const startCreatingWarehouse = createAction(
     '[Warehouse] Start Creating Warehouse',
@@ -37,21 +35,6 @@ export const finishAddingProducts = createAction(
 export const failAddingProducts = createAction(
     '[Warehouse] Fail Adding Products',
     props<{ payload: ApiResponseError }>()
-);
-
-export const startPredictingProductCategory = createAction(
-    '[Warehouse] Start Predicting Product Category',
-    props<{ payload: DataToPredictCategory }>()
-);
-
-export const finishPredictingProductCategory = createAction(
-    '[Warehouse] Finish Predicting Product Category',
-    props<{ payload: CategoryPredictionResult }>()
-);
-
-export const failPredictingProductCategory = createAction(
-    '[Warehouse] Fail Predicting Product Category',
-    props<{ payload: object }>()
 );
 
 export const storeWarehouse = createAction( // This action layer here is for consistency
