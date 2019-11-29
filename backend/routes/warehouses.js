@@ -13,8 +13,8 @@ router.get('', (req, res, next) => {
     const idOfUserResponsibleForWarehouse = req.query.userId;
     
     Admin.findOne({ userId: idOfUserResponsibleForWarehouse })
-        .then((foundAdmin) => Warehouse.findOne({ adminId: foundAdmin._id }))
-        .then((warehouse) => {
+        .then(foundAdmin => Warehouse.findOne({ adminId: foundAdmin._id }))
+        .then(warehouse => {
             res.status(200).json({
                 message: 'The warehouse has been fetched successfully',
                 result: {
@@ -90,7 +90,7 @@ router.post('/', (req, res, next) => {
     let areasWithCorrectProperties, createdWarehouse;
 
     warehouse.save()
-        .then((warehouse) => {
+        .then(warehouse => {
             createdWarehouse = warehouse;
             areasWithCorrectProperties = warehouse.areas
                 .map(({ name, productIds, _id: areaId }) => ({
@@ -101,26 +101,54 @@ router.post('/', (req, res, next) => {
 
             return Admin.findById(adminId);
         })
-        .then((foundAdmin) => User.findByIdAndUpdate(
-            foundAdmin.userId,
-            { warehouseId: warehouse._id },
-            { new: true }
-        ))
-        .then((updatedUser) => {
-            return res.status(201).json({
+        .then(foundAdmin =>
+            User.findByIdAndUpdate(
+                foundAdmin.userId,
+                { warehouseId: warehouse._id },
+                { new: true }
+            )
+        )
+        .then(updatedUser => 
+            res.status(201).json({
                 message: 'The warehouse has been successfully created!',
                 result: {
                     areas: areasWithCorrectProperties,
                     adminId: createdWarehouse.adminId,
                     warehouseId: createdWarehouse._id
                 }
-            });
-        })
-        .catch(error => res.status(500).json({
-            message: 'Failed to create a warehouse',
-            error
-        }));
+            })
+        )
+        .catch(error => 
+            res.status(500).json({
+                message: 'Failed to create a warehouse',
+                error
+            })
+        );
 
+});
+
+router.post('/tasks', (req, res, next) => {
+    const { tasks, warehouseId } = req.body;
+    
+    Warehouse.findByIdAndUpdate(
+        warehouseId,
+        { tasks },
+        { new: true }
+    )
+    .then(updatedWarehouse => 
+        res.json(201).json({
+            message: 'New tasks have been successfully created!',
+            result: {
+                tasks: updatedWarehouse.tasks
+            }
+        })
+    )
+    .catch(error =>
+        res.status(500).json({
+            message: 'Failed to create tasks',
+            error
+        })
+    )
 });
 
 router.post('/predict', (req, res, next) => {
