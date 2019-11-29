@@ -13,6 +13,7 @@ import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-page
 import { CreateWarehouseComponent } from './custom-ui/warehouse/create-warehouse/create-warehouse.component';
 import { SignUpSubordinatesComponent } from './custom-ui/admin/sign-up-subordinates/sign-up-subordinates.component';
 import { AddProductsComponent } from './custom-ui/warehouse/add-products/add-products.component';
+import { CreateTasksComponent } from './custom-ui/warehouse/task-management/create-tasks/create-tasks.component';
 
 export const routes: Routes = [
   {
@@ -40,7 +41,7 @@ export const routes: Routes = [
         path: 'sign-in',
         component: SignInComponent,
         data: {
-          title: 'Sign In Page'
+          title: 'Sign In'
         },
         canActivate: [AuthFormsPagesGuard]
       },
@@ -48,24 +49,41 @@ export const routes: Routes = [
         path: 'sign-up',
         component: SignUpComponent,
         data: {
-          title: 'Sign Up Page'
+          title: 'Sign Up'
         },
         canActivate: [AuthFormsPagesGuard]
       },
       {
         path: 'create-warehouse',
         component: CreateWarehouseComponent,
+        data: {
+          title: 'Create Warehouse'
+        },
         canActivate: [GenericPagesGuard]
       },
       {
         path: 'sign-up-subordinates',
         component: SignUpSubordinatesComponent,
+        data: {
+          title: 'Register Subordinates'
+        },
         canActivate: [GenericPagesGuard]
       },
       {
         path: 'add-products',
         component: AddProductsComponent,
+        data: {
+          title: 'Add Products'
+        },
         canActivate: [GenericPagesGuard]
+      },
+      {
+        path: 'create-tasks',
+        component: CreateTasksComponent,
+        canActivate: [GenericPagesGuard],
+        data: {
+          title: 'Create Tasks'
+        },
       },
       {
         path: 'base',

@@ -3,22 +3,22 @@
         <div class="col-md-9 col-centered">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Create a Warehouse</h5>
+                    <h5 class="card-title">Create Tasks for Your Subordinates</h5>
     
-                    <button class="btn btn-primary" (click)="addArea()">Add an Area</button>
+                    <button class="btn btn-primary" (click)="addTask()">Create a Task</button>
                 </div>
     
                 <div class="card-body">
                     <form
                         class="form-horizontal"
-                        [formGroup]="warehouseCreationForm"
-                        (ngSubmit)="onWarehouseCreationFormSubmit()">
+                        [formGroup]="tasksCreationForm"
+                        (ngSubmit)="onTasksCreationFormSubmit()">
     
-                        <ng-container formArrayName="areas">
-                            <div class="form-group row" *ngFor="let area of newAreas.controls; index as i">
+                        <ng-container formArrayName="tasks">
+                            <div class="form-group row" *ngFor="let area of newTasks.controls; index as i">
                                 <label
                                     class="col-1 col-form-label" 
-                                    [for]="i+1">Area {{ i+1 }}:</label>
+                                    [for]="i+1">Task {{ i+1 }}:</label>
             
                                 <div class="col-10 area-name-control-wrapper">
                                     <input
@@ -27,14 +27,14 @@
                                         name="text-input"
                                         [formControlName]="i"
                                         class="form-control area-name-control"
-                                        placeholder="Area Name">
+                                        placeholder="Task Description">
                                 </div>
     
                                 <button
                                     type="button"
                                     class="card-header-action btn btn-link btn-close col-1"
-                                    (click)="deleteArea(i)"
-                                    *ngIf="newAreas.length !== 1">
+                                    (click)="deleteTask(i)"
+                                    *ngIf="newTasks.length !== 1">
     
                                     <i class="icon-close"></i>
                                 </button>
@@ -45,9 +45,7 @@
                             <button 
                                 type="submit"
                                 class="btn btn-primary btn-submit"
-                                [disabled]="warehouseCreationForm.invalid ||
-                                            warehouseCreationForm.pending ||
-                                            !adminId"
+                                [disabled]="tasksCreationForm.invalid || !adminId"
                             >Create</button>    
                         </div>
                     </form>
