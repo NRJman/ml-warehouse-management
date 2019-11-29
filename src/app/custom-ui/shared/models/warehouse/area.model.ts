@@ -1,5 +1,5 @@
 export interface Area {
     name: string;
-    productIds: string[];
+    productIds?: string[];
     _id: string;
 }

@@ -164,6 +164,8 @@ router.post('/predict', (req, res, next) => {
             return res.status(500).json({ type: 'error', error });
         }
 
+        console.log(getMostPossibleCategories(body));
+
         res.status(200).json({
             message: 'Successfully predicted the category',
             result: getMostPossibleCategories(body)

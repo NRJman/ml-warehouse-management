@@ -14,6 +14,8 @@ import { Product } from '../../shared/models/warehouse/product.model';
 import { Subject, of, zip } from 'rxjs';
 import { PredictionControllerInput } from '../../shared/models/warehouse/prediction-controller-input.model';
 import { ProductCategoryPredictionService } from '../services/product-category-prediction.service';
+import { ProductFormGroupInfo } from '../../shared/models/warehouse/product-form-group-info.model';
+import { Area } from '../../shared/models/warehouse/area.model';
 
 @Component({
   selector: 'app-add-products',
@@ -25,7 +27,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   public productsAdditionForm: FormGroup;
   public adminState: fromAdmin.State;
   public warehouseState: fromWarehouse.State;
-  public predictionListsMap: WeakMap<AbstractControl, string[]> = new WeakMap();
+  public areaPredictionLists: Area[][] = [];
   private predictionController$$: Subject<PredictionControllerInput> = new Subject<PredictionControllerInput>();
 
   constructor(
@@ -75,6 +77,7 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
 
   public deleteProduct(productFormGroupPosition: number): void {
     this.newProducts.controls.splice(productFormGroupPosition, 1);
+    this.discardPrediction(productFormGroupPosition);
   }
 
   public get newProducts(): FormArray {
@@ -115,6 +118,10 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
     this.startPrediction(productFormGroup, productFormGroupPosition);
   }
 
+  public discardPrediction(productFormGroupPosition: number) {
+    this.productCategoryPredictionService.deletePredictionResultFromList(productFormGroupPosition);
+  }
+
   private getProduct(productFormGroupPosition: number) {
     return this.newProducts.controls[productFormGroupPosition];
   }
@@ -149,14 +156,16 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
       )
       .subscribe((state: fromWarehouse.State) => {
         this.warehouseState = state;
+        this.productCategoryPredictionService.warehouseAreas = state.areas.slice();
       });
 
     this.productCategoryPredictionService.predictionListsMapUpdates$
       .pipe(
         takeUntil(this.subscriptionController$$)
       )
-      .subscribe(predictionListsMapUpdates => {
-        console.log(predictionListsMapUpdates);
+      .subscribe(updatedPredictionLists => {
+        console.log(updatedPredictionLists);
+        this.areaPredictionLists = updatedPredictionLists;
       });
 
     this.predictionController$$
@@ -172,21 +181,21 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
           const productFormGroup = this.getProduct(productFormGroupPosition);
 
           if (productFormGroup.status === 'PENDING') {
-            return zip(of(productFormGroup), productFormGroup.statusChanges);
+            return zip(of(productFormGroup), of(productFormGroupPosition), productFormGroup.statusChanges);
           }
 
-          return zip(of(productFormGroup), of(null));
+          return zip(of(productFormGroup), of(productFormGroupPosition), of(null));
         }),
-        map(([productFormGroup]: [AbstractControl, string]) => {
-          return productFormGroup;
+        map(([productFormGroup, productFormGroupPosition]: [FormGroup, number, any]) => {
+          return { productFormGroup, productFormGroupPosition };
         }),
-        filter((productFormGroup) => {
+        filter(({ productFormGroup }: ProductFormGroupInfo) => {
           return productFormGroup.get('description').valid && productFormGroup.get('brandName').valid;
         }),
         takeUntil(this.subscriptionController$$)
       )
-      .subscribe((productFormGroup) => {
-        this.productCategoryPredictionService.predictProductCategory(productFormGroup);
+      .subscribe(({ productFormGroup, productFormGroupPosition }: ProductFormGroupInfo) => {
+        this.productCategoryPredictionService.predictProductCategory(productFormGroup, productFormGroupPosition);
       });
   }
 

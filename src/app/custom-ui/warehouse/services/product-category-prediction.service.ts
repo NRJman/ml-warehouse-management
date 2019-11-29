@@ -1,23 +1,23 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AbstractControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { WAREHOUSES_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { ApiResponse } from '../../shared/models/api/api-response.model';
+import { FormGroup } from '@angular/forms';
+import { Area } from '../../shared/models/warehouse/area.model';
 
 @Injectable()
 export class ProductCategoryPredictionService {
-    public predictionListsMapUpdateController$$: Subject<WeakMap<AbstractControl, string[]>> = new Subject();
-    private predictionListsMap: WeakMap<AbstractControl, string[]> = new WeakMap();
+    public predictionListsUpdateController$$: Subject<Area[][]> = new Subject();
+    public warehouseAreas: Area[];
+    private _areaListsMatchPredictedCategoryLists: Area[][] = [];
 
     constructor(
         private http: HttpClient,
         @Inject(WAREHOUSES_API_SERVER_URL_TOKEN) private warehousesApiServerUrl: string
     ) { }
 
-    public predictProductCategory(productFormGroup: AbstractControl) {
-        const { description, brandName }: any = productFormGroup.value;
-
+    public predictProductCategory({ value: { description, brandName } }: FormGroup, productFormGroupPosition: number) {
         this.http.post<ApiResponse<string[]>>(
             `${this.warehousesApiServerUrl}/predict`,
             {
@@ -25,12 +25,27 @@ export class ProductCategoryPredictionService {
                 brandName
             }
         ).subscribe(({ result }) => {
-            this.predictionListsMap.set(productFormGroup, result);
-            this.predictionListsMapUpdateController$$.next(this.predictionListsMap);
+            const areaListMathesPredictedCategoryList: Area[] = result.map(
+                (categoryPrediction: string) => this.warehouseAreas.find(
+                    (area) => area.name === categoryPrediction
+                )
+            );
+
+            this._areaListsMatchPredictedCategoryLists[productFormGroupPosition] = areaListMathesPredictedCategoryList;
+            this.predictionListsUpdateController$$.next(this.areaListsMatchPredictedCategoryLists);
         });
     }
 
-    public get predictionListsMapUpdates$(): Observable<WeakMap<AbstractControl, string[]>> {
-        return this.predictionListsMapUpdateController$$.asObservable();
+    public deletePredictionResultFromList(predictionResultPosition: number): void {
+        this._areaListsMatchPredictedCategoryLists.splice(predictionResultPosition, 1);
+        this.predictionListsUpdateController$$.next(this.areaListsMatchPredictedCategoryLists);
+    }
+
+    public get predictionListsMapUpdates$(): Observable<Area[][]> {
+        return this.predictionListsUpdateController$$.asObservable();
+    }
+
+    public get areaListsMatchPredictedCategoryLists(): Area[][] {
+        return this._areaListsMatchPredictedCategoryLists.slice();
     }
 }
