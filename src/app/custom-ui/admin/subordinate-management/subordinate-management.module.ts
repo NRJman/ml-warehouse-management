@@ -12,6 +12,9 @@ import { SubordinateListComponent } from './subordinate-list/subordinate-list.co
   imports: [
     CommonModule,
     SharedModule
+  ],
+  exports: [
+    SubordinateListComponent
   ]
 })
 export class SubordinateManagementModule { }

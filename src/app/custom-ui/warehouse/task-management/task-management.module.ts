@@ -14,6 +14,9 @@ import { TaskListComponent } from './task-list/task-list.component';
   imports: [
     CommonModule,
     SharedModule
+  ],
+  exports: [
+    TaskListComponent
   ]
 })
 export class TaskManagementModule { }

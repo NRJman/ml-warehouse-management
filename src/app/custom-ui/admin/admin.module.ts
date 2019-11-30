@@ -6,10 +6,13 @@ import { ChartsModule } from 'ng2-charts';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { SharedModule } from '../shared/shared.module';
+import { GeneralManagementComponent } from './general-management/general-management.component';
+import { TaskManagementModule } from '../warehouse/task-management/task-management.module';
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    DashboardComponent,
+    GeneralManagementComponent
   ],
   imports: [
     CommonModule,
@@ -17,7 +20,8 @@ import { SharedModule } from '../shared/shared.module';
     BsDropdownModule,
     ButtonsModule.forRoot(),
     SharedModule,
-    SubordinateManagementModule
+    SubordinateManagementModule,
+    TaskManagementModule
   ]
 })
 export class AdminModule { }
