@@ -1,0 +1,43 @@
+@mixin display-flex($direction-value, $align-value, $wrap-value: initial, $justify-value: initial) {
+    display: flex;
+    flex-direction: $direction-value;
+    align-items: $align-value;
+    flex-wrap: $wrap-value;
+    justify-content: $justify-value;
+}
+
+.user-cards-wrapper {
+    @include display-flex(row, center, wrap, start);
+}
+
+.user-card {
+    @include display-flex(row, center, initial, space-between);
+    border: 1px solid #c8ced3;
+    background-color: #f0f3f5;
+    border-radius: 3px;
+    padding: 1rem;
+}
+
+.user-logo {
+    padding: 2rem;
+    border-radius: 100%;
+    position: relative;
+    overflow: hidden;
+    margin-right: 1rem;
+
+    img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+
+.user-info {
+    &-piece {
+        &-label {
+            font-weight: bold;
+        }
+    }
+}

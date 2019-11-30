@@ -11,9 +11,11 @@ import { SignUpComponent } from './custom-ui/auth/sign-up/sign-up.component';
 import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-guard.service';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
 import { CreateWarehouseComponent } from './custom-ui/warehouse/create-warehouse/create-warehouse.component';
-import { SignUpSubordinatesComponent } from './custom-ui/admin/sign-up-subordinates/sign-up-subordinates.component';
+import { SignUpSubordinatesComponent } from './custom-ui/admin/subordinate-management/sign-up-subordinates/sign-up-subordinates.component';
 import { AddProductsComponent } from './custom-ui/warehouse/add-products/add-products.component';
 import { CreateTasksComponent } from './custom-ui/warehouse/task-management/create-tasks/create-tasks.component';
+import { DashboardComponent } from './custom-ui/admin/dashboard/dashboard.component';
+import { SubordinateListComponent } from './custom-ui/admin/subordinate-management/subordinate-list/subordinate-list.component';
 
 export const routes: Routes = [
   {
@@ -86,6 +88,17 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'subordinate-list',
+        component: SubordinateListComponent
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        data: {
+          title: 'Dashboard'
+        }
+      },
+      {
         path: 'base',
         loadChildren: () => import('./core-ui/views/base/base.module').then(m => m.BaseModule)
       },
@@ -96,11 +109,6 @@ export const routes: Routes = [
       {
         path: 'charts',
         loadChildren: () => import('./core-ui/views/chartjs/chartjs.module').then(m => m.ChartJSModule)
-      },
-      {
-        path: 'dashboard',
-        loadChildren: () => import('./custom-ui/admin/dashboard/dashboard.module').then(m => m.DashboardModule),
-        canActivate: [GenericPagesGuard]
       },
       {
         path: 'icons',
