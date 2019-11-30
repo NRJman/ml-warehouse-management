@@ -16,6 +16,7 @@ import { AddProductsComponent } from './custom-ui/warehouse/add-products/add-pro
 import { CreateTasksComponent } from './custom-ui/warehouse/task-management/create-tasks/create-tasks.component';
 import { DashboardComponent } from './custom-ui/admin/dashboard/dashboard.component';
 import { SubordinateListComponent } from './custom-ui/admin/subordinate-management/subordinate-list/subordinate-list.component';
+import { TaskListComponent } from './custom-ui/warehouse/task-management/task-list/task-list.component';
 
 export const routes: Routes = [
   {
@@ -88,8 +89,19 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'task-list',
+        component: TaskListComponent,
+        canActivate: [GenericPagesGuard],
+        data: {
+          title: 'Task List'
+        },
+      },
+      {
         path: 'subordinate-list',
-        component: SubordinateListComponent
+        component: SubordinateListComponent,
+        data: {
+          title: 'Subordinate Task'
+        }
       },
       {
         path: 'dashboard',
