@@ -3,6 +3,8 @@ import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import * as fromApp from './../../../../store/app.reducers';
 import * as fromAdminSelectors from './../../../admin/store/admin.selectors';
+import * as fromWarehouseSelectors from './../../store/warehouse.selectors';
+import * as fromWarehouseActions from './../../store/warehouse.actions';
 import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { takeUntil } from 'rxjs/operators';
 
@@ -14,6 +16,7 @@ import { takeUntil } from 'rxjs/operators';
 export class CreateTasksComponent extends Unsubscriber implements OnInit, OnDestroy {
   public tasksCreationForm: FormGroup;
   public adminId: string;
+  public warehouseId: string;
 
   constructor(
     private store: Store<fromApp.State>
@@ -21,8 +24,15 @@ export class CreateTasksComponent extends Unsubscriber implements OnInit, OnDest
     super();
   }
 
-  onTasksCreationFormSubmit(): void {
-    console.log(this.tasksCreationForm);
+  public onTasksCreationFormSubmit(): void {
+    this.store.dispatch(
+      fromWarehouseActions.startCreatingTasks({
+        payload: {
+          warehouseId: this.warehouseId,
+          tasks: this.newTasks.controls.map(taskControl => taskControl.value)
+        }
+      })
+    );
   }
 
   public addTask(): void {
@@ -53,6 +63,15 @@ export class CreateTasksComponent extends Unsubscriber implements OnInit, OnDest
       )
       .subscribe(adminId => {
         this.adminId = adminId;
+      });
+
+    this.store
+      .pipe(
+        select(fromWarehouseSelectors.getWarehouseId),
+        takeUntil(this.subscriptionController$$)
+      )
+      .subscribe(warehouseId => {
+        this.warehouseId = warehouseId;
       });
   }
 

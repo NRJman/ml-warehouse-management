@@ -3,7 +3,7 @@ import { WAREHOUSES_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { createEffect, ofType, Actions } from '@ngrx/effects';
 import * as fromWarehouseActions from './warehouse.actions';
 import * as fromSharedActions from './../../shared/store/shared.actions';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import { DataToCreateWarehouse } from '../../shared/models/warehouse/data-to-create-warehouse.model';
 import { HttpClient } from '@angular/common/http';
 import { WarehouseCreationResult } from '../../shared/models/warehouse/warehouse-creation-result.model';
@@ -14,6 +14,8 @@ import * as fromAdminActions from './../../admin/store/admin.actions';
 import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/warehouse-data-fetching-result.model';
 import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
+import { DataToCreateTasks } from '../../shared/models/warehouse/data-to-create-tasks.model';
+import { Task } from '../../shared/models/warehouse/task.model';
 
 @Injectable()
 export class WarehouseEffects {
@@ -39,7 +41,7 @@ export class WarehouseEffects {
                         fromSharedActions.navigate({ payload: '/dashboard' })
                     ]),
                     catchError((error: ApiResponseError) =>
-                        of(fromWarehouseActions.failCreatingWarehouse({ payload: error }))
+                        of(fromWarehouseActions.failWarehouseManipulating({ payload: error }))
                     )
                 )
             )
@@ -57,7 +59,7 @@ export class WarehouseEffects {
                         fromSharedActions.navigate({ payload: '/dashboard' })
                     ]),
                     catchError((error: ApiResponseError) =>
-                        of(fromWarehouseActions.failAddingProducts({ payload: error }))
+                        of(fromWarehouseActions.failWarehouseManipulating({ payload: error }))
                     )
                 )
             )
@@ -68,9 +70,9 @@ export class WarehouseEffects {
         () => this.actions$.pipe(
             ofType(fromWarehouseActions.storeWarehouse),
             map(action => action.payload),
-            map((idOfUserResponsibleForWarehouse: string) => {
-                return fromWarehouseActions.fetchWarehouseData({ payload: idOfUserResponsibleForWarehouse });
-            })
+            map((idOfUserResponsibleForWarehouse: string) =>
+                fromWarehouseActions.fetchWarehouseData({ payload: idOfUserResponsibleForWarehouse })
+            )
         )
     );
 
@@ -84,14 +86,45 @@ export class WarehouseEffects {
                         userId: idOfUserResponsibleForWarehouse
                     }
                 }).pipe(
-                    map(({ result }: ApiResponse<WarehouseDataFetchingResult>) => {
-                        return fromWarehouseActions.storeWarehouseData({ payload: result });
-                    }),
+                    map(({ result }: ApiResponse<WarehouseDataFetchingResult>) =>
+                        fromWarehouseActions.storeWarehouseData({ payload: result })
+                    ),
                     catchError((error: ApiResponseError) =>
-                        of(fromWarehouseActions.failCreatingWarehouse({ payload: error }))
+                        of(fromWarehouseActions.failWarehouseManipulating({ payload: error }))
                     )
                 )
             ),
         )
+    );
+
+    startCreatingTasks$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromWarehouseActions.startCreatingTasks),
+            map(action => action.payload),
+            switchMap((data: DataToCreateTasks) =>
+                this.http.post(`${this.warehousesApiServerUrl}/tasks`, {
+                    warehouseId: data.warehouseId,
+                    tasks: data.tasks
+                }).pipe(
+                    map(({ result }: ApiResponse<Task[]>) =>
+                        fromWarehouseActions.finishCreatingTasks({ payload: result })
+                    ),
+                    catchError((error: ApiResponseError) =>
+                        of(fromWarehouseActions.failWarehouseManipulating({ payload: error }))
+                    )
+                )
+            )
+        )
+    );
+
+    failWarehouseManipulating$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromWarehouseActions.failWarehouseManipulating),
+            map(action => action.payload),
+            tap(({ message, error }) => {
+                console.log(message, error);
+            })
+        ),
+        { dispatch: false }
     );
 }

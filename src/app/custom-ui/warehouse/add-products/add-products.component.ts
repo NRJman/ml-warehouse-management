@@ -39,12 +39,14 @@ export class AddProductsComponent extends Unsubscriber implements OnInit, OnDest
   }
 
   public onProductsAdditionFormSubmit(): void {
-    this.store.dispatch(fromWarehouseActions.startAddingProducts({
-      payload: {
-        productsDataList: this.newProducts.controls.map(productControl => productControl.value),
-        warehouseId: this.warehouseState.warehouseId
-      }
-    }));
+    this.store.dispatch(
+      fromWarehouseActions.startAddingProducts({
+        payload: {
+          productsDataList: this.newProducts.controls.map(productControl => productControl.value),
+          warehouseId: this.warehouseState.warehouseId
+        }
+      })
+    );
   }
 
   public addProduct(): void {

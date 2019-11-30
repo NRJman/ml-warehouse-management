@@ -25,14 +25,16 @@ export class CreateWarehouseComponent extends Unsubscriber implements OnInit, On
   }
 
   onWarehouseCreationFormSubmit(): void {
-    this.store.dispatch(fromWarehouseActions.startCreatingWarehouse({
-      payload: {
-        adminId: this.adminId,
-        areas: this.newAreas.controls.map(
-          areaFormControl => ({ name: areaFormControl.value as string })
-        )
-      }
-    }));
+    this.store.dispatch(
+      fromWarehouseActions.startCreatingWarehouse({
+        payload: {
+          adminId: this.adminId,
+          areas: this.newAreas.controls.map(
+            areaFormControl => ({ name: areaFormControl.value as string })
+          )
+        }
+      })
+    );
   }
 
   public addArea(): void {

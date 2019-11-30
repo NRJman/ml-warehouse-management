@@ -16,12 +16,14 @@ export class SignInComponent implements OnInit {
   onSignInFormSubmit(): void {
     const signInFormValue = this.signInForm.value;
 
-    this.store.dispatch(fromAuthActions.startSigningIn({
-      payload: {
-        email: signInFormValue.email,
-        password: signInFormValue.password
-      }
-    }));
+    this.store.dispatch(
+      fromAuthActions.startSigningIn({
+        payload: {
+          email: signInFormValue.email,
+          password: signInFormValue.password
+        }
+      })
+    );
   }
 
   ngOnInit(): void {

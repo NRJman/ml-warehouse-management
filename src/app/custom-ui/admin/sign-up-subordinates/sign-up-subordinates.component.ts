@@ -30,13 +30,15 @@ export class SignUpSubordinatesComponent extends Unsubscriber implements OnInit,
       ({ value: { name, phone, email, password } }) => ({ name, phone, email, password })
     );
 
-    this.store.dispatch(fromAdminActions.startSigningUpSubordinates({
-      payload: {
-        registrationDataList,
-        adminId: this.adminState.adminId,
-        warehouseId: this.adminState.warehouseId
-      }
-    }));
+    this.store.dispatch(
+      fromAdminActions.startSigningUpSubordinates({
+        payload: {
+          registrationDataList,
+          adminId: this.adminState.adminId,
+          warehouseId: this.adminState.warehouseId
+        }
+      })
+    );
   }
 
   public addSubordinate(): void {

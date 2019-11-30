@@ -37,6 +37,13 @@ export function warehouseReducer(warehouseState: State | undefined, warehouseAct
                 ...state,
                 ...(action.payload ? action.payload : initialState)
             })
+        ),
+        on(
+            fromWarehouseActions.finishCreatingTasks,
+            (state, action) => ({
+                ...state,
+                tasks: action.payload
+            })
         )
     )(warehouseState, warehouseAction);
 }

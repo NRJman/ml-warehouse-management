@@ -60,13 +60,17 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
       return;
     }
 
-    this.store.dispatch(fromSharedActions.changeAppLoadingStatus({
-      payload: true
-    }));
+    this.store.dispatch(
+      fromSharedActions.changeAppLoadingStatus({
+        payload: true
+      })
+    );
 
-    this.store.dispatch(fromSharedActions.startInitializingAppState({
-      payload: { token, expirationTime }
-    }));
+    this.store.dispatch(
+      fromSharedActions.startInitializingAppState({
+        payload: { token, expirationTime }
+      })
+    );
   }
 
   ngOnInit(): void {

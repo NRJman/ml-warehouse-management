@@ -72,7 +72,8 @@
                         <div class="form-group">
                             <div class="select-category-heading">
                                 <label class="select-category-heading-label" for="areaSelect">Category</label>
-                                <span 
+                                <span
+                                    *ngIf="areaPredictionLists[i]"
                                     class="select-category-heading-btn"
                                     (click)="discardPrediction(i)">Not satisfied? Discard the prediction.</span>
                             </div>

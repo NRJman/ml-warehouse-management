@@ -6,6 +6,8 @@ import { WarehouseDataFetchingResult } from '../../shared/models/warehouse/wareh
 import * as fromWarehouse from './warehouse.reducer';
 import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-products.model';
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
+import { DataToCreateTasks } from '../../shared/models/warehouse/data-to-create-tasks.model';
+import { Task } from '../../shared/models/warehouse/task.model';
 
 export const startCreatingWarehouse = createAction(
     '[Warehouse] Start Creating Warehouse',
@@ -15,11 +17,6 @@ export const startCreatingWarehouse = createAction(
 export const finishCreatingWarehouse = createAction(
     '[Warehouse] Finish Creating Warehouse',
     props<{ payload: WarehouseCreationResult }>()
-);
-
-export const failCreatingWarehouse = createAction(
-    '[Warehouse] Fail Creating Warehouse',
-    props<{ payload: ApiResponseError }>()
 );
 
 export const startAddingProducts = createAction(
@@ -32,11 +29,6 @@ export const finishAddingProducts = createAction(
     props<{ payload: ProductsAdditionResult }>()
 );
 
-export const failAddingProducts = createAction(
-    '[Warehouse] Fail Adding Products',
-    props<{ payload: ApiResponseError }>()
-);
-
 export const storeWarehouse = createAction( // This action layer here is for consistency
     '[Warehouse] Store Warehouse',
     props<{ payload: string }>()
@@ -47,11 +39,6 @@ export const fetchWarehouseData = createAction(
     props<{ payload: string }>()
 );
 
-export const failFetchingWarehouseData = createAction(
-    '[Warehouse] Fail Fetching Warehouse Data',
-    props<{ payload: ApiResponseError }>()
-);
-
 export const storeWarehouseData = createAction(
     '[Warehouse] Store Warehouse Data',
     props<{ payload: WarehouseDataFetchingResult }>()
@@ -60,4 +47,19 @@ export const storeWarehouseData = createAction(
 export const resetWarehouseState = createAction(
     '[Warehouse] Reset Warehouse State',
     props<{ payload: fromWarehouse.State }>()
+);
+
+export const startCreatingTasks = createAction(
+    '[Warehouse] Start Creating Tasks',
+    props<{ payload: DataToCreateTasks }>()
+);
+
+export const finishCreatingTasks = createAction(
+    '[Warehouse] Finish Creating Tasks',
+    props<{ payload: Task[] }>()
+);
+
+export const failWarehouseManipulating = createAction(
+    '[Warehouse] Fail Warehouse Manipulating',
+    props<{ payload: ApiResponseError }>()
 );

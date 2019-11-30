@@ -128,27 +128,32 @@ router.post('/', (req, res, next) => {
 });
 
 router.post('/tasks', (req, res, next) => {
-    const { tasks, warehouseId } = req.body;
+    const warehouseId = req.body.warehouseId;
+    const newTasks = req.body.tasks.map(task => ({
+        description: task,
+        creationDate: new Date(),
+        isResolved: false
+    }));
     
-    Warehouse.findByIdAndUpdate(
-        warehouseId,
-        { tasks },
-        { new: true }
-    )
-    .then(updatedWarehouse => 
-        res.json(201).json({
-            message: 'New tasks have been successfully created!',
-            result: {
-                tasks: updatedWarehouse.tasks
-            }
+    
+    Warehouse.findById(warehouseId)
+        .then(warehouse => {
+            warehouse.tasks = warehouse.tasks.concat(newTasks);
+
+            return warehouse.save();
         })
-    )
-    .catch(error =>
-        res.status(500).json({
-            message: 'Failed to create tasks',
-            error
-        })
-    )
+        .then(({ tasks }) =>
+            res.status(201).json({
+                message: 'New tasks have been successfully created!',
+                result: tasks
+            })
+        )
+        .catch(error =>
+            res.status(500).json({
+                message: 'Failed to create tasks',
+                error
+            })
+        )
 });
 
 router.post('/predict', (req, res, next) => {
@@ -209,18 +214,15 @@ router.post('/predict', (req, res, next) => {
             .slice(0, 3);
         
 
-        return highestProbabilities.reduce((mostPossibleCategories, probability) => {
+        return highestProbabilities.map((probability) => {
             const probabilityIndex = scoredProbabilities.indexOf(probability);
-            const productCategory = predictionResult.ColumnNames[probabilityIndex]
+
+            return predictionResult.ColumnNames[probabilityIndex]
                 .slice(
                     predictionHandlingConfig.lengthOfColumnNameRedundantStartingPart,
                     -predictionHandlingConfig.lengthOfColumnNameRedundantEndingPart
                 );
-
-            mostPossibleCategories.push(productCategory);
-
-            return mostPossibleCategories;
-        }, []);
+        });
     }
 });
 
