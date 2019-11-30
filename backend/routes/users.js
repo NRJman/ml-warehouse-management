@@ -55,6 +55,7 @@ router.post('/signup/admin', (req, res, next) => {
 router.post('/signup/subordinates', (req, res, next) => {
     const { warehouseId, adminId } = req.body;
     const registrationDataList = req.body.registrationDataList;
+    let registeredSubordinateIds = [];
     let subordinatesCreationResult;
 
     if (!warehouseId || typeof warehouseId !== 'string'
@@ -88,24 +89,24 @@ router.post('/signup/subordinates', (req, res, next) => {
             return User.insertMany(subordinatesDataList);
         })
         .then(createdSubordinates => {
-            let subordinateIds = [];
+            subordinatesCreationResult = createdSubordinates.map(subordinate => {
+                const userId = subordinate._id;
 
-            subordinatesCreationResult = createdSubordinates.map(
-                subordinate => {
-                    const userId = subordinate._id;
+                registeredSubordinateIds.push(userId);
 
-                    subordinateIds.push(userId);
-
-                    return {
-                        name: subordinate.name,
-                        phone: subordinate.phone,
-                        userId,
-                        warehouseId: subordinate.warehouseId
-                    }
+                return {
+                    name: subordinate.name,
+                    phone: subordinate.phone,
+                    userId,
+                    warehouseId: subordinate.warehouseId
                 }
-            );
+            });
 
-            return Admin.findByIdAndUpdate(adminId, { subordinateIds }, { new: true })
+            return Admin.findById(adminId)
+        })
+        .then(foundAdmin => {
+            foundAdmin.subordinateIds = foundAdmin.subordinateIds.concat(registeredSubordinateIds);
+            foundAdmin.save();
         })
         .then(() => {
             return res.status(201).json({

@@ -26,7 +26,7 @@ export class SubordinateListComponent extends Unsubscriber implements OnInit, On
         takeUntil(this.subscriptionController$$)
       )
       .subscribe(subordinates => {
-        const [minRand, maxRand]: [number, number] = [1, 10];
+        const [minRand, maxRand]: [number, number] = [1, 9];
 
         this.subordinateList = subordinates;
         this.randomImageNumberList = subordinates.map(() =>

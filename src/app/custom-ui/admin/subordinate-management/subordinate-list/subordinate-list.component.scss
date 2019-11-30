@@ -7,7 +7,7 @@
 }
 
 .user-cards-wrapper {
-    @include display-flex(row, center, wrap, start);
+    @include display-flex(row, center, wrap, flex-start);
 }
 
 .user-card {
@@ -16,6 +16,8 @@
     background-color: #f0f3f5;
     border-radius: 3px;
     padding: 1rem;
+    width: 23%;
+    margin: 0 1% .7rem;
 }
 
 .user-logo {
@@ -39,5 +41,27 @@
         &-label {
             font-weight: bold;
         }
+    }
+}
+
+@media (min-width: 801px) and (max-width: 1024px) {
+    .user-card {
+        width: 32%;
+        margin: 0 1.5%;
+    }
+}
+
+@media (min-width: 551px) and (max-width: 800px) {
+    .user-card {
+        width: 46%;
+        margin: 0 2%;
+    }
+}
+
+@media (max-width: 550px) {
+    .user-card {
+        width: 100%;
+        margin: initial 0 initial 0;
+        justify-content: flex-start;
     }
 }
