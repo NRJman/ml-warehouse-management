@@ -1,10 +1,12 @@
 const express = require('express');
 const Admin = require('./../models/admin');
 const User = require('./../models/user');
+const checkAuth = require('./../middleware/check-auth');
+const checkAdminRights = require('./../middleware/check-admin-rights');
 
 const router = express.Router();
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', checkAuth, async (req, res, next) => {
     let adminId, subordinateIds, curriedSendSuccessfullResponse;
     
     try {

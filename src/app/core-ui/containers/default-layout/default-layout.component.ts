@@ -67,7 +67,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
     );
 
     this.store.dispatch(
-      fromSharedActions.startInitializingAppState({
+      fromSharedActions.prepareForStartingAppStateInitialization({
         payload: { token, expirationTime }
       })
     );

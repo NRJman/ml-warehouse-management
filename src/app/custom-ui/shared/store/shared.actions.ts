@@ -3,6 +3,11 @@ import { TokenInfo } from '../models/auth/token-info.model';
 import { ApiResponseError } from '../models/api/api-response-error.model';
 import * as fromShared from './shared.reducer';
 
+export const prepareForStartingAppStateInitialization = createAction(
+    '[Shared] Prepare for Starting App State Initialization',
+    props<{ payload: TokenInfo }>()
+);
+
 export const startInitializingAppState = createAction(
     '[Shared] Start Initializing App State',
     props<{ payload: TokenInfo }>()

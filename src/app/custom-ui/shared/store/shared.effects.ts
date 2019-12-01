@@ -16,6 +16,7 @@ import { SubordinateUser } from '../models/users/subordinate-user.model';
 import { TokenInfo } from '../models/auth/token-info.model';
 import { Router } from '@angular/router';
 import { ApiResponseError } from '../models/api/api-response-error.model';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable()
 export class SharedEffects {
@@ -25,6 +26,17 @@ export class SharedEffects {
         private router: Router,
         @Inject(USERS_API_SERVER_URL_TOKEN) private usersApiServerUrl: string
     ) {}
+
+    prepareForStartingAppStateInitialization$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromSharedActions.prepareForStartingAppStateInitialization),
+            map(action => action.payload),
+            switchMap((tokenInfo) => [
+                fromAuthActions.resetAccessToken({ payload: tokenInfo.token }),
+                fromSharedActions.startInitializingAppState({ payload: tokenInfo })
+            ])
+        )
+    );
 
     startInitializingAppState$ = createEffect(
         () => this.actions$.pipe(

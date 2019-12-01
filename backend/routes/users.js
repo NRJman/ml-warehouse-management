@@ -5,6 +5,8 @@ const jwtSecret = require('../sensitive/jwt-secret');
 const User = require('./../models/user');
 const Admin = require('./../models/admin');
 const getNewToken = require('./../utils/get-new-token');
+const checkAuth = require('./../middleware/check-auth');
+const checkAdminRights = require('./../middleware/check-admin-rights');
 
 const router = express.Router();
 
@@ -52,7 +54,7 @@ router.post('/signup/admin', (req, res, next) => {
         }));
 });
 
-router.post('/signup/subordinates', (req, res, next) => {
+router.post('/signup/subordinates', checkAuth, checkAdminRights, (req, res, next) => {
     const { warehouseId, adminId } = req.body;
     const registrationDataList = req.body.registrationDataList;
     let registeredSubordinateIds = [];

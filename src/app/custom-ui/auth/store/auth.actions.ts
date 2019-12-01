@@ -41,3 +41,8 @@ export const navigateAfterSuccessfulAuthActions = createAction(
     '[Auth] Navigate After Successful Auth Actions',
     props<{ payload: string }>()
 );
+
+export const resetAccessToken = createAction(
+    '[Auth] Reset Access Token',
+    props<{ payload: string }>()
+);

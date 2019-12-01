@@ -6,10 +6,12 @@ const request = require('request');
 const predictionApiKey = require('./../sensitive/prediction-api-key');
 const predictionUri = require('./../sensitive/prediction-uri');
 const predictionHandlingConfig = require('./../utils/prediction-handling-config');
+const checkAuth = require('./../middleware/check-auth');
+const checkAdminRights = require('./../middleware/check-admin-rights');
 
 const router = express.Router();
 
-router.get('', (req, res, next) => {
+router.get('', checkAuth, checkAdminRights, (req, res, next) => {
     const idOfUserResponsibleForWarehouse = req.query.userId;
     
     Admin.findOne({ userId: idOfUserResponsibleForWarehouse })
@@ -32,7 +34,7 @@ router.get('', (req, res, next) => {
         }));
 });
 
-router.post('/products', (req, res, next) => {
+router.post('/products', checkAuth, checkAdminRights, (req, res, next) => {
     const { warehouseId, productsDataList } = req.body;
 
     Warehouse.findById(warehouseId)
@@ -78,7 +80,7 @@ router.post('/products', (req, res, next) => {
         }));
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, checkAdminRights, (req, res, next) => {
     const { areas, adminId } = req.body;
     const warehouse = new Warehouse({
         areas,
@@ -127,7 +129,7 @@ router.post('/', (req, res, next) => {
 
 });
 
-router.post('/tasks', (req, res, next) => {
+router.post('/tasks', checkAuth, checkAdminRights, (req, res, next) => {
     const warehouseId = req.body.warehouseId;
     const newTasks = req.body.tasks.map(task => ({
         description: task,
@@ -156,7 +158,7 @@ router.post('/tasks', (req, res, next) => {
         )
 });
 
-router.post('/predict', (req, res, next) => {
+router.post('/predict', checkAuth, checkAdminRights, (req, res, next) => {
     const { description, brandName } = req.body;
     const predictionRequestBody = {
         "Inputs": {

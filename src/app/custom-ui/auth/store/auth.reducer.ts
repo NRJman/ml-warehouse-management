@@ -30,6 +30,13 @@ export function authReducer(authState: State | undefined, authAction: Action) {
             })
         ),
         on(
+            fromAuthActions.resetAccessToken,
+            (state, action) => ({
+                ...state,
+                accessToken: action.payload || null
+            })
+        ),
+        on(
             fromAuthActions.signOut,
             () => ({
                 ...initialState

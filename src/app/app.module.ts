@@ -54,6 +54,7 @@ import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-page
 import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
 import { WarehouseEffects } from './custom-ui/warehouse/store/warehouse.effects';
 import { AdminModule } from './custom-ui/admin/admin.module';
+import { AdminRightsInterceptor } from './custom-ui/shared/interceptors/admin-rights.interceptor';
 
 @NgModule({
   imports: [
@@ -111,6 +112,11 @@ import { AdminModule } from './custom-ui/admin/admin.module';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AdminRightsInterceptor,
       multi: true
     },
     GenericPagesGuard,
