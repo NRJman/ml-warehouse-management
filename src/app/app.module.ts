@@ -54,6 +54,11 @@ import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-page
 import { WarehouseEffects } from './custom-ui/warehouse/store/warehouse.effects';
 import { AdminModule } from './custom-ui/admin/admin.module';
 import { AdminRightsInterceptor } from './custom-ui/shared/interceptors/admin-rights.interceptor';
+import { SubordinateModule } from './custom-ui/subordinate/subordinate.module';
+import { ProductActionsModalComponent } from './custom-ui/subordinate/warehouse-management/product-actions-modal/product-actions-modal.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { SubordinateEffects } from './custom-ui/subordinate/store/subordinate.effects';
+import { ProductCategoryPredictionService } from './custom-ui/shared/services/product-category-prediction.service';
 
 @NgModule({
   imports: [
@@ -70,19 +75,22 @@ import { AdminRightsInterceptor } from './custom-ui/shared/interceptors/admin-ri
     ChartsModule,
     AuthModule,
     AdminModule,
+    SubordinateModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),
     EffectsModule.forRoot([
       AuthEffects,
       AdminEffects,
       SharedEffects,
-      WarehouseEffects
+      WarehouseEffects,
+      SubordinateEffects
     ]),
     StoreDevtoolsModule.instrument({
       maxAge: 15
     }),
     HttpClientModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    ModalModule.forRoot()
   ],
   declarations: [
     AppComponent,
@@ -120,8 +128,10 @@ import { AdminRightsInterceptor } from './custom-ui/shared/interceptors/admin-ri
     GenericPagesGuard,
     AuthFormsPagesGuard,
     CustomValidatorsService,
-    CookieService
+    CookieService,
+    ProductCategoryPredictionService
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [ AppComponent ],
+  entryComponents: [ ProductActionsModalComponent ]
 })
 export class AppModule { }

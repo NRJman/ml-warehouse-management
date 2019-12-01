@@ -15,7 +15,7 @@ router.get('', checkAuth, checkAdminRights, (req, res, next) => {
     const idOfUserResponsibleForWarehouse = req.query.userId;
     
     Admin.findOne({ userId: idOfUserResponsibleForWarehouse })
-        .then(foundAdmin => Warehouse.findOne({ adminId: foundAdmin._id }))
+        .then(admin => Warehouse.findOne({ adminId: admin._id }))
         .then(warehouse => {
             res.status(200).json({
                 message: 'The warehouse has been fetched successfully',
@@ -59,7 +59,7 @@ router.post('/products', checkAuth, checkAdminRights, (req, res, next) => {
                     count: productsDataList[i].count,
                     areaName: warehouse.areas.id(areaId).name,
                     areaId: areaId,
-                    isInWarehouse: true
+                    isInWarehouse: false
                 });
 
                 warehouse.products.push(newProduct);
@@ -103,14 +103,14 @@ router.post('/', checkAuth, checkAdminRights, (req, res, next) => {
 
             return Admin.findById(adminId);
         })
-        .then(foundAdmin =>
+        .then(admin =>
             User.findByIdAndUpdate(
-                foundAdmin.userId,
+                admin.userId,
                 { warehouseId: warehouse._id },
                 { new: true }
             )
         )
-        .then(updatedUser => 
+        .then(user => 
             res.status(201).json({
                 message: 'The warehouse has been successfully created!',
                 result: {
@@ -226,6 +226,28 @@ router.post('/predict', checkAuth, checkAdminRights, (req, res, next) => {
                 );
         });
     }
+});
+
+router.get('/product/:warehouseId/:productId', checkAuth, (req, res, next) => {
+    const { warehouseId, productId } = req.params;
+
+    Warehouse.findById(warehouseId)
+        .then(warehouse => {
+            const targetProduct = warehouse.products.find(product => {
+                return product._id.toString() === productId;
+            });
+
+            res.status(200).json({
+                message: 'Successfully fetched product info',
+                result: targetProduct
+            });
+        })
+        .catch(error =>
+            res.status(500).json({
+                message: 'Failed to fetch product info!',
+                error
+            })
+        );
 });
 
 module.exports = router;

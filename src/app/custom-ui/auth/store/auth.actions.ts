@@ -2,8 +2,8 @@ import { createAction, props } from '@ngrx/store';
 import { DataToBeAuthenticated } from '../../shared/models/auth/data-to-be-authenticated.model';
 import { AuthenticationResult } from '../../shared/models/auth/authentication-result.model';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
-import { RegistrationSubordinateUsersData } from '../../shared/models/auth/registration-subordinate-users-data.model';
 import { RegistrationAdminUserData } from '../../shared/models/auth/registration-admin-user-data.model';
+import { TokenInfo } from '../../shared/models/auth/token-info.model';
 
 export const startSigningUpAdmin = createAction(
     '[Auth] Start Signing Up Admin',
@@ -45,4 +45,9 @@ export const navigateAfterSuccessfulAuthActions = createAction(
 export const resetAccessToken = createAction(
     '[Auth] Reset Access Token',
     props<{ payload: string }>()
+);
+
+export const storeTokenData = createAction(
+    '[Auth] Store Token Data',
+    props<{ payload: TokenInfo }>()
 );

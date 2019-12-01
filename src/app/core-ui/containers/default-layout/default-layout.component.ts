@@ -11,7 +11,10 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import * as fromSharedActions from './../../../custom-ui/shared/store/shared.actions';
 import * as fromAuthActions from './../../../custom-ui/auth/store/auth.actions';
 import * as fromAuthSelectors from './../../../custom-ui/auth/store/auth.selectors';
+import * as fromSubordinateActions from './../../../custom-ui/subordinate/store/subordinate.actions';
 import { CookieService } from 'ngx-cookie-service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { ProductActionsModalComponent } from '../../../custom-ui/subordinate/warehouse-management/product-actions-modal/product-actions-modal.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,6 +27,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
   public element: HTMLElement;
   public isAppLoading: boolean;
   public isOnAuthFormPage: boolean;
+  public bsModalRef: BsModalRef;
   private changes: MutationObserver;
 
   constructor(
@@ -31,6 +35,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
     private store: Store<fromApp.State>,
     private spinnerService: NgxSpinnerService,
     private cookieService: CookieService,
+    private modalService: BsModalService,
     @Inject(DOCUMENT) public _document?: any
   ) {
     super();
@@ -44,6 +49,10 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
       attributes: true,
       attributeFilter: ['class']
     });
+  }
+
+  public openProductActionsModal(): void {
+    this.bsModalRef = this.modalService.show(ProductActionsModalComponent, {class: 'modal-lg'});
   }
 
   public logUserOut(): void {
@@ -108,6 +117,16 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
       .subscribe(isAuthenticated => {
         if (!isAuthenticated) {
           this.initializeApp();
+        }
+      });
+
+    this.modalService.onHide
+      .pipe(
+        takeUntil(this.subscriptionController$$)
+      )
+      .subscribe(() => {
+        if (this.bsModalRef.content instanceof ProductActionsModalComponent) {
+          this.store.dispatch(fromSubordinateActions.cleanSpecificProductInfo())
         }
       });
   }

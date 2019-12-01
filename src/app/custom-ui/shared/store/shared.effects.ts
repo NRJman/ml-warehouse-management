@@ -16,7 +16,6 @@ import { SubordinateUser } from '../models/users/subordinate-user.model';
 import { TokenInfo } from '../models/auth/token-info.model';
 import { Router } from '@angular/router';
 import { ApiResponseError } from '../models/api/api-response-error.model';
-import { CookieService } from 'ngx-cookie-service';
 
 @Injectable()
 export class SharedEffects {

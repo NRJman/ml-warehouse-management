@@ -5,6 +5,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { TaskListComponent } from './task-list/task-list.component';
 import { AddProductsComponent } from './add-products/add-products.component';
 import { CreateWarehouseComponent } from './create-warehouse/create-warehouse.component';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { CreateWarehouseComponent } from './create-warehouse/create-warehouse.co
   ],
   imports: [
     CommonModule,
+    AutocompleteLibModule,
     SharedModule
   ],
   exports: [

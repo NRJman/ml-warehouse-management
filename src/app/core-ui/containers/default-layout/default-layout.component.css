@@ -8,3 +8,8 @@
     display: flex;
     flex-direction: column;
 }
+
+.btn-scan {
+    margin: .8rem .9rem 0;
+    font-size: 1.025em;
+}

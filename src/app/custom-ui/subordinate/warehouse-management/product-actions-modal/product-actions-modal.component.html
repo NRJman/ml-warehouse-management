@@ -1,0 +1,79 @@
+<div class="modal-header">
+    <h4
+        *ngIf="!scannedProductInfo; else productInfoHeading"
+        class="modal-title pull-left">{{ isAutomaticEntering ? 'Scan a Product ID' : 'Enter a product ID' }}</h4>
+
+    <ng-template #productInfoHeading>
+        <h4 class="modal-title pull-left">Select an appropriate action</h4>
+    </ng-template>
+
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="id-entering-section" *ngIf="!scannedProductInfo; else productInfoSection">
+        <div class="automatic-entering" *ngIf="isAutomaticEntering; else manualEntering">
+            <button type="button" class="btn btn-lg btn-primary btn-scan">Scan a Product ID</button>
+            
+            <div
+                class="switch-to-manual-entering"
+                (click)="switchToManualEntering()">Have any problems? Switch to manual entering.</div>
+        </div>
+
+        <ng-template #manualEntering>
+            <div class="manual-entering">
+                <form
+                    class="product-id-form"
+                    [formGroup]="productIdForm"
+                    (ngSubmit)="onProductIdFormSubmit()">
+    
+                    <input
+                        formControlName="productId"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter a product ID">
+    
+                    <button
+                        type="submit"
+                        class="btn btn-primary product-id-form-submit"
+                        [disabled]="productIdForm.invalid || !warehouseId">Find a Product</button>
+                </form>
+            </div>
+        </ng-template>
+    </div>
+
+    <ng-template #productInfoSection>
+        <div class="product-info-section">
+            <div class="product-info-piece">
+                <span class="product-info-piece-label">Description:</span>
+                <span class="product-info-piece-value">{{ scannedProductInfo?.description }}</span>
+            </div>
+    
+            <div class="product-info-piece">
+                <span class="product-info-piece-label">Brand Name:</span>
+                <span class="product-info-piece-value">{{ scannedProductInfo?.brandName }}</span>
+            </div>
+    
+            <div class="product-info-piece">
+                <span class="product-info-piece-label">Total Count:</span>
+                <span class="product-info-piece-value">{{ scannedProductInfo?.count }}</span>
+            </div>
+    
+            <div class="product-info-piece">
+                <span class="product-info-piece-label">Location Area Name:</span>
+                <span class="product-info-piece-value">{{ scannedProductInfo?.areaName }}</span>
+            </div>
+        </div>
+    </ng-template>
+</div>
+
+<div class="modal-footer">
+    <ng-container *ngIf="scannedProductInfo">
+        <button *ngIf="!scannedProductInfo.isInWarehouse" type="button" class="btn btn-success">Ship to Warehouse</button>
+        <button *ngIf="scannedProductInfo.isInWarehouse" type="button" class="btn btn-primary">Dispatch from Warehouse</button>
+    </ng-container>
+
+    <button type="button" class="btn btn-outline-secondary" (click)="bsModalRef.hide()">Close</button>
+</div>

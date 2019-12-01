@@ -4,5 +4,6 @@ export interface Product {
     count: number;
     areaId: string;
     areaName?: string;
+    isInWarehouse?: boolean;
     _id?: string;
 }

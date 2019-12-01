@@ -6,7 +6,7 @@ import * as fromAdminActions from './../../admin/store/admin.actions';
 import * as fromSharedActions from './../../shared/store/shared.actions';
 import * as fromSubordinateActions from './../../subordinate/store/subordinate.actions';
 import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions';
-import { switchMap, catchError, map } from 'rxjs/operators';
+import { switchMap, catchError, map, tap } from 'rxjs/operators';
 import { USERS_API_SERVER_URL_TOKEN } from '../../../app.config';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
@@ -37,9 +37,8 @@ export class AuthEffects {
                     registrationData
                 }).pipe(
                     switchMap(({ result: { tokenInfo, user, isAdmin } }: ApiResponse<UserDataInitType>) => {
-                        this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
-
                         return [
+                            fromAuthActions.storeTokenData({ payload: tokenInfo }),
                             fromAdminActions.storeAdmin({ payload: user }),
                             fromAuthActions.finishSigningUpAdmin({
                                 payload: {
@@ -69,9 +68,9 @@ export class AuthEffects {
                             ? fromAdminActions.storeAdmin({ payload: user })
                             : fromSubordinateActions.storeSubordinate({ payload: user as SubordinateUser });
 
-                        this.saveTokenData(tokenInfo.token, tokenInfo.expirationTime);
 
                         return [
+                            fromAuthActions.storeTokenData({ payload: tokenInfo }),
                             fromSharedActions.changeAppLoadingStatus({ payload: true }),
                             targetUserStoringAction,
                             fromAuthActions.finishSigningIn({
@@ -115,6 +114,18 @@ export class AuthEffects {
         )
     );
 
+    storeTokenData$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromAuthActions.storeTokenData),
+            map(action => action.payload),
+            tap(({ token, expirationTime }) => {
+                this.cookieService.set('Token', `${token}`);
+                this.cookieService.set('ExpirationTime', `${expirationTime}`);
+            })
+        ),
+        { dispatch: false }
+    );
+
     navigateAfterSuccessfulAuthActions$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromAuthActions.navigateAfterSuccessfulAuthActions),
@@ -126,9 +137,4 @@ export class AuthEffects {
             })
         )
     );
-
-    private saveTokenData(token: string, expirationTime: number): void {
-        this.cookieService.set('Token', `${token}`);
-        this.cookieService.set('ExpirationTime', `${expirationTime}`);
-    }
 }

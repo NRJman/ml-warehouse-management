@@ -16,6 +16,7 @@ import { DashboardComponent } from './custom-ui/admin/dashboard/dashboard.compon
 import { SubordinateManagementComponent } from './custom-ui/admin/subordinate-management/subordinate-management.component';
 import { SignUpSubordinatesComponent } from './custom-ui/admin/subordinate-management/sign-up-subordinates/sign-up-subordinates.component';
 import { CreateTasksComponent } from './custom-ui/admin/warehouse-management/create-tasks/create-tasks.component';
+import { ProductActionsModalComponent } from './custom-ui/subordinate/warehouse-management/product-actions-modal/product-actions-modal.component';
 
 export const routes: Routes = [
   {
@@ -98,9 +99,15 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent,
+        canActivate: [GenericPagesGuard],
         data: {
           title: 'Dashboard'
         }
+      },
+      {
+        path: 'product-actions',
+        component: ProductActionsModalComponent,
+        canActivate: [GenericPagesGuard]
       },
       {
         path: 'base',

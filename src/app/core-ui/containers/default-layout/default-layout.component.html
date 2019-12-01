@@ -32,6 +32,10 @@
 
   <div class="app-body">
     <app-sidebar [fixed]="true" *ngIf="!isOnAuthFormPage" [display]="'lg'">
+      <button
+        class="btn btn-primary btn-scan"
+        (click)="openProductActionsModal()">Scan an ID</button>
+
       <app-sidebar-nav [navItems]="navItems" [perfectScrollbar] [disabled]="sidebarMinimized"></app-sidebar-nav>
       <app-sidebar-minimizer></app-sidebar-minimizer>
     </app-sidebar>

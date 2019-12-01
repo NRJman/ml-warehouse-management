@@ -1,0 +1,43 @@
+.automatic-entering {
+    margin: .8rem 0;
+}
+
+.btn-scan {
+    margin-bottom: .2rem;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.switch-to-manual-entering {
+    color: #babec4;
+    cursor: pointer;
+    text-align: center;
+
+    &:hover {
+        color: #838a95;
+        text-decoration: underline;
+    }
+}
+
+.product-id-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product-id-form-submit {
+    flex: none;
+    margin-left: 1.25rem;
+}
+
+.product-info {
+    padding: 0 .5rem;
+
+    &-piece {
+        &-label {
+            font-weight: bold;
+        }
+    }
+}
