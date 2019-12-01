@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
-import { SubordinateUser } from '../../../shared/models/users/subordinate-user.model';
-import * as fromApp from './../../../../store/app.reducers';
-import * as fromAdminSelectors from './../../store/admin.selectors';
-import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
+import * as fromApp from '../../../../store/app.reducers';
+import * as fromAdminSelectors from '../../../admin/store/admin.selectors';
 import { select, Store } from '@ngrx/store';
 import { takeUntil } from 'rxjs/operators';
+import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
+import { SubordinateUser } from '../../../shared/models/users/subordinate-user.model';
 
 @Component({
   selector: 'app-subordinate-list',

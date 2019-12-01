@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { Task } from '../../../shared/models/warehouse/task.model';
-import * as fromApp from './../../../../store/app.reducers';
-import * as fromWarehouseSelectors from './../../store/warehouse.selectors';
-import * as fromAdminSelectors from './../../../admin/store/admin.selectors';
+import * as fromApp from '../../../../store/app.reducers';
+import * as fromWarehouseSelectors from './../../../warehouse/store/warehouse.selectors';
+import * as fromAdminSelectors from '../../store/admin.selectors';
 import { Store, select } from '@ngrx/store';
 import { takeUntil } from 'rxjs/operators';
 import { SubordinateUser } from '../../../shared/models/users/subordinate-user.model';

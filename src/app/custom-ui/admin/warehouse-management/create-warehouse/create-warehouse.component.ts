@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
-import { CustomValidatorsService } from '../../shared/services/custom-validators.service';
+import { CustomValidatorsService } from '../../../shared/services/custom-validators.service';
 import { Store, select } from '@ngrx/store';
-import * as fromApp from './../../../store/app.reducers';
-import * as fromWarehouseActions from './../store/warehouse.actions';
-import * as fromAdminSelectors from './../../admin/store/admin.selectors';
-import { Unsubscriber } from '../../shared/services/unsubscriber.service';
+import * as fromApp from '../../../../store/app.reducers';
+import * as fromWarehouseActions from '../../../warehouse/store/warehouse.actions';
+import * as fromAdminSelectors from '../../store/admin.selectors';
+import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { takeUntil, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 
 @Component({

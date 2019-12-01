@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
-import { CustomValidatorsService } from '../../../shared/services/custom-validators.service';
 import * as fromApp from '../../../../store/app.reducers';
-import * as fromAdmin from '../../store/admin.reducer';
-import * as fromAdminActions from '../../store/admin.actions';
-import * as fromAdminSelectors from '../../store/admin.selectors';
+import * as fromAdmin from '../../../admin/store/admin.reducer';
+import * as fromAdminActions from '../../../admin/store/admin.actions';
+import * as fromAdminSelectors from '../../../admin/store/admin.selectors';
 import { Store, select } from '@ngrx/store';
-import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { takeUntil } from 'rxjs/operators';
+import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
+import { CustomValidatorsService } from '../../../shared/services/custom-validators.service';
 
 @Component({
   selector: 'app-sign-up-subordinates',

@@ -8,6 +8,7 @@
 
 .user-cards-wrapper {
     @include display-flex(row, center, wrap, flex-start);
+    margin: 0 -1%;
 }
 
 .user-card {
@@ -45,6 +46,10 @@
 }
 
 @media (min-width: 801px) and (max-width: 1024px) {
+    .user-cards-wrapper {
+        margin: 0 -1.5%;
+    }
+
     .user-card {
         width: 32%;
         margin: 0 1.5%;
@@ -52,6 +57,10 @@
 }
 
 @media (min-width: 551px) and (max-width: 800px) {
+    .user-cards-wrapper {
+        margin: 0 -2%;
+    }
+
     .user-card {
         width: 46%;
         margin: 0 2%;

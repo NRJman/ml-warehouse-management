@@ -51,7 +51,6 @@ import { AdminEffects } from './custom-ui/admin/store/admin.effects';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { SharedEffects } from './custom-ui/shared/store/shared.effects';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
-import { WarehouseModule } from './custom-ui/warehouse/warehouse.module';
 import { WarehouseEffects } from './custom-ui/warehouse/store/warehouse.effects';
 import { AdminModule } from './custom-ui/admin/admin.module';
 import { AdminRightsInterceptor } from './custom-ui/shared/interceptors/admin-rights.interceptor';
@@ -70,7 +69,6 @@ import { AdminRightsInterceptor } from './custom-ui/shared/interceptors/admin-ri
     TabsModule.forRoot(),
     ChartsModule,
     AuthModule,
-    WarehouseModule,
     AdminModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers),

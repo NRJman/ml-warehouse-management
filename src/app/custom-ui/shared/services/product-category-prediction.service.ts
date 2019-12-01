@@ -2,9 +2,9 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { WAREHOUSES_API_SERVER_URL_TOKEN } from '../../../app.config';
-import { ApiResponse } from '../../shared/models/api/api-response.model';
+import { ApiResponse } from '../models/api/api-response.model';
 import { FormGroup } from '@angular/forms';
-import { Area } from '../../shared/models/warehouse/area.model';
+import { Area } from '../models/warehouse/area.model';
 
 @Injectable()
 export class ProductCategoryPredictionService {

@@ -10,14 +10,12 @@ import { SignInComponent } from './custom-ui/auth/sign-in/sign-in.component';
 import { SignUpComponent } from './custom-ui/auth/sign-up/sign-up.component';
 import { GenericPagesGuard } from './custom-ui/shared/services/generic-pages-guard.service';
 import { AuthFormsPagesGuard } from './custom-ui/shared/services/auth-forms-pages-guard.service';
-import { CreateWarehouseComponent } from './custom-ui/warehouse/create-warehouse/create-warehouse.component';
-import { SignUpSubordinatesComponent } from './custom-ui/admin/subordinate-management/sign-up-subordinates/sign-up-subordinates.component';
-import { AddProductsComponent } from './custom-ui/warehouse/add-products/add-products.component';
-import { CreateTasksComponent } from './custom-ui/warehouse/task-management/create-tasks/create-tasks.component';
+import { CreateWarehouseComponent } from './custom-ui/admin/warehouse-management/create-warehouse/create-warehouse.component';
+import { AddProductsComponent } from './custom-ui/admin/warehouse-management/add-products/add-products.component';
 import { DashboardComponent } from './custom-ui/admin/dashboard/dashboard.component';
-import { SubordinateListComponent } from './custom-ui/admin/subordinate-management/subordinate-list/subordinate-list.component';
-import { TaskListComponent } from './custom-ui/warehouse/task-management/task-list/task-list.component';
-import { GeneralManagementComponent } from './custom-ui/admin/general-management/general-management.component';
+import { SubordinateManagementComponent } from './custom-ui/admin/subordinate-management/subordinate-management.component';
+import { SignUpSubordinatesComponent } from './custom-ui/admin/subordinate-management/sign-up-subordinates/sign-up-subordinates.component';
+import { CreateTasksComponent } from './custom-ui/admin/warehouse-management/create-tasks/create-tasks.component';
 
 export const routes: Routes = [
   {
@@ -91,7 +89,7 @@ export const routes: Routes = [
       },
       {
         path: 'management',
-        component: GeneralManagementComponent,
+        component: SubordinateManagementComponent,
         canActivate: [GenericPagesGuard],
         data: {
           title: 'Management'

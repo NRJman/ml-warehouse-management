@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
-import * as fromApp from './../../../../store/app.reducers';
-import * as fromAdminSelectors from './../../../admin/store/admin.selectors';
-import * as fromWarehouseSelectors from './../../store/warehouse.selectors';
-import * as fromWarehouseActions from './../../store/warehouse.actions';
+import * as fromApp from '../../../../store/app.reducers';
+import * as fromAdminSelectors from '../../store/admin.selectors';
+import * as fromWarehouseSelectors from './../../../warehouse/store/warehouse.selectors';
+import * as fromWarehouseActions from './../../../warehouse/store/warehouse.actions';
 import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { takeUntil } from 'rxjs/operators';
 

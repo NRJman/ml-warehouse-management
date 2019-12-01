@@ -1,21 +1,21 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl, AbstractControl } from '@angular/forms';
-import { CustomValidatorsService } from '../../shared/services/custom-validators.service';
-import { Unsubscriber } from '../../shared/services/unsubscriber.service';
+import { CustomValidatorsService } from '../../../shared/services/custom-validators.service';
+import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { debounceTime, distinctUntilChanged, takeUntil, filter, switchMap, withLatestFrom, map } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
-import * as fromApp from './../../../store/app.reducers';
-import * as fromAdmin from './../../admin/store/admin.reducer';
-import * as fromWarehouse from './../../warehouse/store/warehouse.reducer';
-import * as fromAdminSelectors from './../../admin/store/admin.selectors';
-import * as fromWarehouseSelectors from './../../warehouse/store/warehouse.selectors';
-import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions';
-import { Product } from '../../shared/models/warehouse/product.model';
+import * as fromApp from '../../../../store/app.reducers';
+import * as fromAdmin from '../../store/admin.reducer';
+import * as fromWarehouse from '../../../warehouse/store/warehouse.reducer';
+import * as fromAdminSelectors from '../../store/admin.selectors';
+import * as fromWarehouseSelectors from '../../../warehouse/store/warehouse.selectors';
+import * as fromWarehouseActions from '../../../warehouse/store/warehouse.actions';
+import { Product } from '../../../shared/models/warehouse/product.model';
 import { Subject, of, zip } from 'rxjs';
-import { PredictionControllerInput } from '../../shared/models/warehouse/prediction-controller-input.model';
-import { ProductCategoryPredictionService } from '../services/product-category-prediction.service';
-import { ProductFormGroupInfo } from '../../shared/models/warehouse/product-form-group-info.model';
-import { Area } from '../../shared/models/warehouse/area.model';
+import { PredictionControllerInput } from '../../../shared/models/warehouse/prediction-controller-input.model';
+import { ProductCategoryPredictionService } from '../../../shared/services/product-category-prediction.service';
+import { ProductFormGroupInfo } from '../../../shared/models/warehouse/product-form-group-info.model';
+import { Area } from '../../../shared/models/warehouse/area.model';
 
 @Component({
   selector: 'app-add-products',

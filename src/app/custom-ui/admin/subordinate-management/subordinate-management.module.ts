@@ -1,20 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SubordinateManagementComponent } from './subordinate-management.component';
 import { SignUpSubordinatesComponent } from './sign-up-subordinates/sign-up-subordinates.component';
-import { SharedModule } from '../../shared/shared.module';
 import { SubordinateListComponent } from './subordinate-list/subordinate-list.component';
+import { SharedModule } from '../../shared/shared.module';
+import { WarehouseManagementModule } from '../warehouse-management/warehouse-management.module';
 
 @NgModule({
   declarations: [
+    SubordinateManagementComponent,
     SignUpSubordinatesComponent,
     SubordinateListComponent
   ],
   imports: [
     CommonModule,
-    SharedModule
-  ],
-  exports: [
-    SubordinateListComponent
+    SharedModule,
+    WarehouseManagementModule
   ]
 })
 export class SubordinateManagementModule { }
