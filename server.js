@@ -49,6 +49,8 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
+app.io.attach(server);
+
 server.on('error', onError);
 server.on('listening', onListening);
 server.listen(port);

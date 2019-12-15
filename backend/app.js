@@ -2,11 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const mongodbAccessKey = require('./sensitive/mongodb-access-key');
-const app = express();
-
-const userRoutes = require('./routes/users');
+const socketIo = require('socket.io');
 const adminRoutes = require('./routes/admins');
 const warehouseRoutes = require('./routes/warehouses');
+const app = express();
+
+app.io = socketIo();
+
+const userRoutes = require('./routes/users');
 
 mongoose.connect(`mongodb+srv://Vadym:${mongodbAccessKey}@wms-cluster-xayjt.mongodb.net/test?retryWrites=true&w=majority`)
     .then(() => {
@@ -21,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader(
         'Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Rights-Id'
@@ -33,9 +37,13 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/users', userRoutes);
-app.use('/api/admins', adminRoutes);
-app.use('/api/warehouses', warehouseRoutes);
+app.io.on("connection", function (socket) {
+    console.log('Client connected');
+
+    app.use('/api/users', userRoutes);
+    app.use('/api/admins', adminRoutes);
+    app.use('/api/warehouses', warehouseRoutes(app.io));
+});
 
 app.get('/', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');

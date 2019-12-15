@@ -1,281 +1,276 @@
-const express = require('express');
-const Warehouse = require('./../models/warehouse');
-const Admin = require('./../models/admin');
-const User = require('./../models/user');
-const request = require('request');
-const predictionApiKey = require('./../sensitive/prediction-api-key');
-const predictionUri = require('./../sensitive/prediction-uri');
-const predictionHandlingConfig = require('./../utils/prediction-handling-config');
-const checkAuth = require('./../middleware/check-auth');
-const checkAdminRights = require('./../middleware/check-admin-rights');
+module.exports = function (io) {
+    const express = require('express');
+    const Warehouse = require('./../models/warehouse');
+    const Admin = require('./../models/admin');
+    const User = require('./../models/user');
+    const request = require('request');
+    const predictionApiKey = require('./../sensitive/prediction-api-key');
+    const predictionUri = require('./../sensitive/prediction-uri');
+    const predictionHandlingConfig = require('./../utils/prediction-handling-config');
+    const checkAuth = require('./../middleware/check-auth');
+    const checkAdminRights = require('./../middleware/check-admin-rights');
 
-const router = express.Router();
+    const router = express.Router();
 
-router.get('', checkAuth, async (req, res, next) => {
-    const userId = req.query.userId;
-    let isAdmin, foundUser;
+    router.get('', checkAuth, async (req, res, next) => {
+        const userId = req.query.userId;
+        let isAdmin, foundUser;
 
-    try {
-        foundUser = await User.findById(userId);
+        try {
+            foundUser = await User.findById(userId);
 
-        const warehouseId = foundUser.warehouseId;
+            const warehouseId = foundUser.warehouseId;
 
-        isAdmin = foundUser.isAdmin;
+            isAdmin = foundUser.isAdmin;
 
-        if (!warehouseId) {
-            return sendSuccessfulResponse(null);
+            if (!warehouseId) {
+                return sendSuccessfulResponse(null);
+            }
+
+            const foundWarehouse = await Warehouse.findById(warehouseId);
+
+            return sendSuccessfulResponse({
+                areas: foundWarehouse.areas,
+                products: foundWarehouse.products,
+                tasks: foundWarehouse.tasks,
+                warehouseId: foundWarehouse._id,
+                ...(isAdmin ? { adminId: foundWarehouse.adminId } : null)
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: 'Failed to fetch the warehouse!',
+                error
+            })
         }
 
-        const foundWarehouse = await Warehouse.findById(warehouseId);
+        function sendSuccessfulResponse(result) {
+            res.status(200).json({
+                message: result ? 'The warehouse has been fetched successfully' : 'The user is not related to any warehouse yet!',
+                result: result ? result : {}
+            })
+        }
+    });
 
-        return sendSuccessfulResponse({
-            areas: foundWarehouse.areas,
-            products: foundWarehouse.products,
-            tasks: foundWarehouse.tasks,
-            warehouseId: foundWarehouse._id,
-            ...(isAdmin ? { adminId: foundWarehouse.adminId } : null)
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: 'Failed to fetch the warehouse!',
-            error
-        })
-    }
+    router.post('/products', checkAuth, checkAdminRights, (req, res, next) => {
+        const { warehouseId, productsDataList } = req.body;
 
-    function sendSuccessfulResponse(result) {
-        res.status(200).json({
-            message: result ? 'The warehouse has been fetched successfully' : 'The user is not related to any warehouse yet!',
-            result: result ? result : { }
-        })
-    }
-});
+        Warehouse.findById(warehouseId)
+            .then(warehouse => {
+                for (let i = 0, len = productsDataList.length; i < len; i++) {
+                    const existingProduct = warehouse.products.find(product =>
+                        product.description === productsDataList[i].description &&
+                        product.brandName === productsDataList[i].brandName
+                    );
 
-router.post('/products', checkAuth, checkAdminRights, (req, res, next) => {
-    const { warehouseId, productsDataList } = req.body;
+                    if (existingProduct) {
+                        existingProduct.count += productsDataList[i].count;
 
-    Warehouse.findById(warehouseId)
-        .then(warehouse => {
-            for (let i = 0, len = productsDataList.length; i < len; i++) {
-                const existingProduct = warehouse.products.find(product =>
-                    product.description === productsDataList[i].description &&
-                    product.brandName === productsDataList[i].brandName
-                );
+                        continue;
+                    }
 
-                if (existingProduct) {
-                    existingProduct.count += productsDataList[i].count;
+                    const areaId = productsDataList[i].areaId;
 
-                    continue;
+                    const newProduct = warehouse.products.create({
+                        description: productsDataList[i].description,
+                        brandName: productsDataList[i].brandName,
+                        count: productsDataList[i].count,
+                        areaName: warehouse.areas.id(areaId).name,
+                        areaId: areaId,
+                        isInWarehouse: false
+                    });
+
+                    warehouse.products.push(newProduct);
+                    warehouse.areas.id(areaId).productIds.push(newProduct._id);
                 }
 
-                const areaId = productsDataList[i].areaId;
-
-                const newProduct = warehouse.products.create({
-                    description: productsDataList[i].description,
-                    brandName: productsDataList[i].brandName,
-                    count: productsDataList[i].count,
-                    areaName: warehouse.areas.id(areaId).name,
-                    areaId: areaId,
-                    isInWarehouse: false
+                return warehouse.save();
+            })
+            .then(({ areas, products }) => {
+                return res.status(201).json({
+                    areas,
+                    products
                 });
-
-                warehouse.products.push(newProduct);
-                warehouse.areas.id(areaId).productIds.push(newProduct._id);
-            }
-
-            return warehouse.save();
-        })
-        .then(({ areas, products }) => {
-            return res.status(201).json({
-                areas,
-                products
-            });
-        })
-        .catch(error => res.status(500).json({
-            message: 'Failed to add products to the warehouse!',
-            error
-        }));
-});
-
-router.post('/', checkAuth, checkAdminRights, (req, res, next) => {
-    const { areas, adminId } = req.body;
-    const warehouse = new Warehouse({
-        areas,
-        products: [],
-        tasks: [],
-        adminId
+            })
+            .catch(error => res.status(500).json({
+                message: 'Failed to add products to the warehouse!',
+                error
+            }));
     });
 
-    let areasWithCorrectProperties, createdWarehouse;
+    router.post('/', checkAuth, checkAdminRights, (req, res, next) => {
+        const { areas, adminId } = req.body;
+        const warehouse = new Warehouse({
+            areas,
+            products: [],
+            tasks: [],
+            adminId
+        });
 
-    warehouse.save()
-        .then(warehouse => {
-            createdWarehouse = warehouse;
-            areasWithCorrectProperties = warehouse.areas
-                .map(({ name, productIds, _id: areaId }) => ({
-                    name: name.toLowerCase(),
-                    productIds,
-                    areaId
-                }));
+        let areasWithCorrectProperties, createdWarehouse;
 
-            return Admin.findById(adminId);
-        })
-        .then(admin =>
-            User.findByIdAndUpdate(
-                admin.userId,
-                { warehouseId: warehouse._id },
-                { new: true }
+        warehouse.save()
+            .then(warehouse => {
+                createdWarehouse = warehouse;
+                areasWithCorrectProperties = warehouse.areas
+                    .map(({ name, productIds, _id: areaId }) => ({
+                        name: name.toLowerCase(),
+                        productIds,
+                        areaId
+                    }));
+
+                return Admin.findById(adminId);
+            })
+            .then(admin =>
+                User.findByIdAndUpdate(
+                    admin.userId,
+                    { warehouseId: warehouse._id },
+                    { new: true }
+                )
             )
-        )
-        .then(user => 
-            res.status(201).json({
-                message: 'The warehouse has been successfully created!',
-                result: {
-                    areas: areasWithCorrectProperties,
-                    adminId: createdWarehouse.adminId,
-                    warehouseId: createdWarehouse._id
-                }
-            })
-        )
-        .catch(error => 
-            res.status(500).json({
-                message: 'Failed to create a warehouse',
-                error
-            })
-        );
+            .then(user =>
+                res.status(201).json({
+                    message: 'The warehouse has been successfully created!',
+                    result: {
+                        areas: areasWithCorrectProperties,
+                        adminId: createdWarehouse.adminId,
+                        warehouseId: createdWarehouse._id
+                    }
+                })
+            )
+            .catch(error =>
+                res.status(500).json({
+                    message: 'Failed to create a warehouse',
+                    error
+                })
+            );
 
-});
+    });
 
-router.post('/tasks', checkAuth, checkAdminRights, (req, res, next) => {
-    const warehouseId = req.body.warehouseId;
-    const newTasks = req.body.tasks.map(task => ({
-        description: task,
-        creationDate: new Date(),
-        isResolved: false
-    }));
-    
-    
-    Warehouse.findById(warehouseId)
-        .then(warehouse => {
-            warehouse.tasks = warehouse.tasks.concat(newTasks);
+    router.post('/tasks', checkAuth, checkAdminRights, (req, res, next) => {
+        const warehouseId = req.body.warehouseId;
+        const newTasks = req.body.tasks.map(task => ({
+            description: task,
+            creationDate: new Date(),
+            isResolved: false
+        }));
 
-            return warehouse.save();
-        })
-        .then(({ tasks }) =>
-            res.status(201).json({
-                message: 'New tasks have been successfully created!',
-                result: tasks
+
+        Warehouse.findById(warehouseId)
+            .then(warehouse => {
+                warehouse.tasks = warehouse.tasks.concat(newTasks);
+
+                return warehouse.save();
             })
-        )
-        .catch(error =>
-            res.status(500).json({
-                message: 'Failed to create tasks',
-                error
-            })
-        )
-});
+            .then(({ tasks }) => {
+                io.emit('task was added', {
+                    message: 'task was added',
+                    result: tasks
+                })
 
-router.post('/predict', checkAuth, checkAdminRights, (req, res, next) => {
-    const { description, brandName } = req.body;
-    const predictionRequestBody = {
-        "Inputs": {
-            "input1": {
-                "ColumnNames": [
-                    "subcategory",
-                    "item_name",
-                    "merchant_brand_name"
-                ],
-                "Values": [
-                    [
-                        "",
-                        description.toLowerCase(),
-                        brandName.toLowerCase()
+                return res.status(201).json({
+                    message: 'New tasks have been successfully created!',
+                    result: tasks
+                })
+            })
+            .catch(error =>
+                res.status(500).json({
+                    message: 'Failed to create tasks',
+                    error
+                })
+            )
+    });
+
+    router.post('/predict', checkAuth, checkAdminRights, (req, res, next) => {
+        const { description, brandName } = req.body;
+        const predictionRequestBody = {
+            "Inputs": {
+                "input1": {
+                    "ColumnNames": [
+                        "subcategory",
+                        "item_name",
+                        "merchant_brand_name"
+                    ],
+                    "Values": [
+                        [
+                            "",
+                            description.toLowerCase(),
+                            brandName.toLowerCase()
+                        ]
                     ]
-                ]
-            }
-        },
-        "GlobalParameters": { }
-    };
+                }
+            },
+            "GlobalParameters": {}
+        };
 
-    const options = {
-        method: 'POST',
-        uri: predictionUri,
-        qs: {
-            'api-version': '2.0',
-            'details': 'true'
-        },
-        headers: {
-            'Authorization': `Bearer ${predictionApiKey}`
-        },
-        json: true,
-        body: predictionRequestBody
-    }
-
-    request(options, (error, response, body) => {
-        if (error || response.statusCode !== 200) {
-            return res.status(500).json({ type: 'error', error });
+        const options = {
+            method: 'POST',
+            uri: predictionUri,
+            qs: {
+                'api-version': '2.0',
+                'details': 'true'
+            },
+            headers: {
+                'Authorization': `Bearer ${predictionApiKey}`
+            },
+            json: true,
+            body: predictionRequestBody
         }
 
-        console.log(getMostPossibleCategories(body));
+        request(options, (error, response, body) => {
+            if (error || response.statusCode !== 200) {
+                return res.status(500).json({ type: 'error', error });
+            }
 
-        res.status(200).json({
-            message: 'Successfully predicted the category',
-            result: getMostPossibleCategories(body)
-        })
-    });
-
-    function getMostPossibleCategories({ Results: { output1: { value: predictionResult } } }) {
-        const scoredProbabilities = predictionResult.Values[0];
-        const lengthOfFieldsPredictionInvolves = predictionHandlingConfig.fieldsPredictionInvolves.length;
-        const highestProbabilities = scoredProbabilities
-            .slice(lengthOfFieldsPredictionInvolves)
-            .sort((a, b) => Number(b) - Number(a))
-            .slice(0, 3);
-        
-
-        return highestProbabilities.map((probability) => {
-            const probabilityIndex = scoredProbabilities.indexOf(probability);
-
-            return predictionResult.ColumnNames[probabilityIndex]
-                .slice(
-                    predictionHandlingConfig.lengthOfColumnNameRedundantStartingPart,
-                    -predictionHandlingConfig.lengthOfColumnNameRedundantEndingPart
-                );
-        });
-    }
-});
-
-router.get('/product/:warehouseId/:productId', checkAuth, (req, res, next) => {
-    const { warehouseId, productId } = req.params;
-
-    Warehouse.findById(warehouseId)
-        .then(warehouse => {
-            const targetProduct = warehouse.products.find(product => {
-                return product._id.toString() === productId;
-            });
+            console.log(getMostPossibleCategories(body));
 
             res.status(200).json({
-                message: 'Successfully fetched product info',
-                result: targetProduct
-            });
-        })
-        .catch(error =>
-            res.status(500).json({
-                message: 'Failed to fetch product info!',
-                error
+                message: 'Successfully predicted the category',
+                result: getMostPossibleCategories(body)
             })
-        );
-});
+        });
 
-module.exports = router;
+        function getMostPossibleCategories({ Results: { output1: { value: predictionResult } } }) {
+            const scoredProbabilities = predictionResult.Values[0];
+            const lengthOfFieldsPredictionInvolves = predictionHandlingConfig.fieldsPredictionInvolves.length;
+            const highestProbabilities = scoredProbabilities
+                .slice(lengthOfFieldsPredictionInvolves)
+                .sort((a, b) => Number(b) - Number(a))
+                .slice(0, 3);
 
-/* async function getWarehouseInfo(warehouseId) {
-    try {
-        const foundWarehouse = await Warehouse.findById(warehouseId);
 
-        return (
-            ({areas, products, tasks, adminId }) => ({ areas, products, tasks, adminId })
-        )(foundWarehouse);           
-    } catch (error) {
-        return null;
-    }
-} */
+            return highestProbabilities.map((probability) => {
+                const probabilityIndex = scoredProbabilities.indexOf(probability);
+
+                return predictionResult.ColumnNames[probabilityIndex]
+                    .slice(
+                        predictionHandlingConfig.lengthOfColumnNameRedundantStartingPart,
+                        -predictionHandlingConfig.lengthOfColumnNameRedundantEndingPart
+                    );
+            });
+        }
+    });
+
+    router.get('/product/:warehouseId/:productId', checkAuth, (req, res, next) => {
+        const { warehouseId, productId } = req.params;
+
+        Warehouse.findById(warehouseId)
+            .then(warehouse => {
+                const targetProduct = warehouse.products.find(product => {
+                    return product._id.toString() === productId;
+                });
+
+                res.status(200).json({
+                    message: 'Successfully fetched product info',
+                    result: targetProduct
+                });
+            })
+            .catch(error =>
+                res.status(500).json({
+                    message: 'Failed to fetch product info!',
+                    error
+                })
+            );
+    });
+
+    return router;
+};

@@ -59,6 +59,8 @@ import { ProductActionsModalComponent } from './custom-ui/subordinate/warehouse-
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { SubordinateEffects } from './custom-ui/subordinate/store/subordinate.effects';
 import { ProductCategoryPredictionService } from './custom-ui/shared/services/product-category-prediction.service';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { socketIoConfig } from '../environments/environment';
 
 @NgModule({
   imports: [
@@ -90,7 +92,8 @@ import { ProductCategoryPredictionService } from './custom-ui/shared/services/pr
     }),
     HttpClientModule,
     NgxSpinnerModule,
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    SocketIoModule.forRoot(socketIoConfig)
   ],
   declarations: [
     AppComponent,

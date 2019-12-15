@@ -7,13 +7,13 @@
                 'bg-warning': task.assigneeId,
                 'bg-secondary': !task.assigneeId
             }">
-            <div *ngIf="task.isResolved" class="card-body">
+            <div *ngIf="!task.isResolved" class="card-body">
                 <div class="row row-centered-vertically">
                     <div class="col-sm-6">{{ task.description }}</div>
 
                     <div class="col-sm-3">
-                        <div [attr.id]="i">{{ task.resolvingDate | date : 'medium' }}</div>
-                        <label [attr.for]="i">In Progress</label>  
+                        <input type="checkbox" name="In Progress" [attr.id]="i">
+                        <label class="in-progress-label" [attr.for]="i">In Progress</label>  
                     </div>
 
                     <div class="col-sm-3">

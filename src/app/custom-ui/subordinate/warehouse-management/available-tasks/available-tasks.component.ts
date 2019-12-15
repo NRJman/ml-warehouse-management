@@ -4,7 +4,8 @@ import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import * as fromApp from './../../../../store/app.reducers';
 import * as fromWarehouseSelectors from './../../../warehouse/store/warehouse.selectors';
 import { Task } from '../../../shared/models/warehouse/task.model';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, map } from 'rxjs/operators';
+import { Socket } from 'ngx-socket-io';
 
 @Component({
   selector: 'app-available-tasks',
@@ -14,7 +15,7 @@ import { takeUntil } from 'rxjs/operators';
 export class AvailableTasksComponent extends Unsubscriber implements OnInit, OnDestroy {
   public taskList: Task[];
   
-  constructor(private store: Store<fromApp.State>) {
+  constructor(private store: Store<fromApp.State>, private socket: Socket) {
     super();
   }
 
@@ -26,8 +27,13 @@ export class AvailableTasksComponent extends Unsubscriber implements OnInit, OnD
       )
       .subscribe(tasks => {
         this.taskList = tasks;
-        console.log(tasks);
-      })
+      });
+
+    this.socket
+      .fromEvent('task was added')
+      .subscribe((data) => {
+        console.log(data);
+      });
   }
 
   ngOnDestroy() {
