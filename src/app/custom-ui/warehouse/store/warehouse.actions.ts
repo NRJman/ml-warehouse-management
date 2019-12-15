@@ -8,6 +8,7 @@ import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-pro
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
 import { DataToCreateTasks } from '../../shared/models/warehouse/data-to-create-tasks.model';
 import { Task } from '../../shared/models/warehouse/task.model';
+import { DataToFetchWarehouse } from '../../shared/models/warehouse/data-to-fetch-warehouse.model';
 
 export const startCreatingWarehouse = createAction(
     '[Warehouse] Start Creating Warehouse',

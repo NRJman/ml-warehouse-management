@@ -11,27 +11,43 @@ const checkAdminRights = require('./../middleware/check-admin-rights');
 
 const router = express.Router();
 
-router.get('', checkAuth, checkAdminRights, (req, res, next) => {
-    const idOfUserResponsibleForWarehouse = req.query.userId;
-    
-    Admin.findOne({ userId: idOfUserResponsibleForWarehouse })
-        .then(admin => Warehouse.findOne({ adminId: admin._id }))
-        .then(warehouse => {
-            res.status(200).json({
-                message: 'The warehouse has been fetched successfully',
-                result: {
-                    areas: warehouse.areas,
-                    products: warehouse.products,
-                    tasks: warehouse.tasks,
-                    adminId: warehouse.adminId,
-                    warehouseId: warehouse._id
-                }
-            })
-        })
-        .catch(error => res.status(500).json({
+router.get('', checkAuth, async (req, res, next) => {
+    const userId = req.query.userId;
+    let isAdmin, foundUser;
+
+    try {
+        foundUser = await User.findById(userId);
+
+        const warehouseId = foundUser.warehouseId;
+
+        isAdmin = foundUser.isAdmin;
+
+        if (!warehouseId) {
+            return sendSuccessfulResponse(null);
+        }
+
+        const foundWarehouse = await Warehouse.findById(warehouseId);
+
+        return sendSuccessfulResponse({
+            areas: foundWarehouse.areas,
+            products: foundWarehouse.products,
+            tasks: foundWarehouse.tasks,
+            warehouseId: foundWarehouse._id,
+            ...(isAdmin ? { adminId: foundWarehouse.adminId } : null)
+        });
+    } catch (error) {
+        return res.status(500).json({
             message: 'Failed to fetch the warehouse!',
             error
-        }));
+        })
+    }
+
+    function sendSuccessfulResponse(result) {
+        res.status(200).json({
+            message: result ? 'The warehouse has been fetched successfully' : 'The user is not related to any warehouse yet!',
+            result: result ? result : { }
+        })
+    }
 });
 
 router.post('/products', checkAuth, checkAdminRights, (req, res, next) => {
@@ -171,8 +187,8 @@ router.post('/predict', checkAuth, checkAdminRights, (req, res, next) => {
                 "Values": [
                     [
                         "",
-                        description,
-                        brandName
+                        description.toLowerCase(),
+                        brandName.toLowerCase()
                     ]
                 ]
             }

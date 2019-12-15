@@ -7,17 +7,17 @@ const checkAdminRights = require('./../middleware/check-admin-rights');
 const router = express.Router();
 
 router.get('/:id', checkAuth, async (req, res, next) => {
-    let adminId, subordinateIds, curriedSendSuccessfullResponse;
+    let adminId, subordinateIds, curriedSendSuccessfulResponse;
     
     try {
         const foundAdmin = await Admin.findOne({ userId: req.params.id });
 
         adminId = foundAdmin._id;
         subordinateIds = foundAdmin.subordinateIds;
-        curriedSendSuccessfullResponse = sendSuccessfullResponse.bind(this, adminId);
+        curriedSendSuccessfulResponse = sendSuccessfulResponse.bind(this, adminId);
 
         if (!(subordinateIds instanceof Array) || subordinateIds.length === 0) {
-            return curriedSendSuccessfullResponse([]);
+            return curriedSendSuccessfulResponse([]);
         }
     } catch (error) {
         return res.status(500).json({
@@ -36,11 +36,11 @@ router.get('/:id', checkAuth, async (req, res, next) => {
                 warehouseId: subordinate.warehouseId
             }));
 
-            return curriedSendSuccessfullResponse(resultingSubordinates);
+            return curriedSendSuccessfulResponse(resultingSubordinates);
         })
-        .catch(subordinates => curriedSendSuccessfullResponse([]));
+        .catch(subordinates => curriedSendSuccessfulResponse([]));
 
-    function sendSuccessfullResponse(adminId, subordinates) {
+    function sendSuccessfulResponse(adminId, subordinates) {
         return res.status(200).json({
             message: 'The admin data has been fetched successfully!',
             result: { adminId, subordinates }

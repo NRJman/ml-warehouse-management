@@ -3,7 +3,6 @@ const jwtSecret = require('./../sensitive/jwt-secret');
 
 module.exports = (req, res, next) => {
     try {
-        console.log(req.headers);
         const authHeader = req.headers['authorization'];
         const authHeaderCipher = 'Bearer ';
         const token = authHeader.slice(authHeader.indexOf(authHeaderCipher) + authHeaderCipher.length);

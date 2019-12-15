@@ -1,0 +1,26 @@
+<div class="animated fadeIn">
+    <h4 class="section-title">Tasks Available for Working On</h4>
+
+    <div class="cards-wrapper">
+        <div *ngFor="let task of taskList; index as i" [ngClass]="{
+                'card': true,
+                'bg-warning': task.assigneeId,
+                'bg-secondary': !task.assigneeId
+            }">
+            <div *ngIf="task.isResolved" class="card-body">
+                <div class="row row-centered-vertically">
+                    <div class="col-sm-6">{{ task.description }}</div>
+
+                    <div class="col-sm-3">
+                        <div [attr.id]="i">{{ task.resolvingDate | date : 'medium' }}</div>
+                        <label [attr.for]="i">In Progress</label>  
+                    </div>
+
+                    <div class="col-sm-3">
+                        <button class="btn btn-primary">Resolve</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

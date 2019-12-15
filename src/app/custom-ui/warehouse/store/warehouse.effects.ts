@@ -16,6 +16,7 @@ import { DataToAddProducts } from '../../shared/models/warehouse/data-to-add-pro
 import { ProductsAdditionResult } from '../../shared/models/warehouse/products-addition-result.model';
 import { DataToCreateTasks } from '../../shared/models/warehouse/data-to-create-tasks.model';
 import { Task } from '../../shared/models/warehouse/task.model';
+import { DataToFetchWarehouse } from '../../shared/models/warehouse/data-to-fetch-warehouse.model';
 
 @Injectable()
 export class WarehouseEffects {
@@ -70,8 +71,8 @@ export class WarehouseEffects {
         () => this.actions$.pipe(
             ofType(fromWarehouseActions.storeWarehouse),
             map(action => action.payload),
-            map((idOfUserResponsibleForWarehouse: string) =>
-                fromWarehouseActions.fetchWarehouseData({ payload: idOfUserResponsibleForWarehouse })
+            map((userId: string) =>
+                fromWarehouseActions.fetchWarehouseData({ payload: userId })
             )
         )
     );
@@ -80,12 +81,8 @@ export class WarehouseEffects {
         () => this.actions$.pipe(
             ofType(fromWarehouseActions.fetchWarehouseData),
             map(action => action.payload),
-            switchMap((idOfUserResponsibleForWarehouse: string) =>
-                this.http.get(this.warehousesApiServerUrl, {
-                    params: {
-                        userId: idOfUserResponsibleForWarehouse
-                    }
-                }).pipe(
+            switchMap((userId : string) =>
+                this.http.get(this.warehousesApiServerUrl, { params: { userId } }).pipe(
                     map(({ result }: ApiResponse<WarehouseDataFetchingResult>) =>
                         fromWarehouseActions.storeWarehouseData({ payload: result })
                     ),
