@@ -2,3 +2,8 @@
     cursor: pointer;
     user-select: none;
 }
+
+.disabled {
+    cursor: default;
+    user-select: none;
+}

@@ -4,4 +4,5 @@ export interface Task {
     isResolved: boolean;
     description: string;
     assigneeId?: string;
+    _id: string;
 }

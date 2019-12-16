@@ -3,11 +3,11 @@ import { DOCUMENT } from '@angular/common';
 import { navItems } from '../../_nav';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import * as fromApp from './../../../store/app.reducers';
-import * as fromSharedSelectors from './../../../custom-ui/shared/store/shared.selectors';
 import { Unsubscriber } from '../../../custom-ui/shared/services/unsubscriber.service';
 import { takeUntil, take } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
+import * as fromApp from './../../../store/app.reducers';
+import * as fromSharedSelectors from './../../../custom-ui/shared/store/shared.selectors';
 import * as fromSharedActions from './../../../custom-ui/shared/store/shared.actions';
 import * as fromAuthActions from './../../../custom-ui/auth/store/auth.actions';
 import * as fromAuthSelectors from './../../../custom-ui/auth/store/auth.selectors';
@@ -15,6 +15,7 @@ import * as fromSubordinateActions from './../../../custom-ui/subordinate/store/
 import { CookieService } from 'ngx-cookie-service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ProductActionsModalComponent } from '../../../custom-ui/subordinate/warehouse-management/product-actions-modal/product-actions-modal.component';
+import { SocketService } from '../../../custom-ui/shared/services/socket.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,6 +30,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
   public isOnAuthFormPage: boolean;
   public bsModalRef: BsModalRef;
   private changes: MutationObserver;
+  private isAdmin: boolean;
 
   constructor(
     private router: Router,
@@ -36,6 +38,7 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
     private spinnerService: NgxSpinnerService,
     private cookieService: CookieService,
     private modalService: BsModalService,
+    private socketService: SocketService,
     @Inject(DOCUMENT) public _document?: any
   ) {
     super();
@@ -120,6 +123,15 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
         }
       });
 
+    this.store
+      .pipe(
+        select(fromAuthSelectors.getAdminStatus),
+        takeUntil(this.subscriptionController$$)
+      )
+      .subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+      });
+
     this.modalService.onHide
       .pipe(
         takeUntil(this.subscriptionController$$)
@@ -134,5 +146,13 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
   ngOnDestroy(): void {
     this.changes.disconnect();
     super.ngOnDestroy();
+
+    if (this.isAdmin) {
+      this.socketService.deleteAdminSocketSubscriptions();
+
+      return;
+    }
+
+    this.socketService.deleteSubordinateSocketSubscriptions();
   }
 }

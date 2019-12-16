@@ -12,8 +12,20 @@
                     <div class="col-sm-6">{{ task.description }}</div>
 
                     <div class="col-sm-3">
-                        <input type="checkbox" name="In Progress" [attr.id]="i">
-                        <label class="in-progress-label" [attr.for]="i">In Progress</label>  
+                        <input
+                            type="checkbox"
+                            name="In Progress"
+                            [attr.id]="i"
+                            [disabled]="!isItAllowedToUpdateTasks"
+                            (change)="onProgressCheckboxChange($event, i)"
+                            [attr.checked]="task.assigneeId">
+
+                        <label
+                            [ngClass]="{
+                                'in-progress-label': true,
+                                'disabled': !isItAllowedToUpdateTasks
+                            }"
+                            [attr.for]="i">In Progress</label>  
                     </div>
 
                     <div class="col-sm-3">

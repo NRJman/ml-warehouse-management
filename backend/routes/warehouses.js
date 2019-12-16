@@ -162,15 +162,12 @@ module.exports = function (io) {
                 return warehouse.save();
             })
             .then(({ tasks }) => {
-                io.emit('task was added', {
-                    message: 'task was added',
-                    result: tasks
-                })
+                io.emit('tasks were added', tasks);
 
                 return res.status(201).json({
                     message: 'New tasks have been successfully created!',
                     result: tasks
-                })
+                });
             })
             .catch(error =>
                 res.status(500).json({
@@ -178,6 +175,39 @@ module.exports = function (io) {
                     error
                 })
             )
+    });
+
+    router.patch('/tasks/:taskId/assignee', checkAuth, (req, res, next) => {
+        const taskId = req.params.taskId;
+        const { warehouseId, userId } = req.body;
+        let targetTask, targetTaskIndex;
+
+        Warehouse.findById(warehouseId)
+            .then(warehouse => {
+                targetTask = warehouse.tasks.find((task, taskIndex) => {
+                    if (task._id.toString() === taskId) {
+                        targetTaskIndex = taskIndex;
+
+                        return true;
+                    }
+                });
+
+                targetTask.assigneeId = userId;
+                warehouse.save();
+            })
+            .then(() => {
+                const updatedTaskData = {
+                    task: targetTask,
+                    taskIndex: targetTaskIndex
+                };
+
+                io.emit('task was assigned to somebody', updatedTaskData);
+
+                return res.status(200).json({
+                    message: 'A task was assigned to the specified user',
+                    result: updatedTaskData
+                });
+            })
     });
 
     router.post('/predict', checkAuth, checkAdminRights, (req, res, next) => {
@@ -220,8 +250,6 @@ module.exports = function (io) {
             if (error || response.statusCode !== 200) {
                 return res.status(500).json({ type: 'error', error });
             }
-
-            console.log(getMostPossibleCategories(body));
 
             res.status(200).json({
                 message: 'Successfully predicted the category',

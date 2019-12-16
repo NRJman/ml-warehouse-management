@@ -17,6 +17,7 @@ import { ApiResponse } from '../../shared/models/api/api-response.model';
 import { UserDataInitType } from '../../shared/models/app/app-data-init-type.model';
 import { SubordinateUser } from '../../shared/models/users/subordinate-user.model';
 import { RegistrationAdminUserData } from '../../shared/models/auth/registration-admin-user-data.model';
+import { SocketService } from '../../shared/services/socket.service';
 
 @Injectable()
 export class AuthEffects {
@@ -25,6 +26,7 @@ export class AuthEffects {
         private http: HttpClient,
         private router: Router,
         private cookieService: CookieService,
+        private socketService: SocketService,
         @Inject(USERS_API_SERVER_URL_TOKEN) private usersApiServerUrl: string
     ) { }
 
@@ -92,7 +94,15 @@ export class AuthEffects {
     finishSigningIn$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromAuthActions.finishSigningIn),
-            map(() => fromSharedActions.changeAppLoadingStatus({ payload: false }))
+            map((action) => {
+                if (action.payload.isAdmin) {
+                    this.socketService.subscribeToAdminSocketEvents();
+                } else {
+                    this.socketService.subscribeToSubordinateSocketEvents();
+                }
+
+                return fromSharedActions.changeAppLoadingStatus({ payload: false })
+            })
         )
     );
 

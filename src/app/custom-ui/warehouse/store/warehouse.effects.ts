@@ -17,6 +17,8 @@ import { ProductsAdditionResult } from '../../shared/models/warehouse/products-a
 import { DataToCreateTasks } from '../../shared/models/warehouse/data-to-create-tasks.model';
 import { Task } from '../../shared/models/warehouse/task.model';
 import { DataToFetchWarehouse } from '../../shared/models/warehouse/data-to-fetch-warehouse.model';
+import { DataToUpdateTaskAssignee } from '../../shared/models/warehouse/data-to-update-task-assignee.model';
+import { AssigneeUpdateResult } from '../../shared/models/warehouse/assignee-update-result.model';
 
 @Injectable()
 export class WarehouseEffects {
@@ -104,7 +106,27 @@ export class WarehouseEffects {
                     tasks: data.tasks
                 }).pipe(
                     map(({ result }: ApiResponse<Task[]>) =>
-                        fromWarehouseActions.finishCreatingTasks({ payload: result })
+                        fromWarehouseActions.storeTasksUpdateResult({ payload: result })
+                    ),
+                    catchError((error: ApiResponseError) =>
+                        of(fromWarehouseActions.failWarehouseManipulating({ payload: error }))
+                    )
+                )
+            )
+        )
+    );
+
+    startUpdatingTaskAssignee$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromWarehouseActions.startUpdatingTaskAssignee),
+            map(action => action.payload),
+            switchMap(({ taskId, warehouseId, userId }: DataToUpdateTaskAssignee) =>
+                this.http.patch(`${this.warehousesApiServerUrl}/tasks/${taskId}/assignee`, {
+                    warehouseId,
+                    userId
+                }).pipe(
+                    map(({ result }: ApiResponse<AssigneeUpdateResult>) =>
+                        fromWarehouseActions.storeTaskAssigneeUpdateResult({ payload: result })
                     ),
                     catchError((error: ApiResponseError) =>
                         of(fromWarehouseActions.failWarehouseManipulating({ payload: error }))

@@ -9,6 +9,8 @@ import { ProductsAdditionResult } from '../../shared/models/warehouse/products-a
 import { DataToCreateTasks } from '../../shared/models/warehouse/data-to-create-tasks.model';
 import { Task } from '../../shared/models/warehouse/task.model';
 import { DataToFetchWarehouse } from '../../shared/models/warehouse/data-to-fetch-warehouse.model';
+import { DataToUpdateTaskAssignee } from '../../shared/models/warehouse/data-to-update-task-assignee.model';
+import { AssigneeUpdateResult } from '../../shared/models/warehouse/assignee-update-result.model';
 
 export const startCreatingWarehouse = createAction(
     '[Warehouse] Start Creating Warehouse',
@@ -55,9 +57,19 @@ export const startCreatingTasks = createAction(
     props<{ payload: DataToCreateTasks }>()
 );
 
-export const finishCreatingTasks = createAction(
-    '[Warehouse] Finish Creating Tasks',
+export const storeTasksUpdateResult = createAction(
+    '[Warehouse] Store Tasks Update Result',
     props<{ payload: Task[] }>()
+);
+
+export const startUpdatingTaskAssignee = createAction(
+    '[Warehouse] Start Updating Task Assignee',
+    props<{ payload: DataToUpdateTaskAssignee }>()
+);
+
+export const storeTaskAssigneeUpdateResult = createAction(
+    '[Warehouse] Store Task Assignee Update Result',
+    props<{ payload: AssigneeUpdateResult }>()
 );
 
 export const failWarehouseManipulating = createAction(

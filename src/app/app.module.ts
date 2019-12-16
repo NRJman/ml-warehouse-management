@@ -61,6 +61,7 @@ import { SubordinateEffects } from './custom-ui/subordinate/store/subordinate.ef
 import { ProductCategoryPredictionService } from './custom-ui/shared/services/product-category-prediction.service';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { socketIoConfig } from '../environments/environment';
+import { SocketService } from './custom-ui/shared/services/socket.service';
 
 @NgModule({
   imports: [
@@ -132,7 +133,8 @@ import { socketIoConfig } from '../environments/environment';
     AuthFormsPagesGuard,
     CustomValidatorsService,
     CookieService,
-    ProductCategoryPredictionService
+    ProductCategoryPredictionService,
+    SocketService
   ],
   bootstrap: [ AppComponent ],
   entryComponents: [ ProductActionsModalComponent ]

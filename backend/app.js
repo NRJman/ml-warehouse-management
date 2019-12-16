@@ -37,12 +37,12 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/api/users', userRoutes);
+app.use('/api/admins', adminRoutes);
+app.use('/api/warehouses', warehouseRoutes(app.io));
+
 app.io.on("connection", function (socket) {
     console.log('Client connected');
-
-    app.use('/api/users', userRoutes);
-    app.use('/api/admins', adminRoutes);
-    app.use('/api/warehouses', warehouseRoutes(app.io));
 });
 
 app.get('/', (req, res, next) => {

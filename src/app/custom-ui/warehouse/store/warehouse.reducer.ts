@@ -39,10 +39,23 @@ export function warehouseReducer(warehouseState: State | undefined, warehouseAct
             })
         ),
         on(
-            fromWarehouseActions.finishCreatingTasks,
+            fromWarehouseActions.storeTasksUpdateResult,
             (state, action) => ({
                 ...state,
                 tasks: action.payload
+            })
+        ),
+        on(
+            fromWarehouseActions.storeTaskAssigneeUpdateResult,
+            (state, action) => ({
+                ...state,
+                tasks: (() => {
+                    const { task, taskIndex } = action.payload;
+
+                    state.tasks[taskIndex] = task;
+
+                    return state.tasks;
+                })()
             })
         )
     )(warehouseState, warehouseAction);
