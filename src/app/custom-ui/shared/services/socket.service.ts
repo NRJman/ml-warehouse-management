@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import * as fromApp from './../../../store/app.reducers';
 import * as fromWarehouseActions from './../../warehouse/store/warehouse.actions';
 import { Task } from '../models/warehouse/task.model';
-import { AssigneeUpdateResult } from '../models/warehouse/assignee-update-result.model';
+import { TaskUpdateResult } from '../models/warehouse/task-update-result.model';
 
 @Injectable()
 export class SocketService {
@@ -13,7 +13,7 @@ export class SocketService {
     };
 
     private readonly adminSocketEventNamesMap = {
-        taskWasAssignedToSomebody: 'task was assigned to somebody'
+        taskWasAssignedToSomebody: 'task was updated'
     };
 
     constructor(
@@ -24,17 +24,17 @@ export class SocketService {
     public subscribeToAdminSocketEvents(): void {
         this.socket
             .fromEvent(this.adminSocketEventNamesMap.taskWasAssignedToSomebody)
-            .subscribe((result: AssigneeUpdateResult) => {
-                this.store.dispatch(fromWarehouseActions.storeTaskAssigneeUpdateResult({ payload: result }));
+            .subscribe((result: TaskUpdateResult) => {
+                this.store.dispatch(fromWarehouseActions.finishUpdatingTask({ payload: result }));
             });
         }
         
-        public subscribeToSubordinateSocketEvents(): void {
-            this.socket
-            .fromEvent(this.subordinateSocketEventNamesMap.tasksWereAdded)
-            .subscribe((taskList: Task[]) => {
-                this.store.dispatch(fromWarehouseActions.storeTasksUpdateResult({ payload: taskList }));
-            });
+    public subscribeToSubordinateSocketEvents(): void {
+        this.socket
+        .fromEvent(this.subordinateSocketEventNamesMap.tasksWereAdded)
+        .subscribe((taskList: Task[]) => {
+            this.store.dispatch(fromWarehouseActions.storeTasksUpdateResult({ payload: taskList }));
+        });
     }
 
     public deleteAdminSocketSubscriptions(): void {

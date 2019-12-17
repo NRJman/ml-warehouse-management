@@ -46,13 +46,14 @@ export function warehouseReducer(warehouseState: State | undefined, warehouseAct
             })
         ),
         on(
-            fromWarehouseActions.storeTaskAssigneeUpdateResult,
+            fromWarehouseActions.finishUpdatingTask,
             (state, action) => ({
                 ...state,
                 tasks: (() => {
-                    const { task, taskIndex } = action.payload;
+                    const { updatedTask, updatedTaskId } = action.payload;
+                    let targetTaskIndex: number = state.tasks.findIndex(task => task._id === updatedTaskId);
 
-                    state.tasks[taskIndex] = task;
+                    state.tasks[targetTaskIndex] = updatedTask;
 
                     return state.tasks;
                 })()

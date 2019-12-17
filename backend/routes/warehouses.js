@@ -9,6 +9,7 @@ module.exports = function (io) {
     const predictionHandlingConfig = require('./../utils/prediction-handling-config');
     const checkAuth = require('./../middleware/check-auth');
     const checkAdminRights = require('./../middleware/check-admin-rights');
+    const taskManipulation = require('./../utils/task-manipulation');
 
     const router = express.Router();
 
@@ -178,36 +179,58 @@ module.exports = function (io) {
     });
 
     router.patch('/tasks/:taskId/assignee', checkAuth, (req, res, next) => {
-        const taskId = req.params.taskId;
-        const { warehouseId, userId } = req.body;
-        let targetTask, targetTaskIndex;
+        const targetTaskId = req.params.taskId;
+        const { warehouseId, userId, isInProgress } = req.body;
+        let targetTask;
 
         Warehouse.findById(warehouseId)
             .then(warehouse => {
-                targetTask = warehouse.tasks.find((task, taskIndex) => {
-                    if (task._id.toString() === taskId) {
-                        targetTaskIndex = taskIndex;
+                targetTask = taskManipulation.getTargetTask(warehouse.tasks, targetTaskId);
+                targetTask.assigneeId = isInProgress ? userId : null;
 
-                        return true;
-                    }
-                });
-
-                targetTask.assigneeId = userId;
                 warehouse.save();
             })
-            .then(() => {
-                const updatedTaskData = {
-                    task: targetTask,
-                    taskIndex: targetTaskIndex
-                };
+            .then(() =>
+                taskManipulation.handleSuccessfulFlow({
+                    res,
+                    socket: io,
+                    socketMessage: 'task was updated',
+                    responseMessage: 'The task was successfully assigned to user',
+                    updatedTask: targetTask,
+                    updatedTaskId: targetTaskId
+                })
+            )
+            .catch(error =>
+                taskManipulation.handleFailedFlow(res, 'Failed to resolve the task!', error)
+            )
+    });
 
-                io.emit('task was assigned to somebody', updatedTaskData);
+    router.patch('/tasks/:taskId/resolve', checkAuth, (req, res, next) => {
+        const targetTaskId = req.params.taskId;
+        const { warehouseId, userId } = req.body;
+        let targetTask;
 
-                return res.status(200).json({
-                    message: 'A task was assigned to the specified user',
-                    result: updatedTaskData
-                });
+        Warehouse.findById(warehouseId)
+            .then(warehouse => {
+                targetTask = taskManipulation.getTargetTask(warehouse.tasks, targetTaskId);
+                targetTask.isResolved = true;
+                targetTask.resolvingDate = new Date();
+
+                warehouse.save();
             })
+            .then(() =>
+                taskManipulation.handleSuccessfulFlow({
+                    res,
+                    socket: io,
+                    socketMessage: 'task was updated',
+                    responseMessage: 'The task was successfully resolved',
+                    updatedTask: targetTask,
+                    updatedTaskId: targetTaskId
+                })
+            )
+            .catch(error =>
+                taskManipulation.handleFailedFlow(res, 'Failed to resolve the task!', error)
+            )
     });
 
     router.post('/predict', checkAuth, checkAdminRights, (req, res, next) => {
@@ -264,7 +287,6 @@ module.exports = function (io) {
                 .slice(lengthOfFieldsPredictionInvolves)
                 .sort((a, b) => Number(b) - Number(a))
                 .slice(0, 3);
-
 
             return highestProbabilities.map((probability) => {
                 const probabilityIndex = scoredProbabilities.indexOf(probability);

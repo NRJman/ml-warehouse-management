@@ -2,37 +2,39 @@
     <h4 class="section-title">Tasks Available for Working On</h4>
 
     <div class="cards-wrapper">
-        <div *ngFor="let task of taskList; index as i" [ngClass]="{
+        <ng-container *ngFor="let task of taskList; index as i">
+            <div *ngIf="!task.isResolved" [ngClass]="{
                 'card': true,
                 'bg-warning': task.assigneeId,
                 'bg-secondary': !task.assigneeId
             }">
-            <div *ngIf="!task.isResolved" class="card-body">
-                <div class="row row-centered-vertically">
-                    <div class="col-sm-6">{{ task.description }}</div>
-
-                    <div class="col-sm-3">
-                        <input
-                            type="checkbox"
-                            name="In Progress"
-                            [attr.id]="i"
-                            [disabled]="!isItAllowedToUpdateTasks"
-                            (change)="onProgressCheckboxChange($event, i)"
-                            [attr.checked]="task.assigneeId">
-
-                        <label
-                            [ngClass]="{
-                                'in-progress-label': true,
-                                'disabled': !isItAllowedToUpdateTasks
-                            }"
-                            [attr.for]="i">In Progress</label>  
-                    </div>
-
-                    <div class="col-sm-3">
-                        <button class="btn btn-primary">Resolve</button>
+                <div class="card-body">
+                    <div class="row row-centered-vertically">
+                        <div class="col-sm-6">{{ task.description }}</div>
+                
+                        <div class="col-sm-3">
+                            <input
+                                type="checkbox"
+                                name="In Progress"
+                                [attr.id]="i"
+                                [disabled]="!isItAllowedToUpdateTasks"
+                                (change)="onTaskProgressCheckboxChange($event, i)"
+                                [attr.checked]="task.assigneeId">
+                
+                            <label 
+                                [ngClass]="{
+                                    'in-progress-label': true,
+                                    'disabled': !isItAllowedToUpdateTasks
+                                }"
+                                [attr.for]="i">In Progress</label>
+                        </div>
+                
+                        <div class="col-sm-3" (click)="onTaskResolve(i)">
+                            <button class="btn btn-primary" [disabled]="!task.assigneeId">Resolve</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </ng-container>
     </div>
 </div>

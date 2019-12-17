@@ -22,18 +22,33 @@ export class AvailableTasksComponent extends Unsubscriber implements OnInit, OnD
     super();
   }
 
-  public onProgressCheckboxChange($event: Event, taskIndex: number): void {
+  public onTaskProgressCheckboxChange($event: Event, taskIndex: number): void {
     const isInProgress: boolean = (event.target as HTMLInputElement).checked;
 
     this.store.dispatch(
-      fromWarehouseActions.startUpdatingTaskAssignee({
+      fromWarehouseActions.startUpdatingTask({
         payload: {
-          userId: isInProgress ? this.subordinateId : null,
+          userId: this.subordinateId,
           taskId: this.taskList[taskIndex]._id,
-          warehouseId: this.warehouseId
+          isInProgress,
+          warehouseId: this.warehouseId,
+          endpointResource: 'assignee'
         }
       })
     );
+  }
+
+  public onTaskResolve(taskIndex: number): void {
+    this.store.dispatch(
+      fromWarehouseActions.startUpdatingTask({
+        payload: {
+          userId: this.subordinateId,
+          taskId: this.taskList[taskIndex]._id,
+          warehouseId: this.warehouseId,
+          endpointResource: 'resolve'
+        }
+      })
+    )
   }
 
   public get isItAllowedToUpdateTasks(): boolean {
