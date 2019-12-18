@@ -8,6 +8,7 @@ import { Store, select } from '@ngrx/store';
 import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { takeUntil } from 'rxjs/operators';
 import { Product } from '../../../shared/models/warehouse/product.model';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-actions-modal',
@@ -22,7 +23,8 @@ export class ProductActionsModalComponent extends Unsubscriber implements OnInit
 
   constructor(
     public bsModalRef: BsModalRef,
-    private store: Store<fromApp.State>
+    private store: Store<fromApp.State>,
+    private http: HttpClient
   ) {
     super();
   }
@@ -36,6 +38,23 @@ export class ProductActionsModalComponent extends Unsubscriber implements OnInit
         }
       })
     );
+  }
+
+  public onInputScanChange(event: Event): void {
+    const file: File = (event.target as HTMLInputElement).files[0];
+    const fileReader: FileReader = new FileReader();
+
+    fileReader.addEventListener('load', () => {
+      console.log(fileReader.result);
+
+      this.http.post('http://localhost:3000/api/warehouses/extract', {
+        fileBase64Code: fileReader.result
+      }).subscribe(console.log);
+    });
+
+    if (file) {
+      fileReader.readAsDataURL(file);
+    }
   }
 
   public switchToManualEntering(): void {

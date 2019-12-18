@@ -10,6 +10,9 @@ module.exports = function (io) {
     const checkAuth = require('./../middleware/check-auth');
     const checkAdminRights = require('./../middleware/check-admin-rights');
     const taskManipulation = require('./../utils/task-manipulation');
+    const checkFileType = require('./../middleware/check-file-type');
+    const googleVision = require('@google-cloud/vision');
+    const makeFileBase64CodePure = require('./../middleware/make-file-base64-code-pure');
 
     const router = express.Router();
 
@@ -298,6 +301,25 @@ module.exports = function (io) {
                     );
             });
         }
+    });
+
+    router.post('/extract', checkAuth, checkFileType, makeFileBase64CodePure, (req, res, next) => {
+        const pureFileBase64Code = req.body.fileBase64Code;
+        const googleVisionClient = new googleVision.ImageAnnotatorClient();
+
+        console.log('EXTRACTING');
+
+        googleVisionClient.textDetection({
+            "image": {
+                "content": pureFileBase64Code
+            }
+        })
+        .then(response => {
+            console.log('RESPONSE: ', response);
+        })
+        .catch(error => {
+            console.log('ERROR: ', error);
+        });
     });
 
     router.get('/product/:warehouseId/:productId', checkAuth, (req, res, next) => {

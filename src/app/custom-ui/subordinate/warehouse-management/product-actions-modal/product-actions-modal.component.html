@@ -15,7 +15,14 @@
 <div class="modal-body">
     <div class="id-entering-section" *ngIf="!scannedProductInfo; else productInfoSection">
         <div class="automatic-entering" *ngIf="isAutomaticEntering; else manualEntering">
-            <button type="button" class="btn btn-lg btn-primary btn-scan">Scan a Product ID</button>
+            <div class="scan-container">
+                <button type="button" class="btn btn-lg btn-primary btn-scan">Scan a Product ID</button>
+                <input
+                    (change)="onInputScanChange($event)"
+                    type="file"
+                    name="scan-id-input"
+                    class="input-scan">
+            </div>
             
             <div
                 class="switch-to-manual-entering"
