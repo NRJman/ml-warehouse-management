@@ -33,6 +33,7 @@
   <div class="app-body">
     <app-sidebar [fixed]="true" *ngIf="!isOnAuthFormPage" [display]="'lg'">
       <button
+        *ngIf="!isAdmin"
         class="btn btn-primary btn-scan"
         (click)="openProductActionsModal()">Scan an ID</button>
 

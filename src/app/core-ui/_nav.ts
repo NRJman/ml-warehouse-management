@@ -27,41 +27,37 @@ export interface NavData {
   class?: string;
   label?: NavLabel;
   wrapper?: NavWrapper;
+  isForAdmin?: boolean;
 }
 
 export const navItems: NavData[] = [
   {
-    title: true,
-    name: 'Admin Options'
+    name: 'Tasks Available',
+    url: '/available-tasks',
+    icon: 'icon-chart',
+    isForAdmin: false
   },
   {
     name: 'Dashboard',
     url: '/dashboard',
-    icon: 'icon-chart'
+    icon: 'icon-chart',
+    isForAdmin: true
   },
   {
-    name: 'Co-workers',
-    url: '/dashboard',
-    icon: 'icon-user'
+    name: 'Management',
+    url: '/management',
+    icon: 'icon-user',
+    isForAdmin: true
   },
   {
-    name: 'Warehouse Schema',
-    url: '/theme/colors',
+    name: 'Areas',
+    url: '/areas', // currently doesn't exist
     icon: 'icon-layers'
   },
   {
     name: 'Invoices List',
-    url: '/theme/colors',
-    icon: 'icon-list'
+    url: '/invoices-list', // currently doesn't exist
+    icon: 'icon-list',
+    isForAdmin: true
   }
-  /* {
-    name: 'Disabled',
-    url: '/dashboard',
-    icon: 'icon-ban',
-    badge: {
-      variant: 'secondary',
-      text: 'NEW'
-    },
-    attributes: { disabled: true },
-  } */
 ];

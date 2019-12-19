@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as fromApp from './../../../../store/app.reducers';
@@ -8,30 +8,29 @@ import { Store, select } from '@ngrx/store';
 import { Unsubscriber } from '../../../shared/services/unsubscriber.service';
 import { takeUntil } from 'rxjs/operators';
 import { Product } from '../../../shared/models/warehouse/product.model';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-actions-modal',
   templateUrl: './product-actions-modal.component.html',
   styleUrls: ['./product-actions-modal.component.scss']
 })
-export class ProductActionsModalComponent extends Unsubscriber implements OnInit, OnDestroy {
+export class ProductActionsModalComponent extends Unsubscriber implements OnInit, OnDestroy, AfterViewInit {
   public productIdForm: FormGroup;
   public warehouseId: string;
   public scannedProductInfo: Product;
   public isAutomaticEntering = true;
+  @ViewChild('inputScan', { static: false }) inputScan: ElementRef;
 
   constructor(
     public bsModalRef: BsModalRef,
-    private store: Store<fromApp.State>,
-    private http: HttpClient
+    private store: Store<fromApp.State>
   ) {
     super();
   }
 
   public onProductIdFormSubmit(): void {
     this.store.dispatch(
-      fromSubordinateActions.fetchSpecificProductInfo({
+      fromSubordinateActions.fetchSpecificProductInfoByText({
         payload: {
           warehouseId: this.warehouseId,
           productId: this.productIdForm.value.productId
@@ -45,11 +44,14 @@ export class ProductActionsModalComponent extends Unsubscriber implements OnInit
     const fileReader: FileReader = new FileReader();
 
     fileReader.addEventListener('load', () => {
-      console.log(fileReader.result);
-
-      this.http.post('http://localhost:3000/api/warehouses/extract', {
-        fileBase64Code: fileReader.result
-      }).subscribe(console.log);
+      this.store.dispatch(
+        fromSubordinateActions.fetchSpecificProductInfoByPhoto({
+          payload: {
+            warehouseId: this.warehouseId,
+            fileBase64Code: fileReader.result as string
+          }
+        })
+      )
     });
 
     if (file) {
@@ -83,5 +85,13 @@ export class ProductActionsModalComponent extends Unsubscriber implements OnInit
       .subscribe(scannedProductInfo => {
         this.scannedProductInfo = scannedProductInfo;
       });
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+  }
+
+  ngAfterViewInit() {
+    (this.inputScan.nativeElement as HTMLInputElement).click();
   }
 }

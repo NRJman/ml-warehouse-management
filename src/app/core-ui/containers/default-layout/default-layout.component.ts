@@ -23,7 +23,7 @@ import { SocketService } from '../../../custom-ui/shared/services/socket.service
   styleUrls: ['./default-layout.component.css']
 })
 export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDestroy {
-  public navItems = navItems;
+  public navItems;
   public sidebarMinimized = true;
   public element: HTMLElement;
   public isAppLoading: boolean;
@@ -130,6 +130,16 @@ export class DefaultLayoutComponent extends Unsubscriber implements OnInit, OnDe
       )
       .subscribe(isAdmin => {
         this.isAdmin = isAdmin;
+
+        this.navItems = [
+          {
+            title: true,
+            name: isAdmin ? 'Admin Options' : 'Subordinate Options'
+          },
+          ...navItems.filter(
+            ({ isForAdmin }) => isForAdmin === isAdmin || isForAdmin === undefined
+          )
+        ];
       });
 
     this.modalService.onHide

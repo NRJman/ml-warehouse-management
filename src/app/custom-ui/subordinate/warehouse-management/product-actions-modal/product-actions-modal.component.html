@@ -18,6 +18,7 @@
             <div class="scan-container">
                 <button type="button" class="btn btn-lg btn-primary btn-scan">Scan a Product ID</button>
                 <input
+                    #inputScan
                     (change)="onInputScanChange($event)"
                     type="file"
                     name="scan-id-input"

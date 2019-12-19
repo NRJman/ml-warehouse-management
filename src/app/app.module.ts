@@ -59,9 +59,11 @@ import { ProductActionsModalComponent } from './custom-ui/subordinate/warehouse-
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { SubordinateEffects } from './custom-ui/subordinate/store/subordinate.effects';
 import { ProductCategoryPredictionService } from './custom-ui/shared/services/product-category-prediction.service';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { SocketIoModule } from 'ngx-socket-io';
 import { socketIoConfig } from '../environments/environment';
 import { SocketService } from './custom-ui/shared/services/socket.service';
+import { SubordinateRightsGuard } from './custom-ui/shared/services/subordinate-rights-guard.service';
+import { AdminRightsGuard } from './custom-ui/shared/services/admin-rights-guard.service copy';
 
 @NgModule({
   imports: [
@@ -134,7 +136,9 @@ import { SocketService } from './custom-ui/shared/services/socket.service';
     CustomValidatorsService,
     CookieService,
     ProductCategoryPredictionService,
-    SocketService
+    SocketService,
+    AdminRightsGuard,
+    SubordinateRightsGuard
   ],
   bootstrap: [ AppComponent ],
   entryComponents: [ ProductActionsModalComponent ]

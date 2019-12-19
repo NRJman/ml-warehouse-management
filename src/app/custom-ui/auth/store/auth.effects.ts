@@ -82,7 +82,9 @@ export class AuthEffects {
                                 }
                             }),
                             fromWarehouseActions.storeWarehouse({ payload: user.userId }),
-                            fromAuthActions.navigateAfterSuccessfulAuthActions({ payload: '/dashboard' })
+                            fromAuthActions.navigateAfterSuccessfulAuthActions({
+                                payload: isAdmin ? '/dashboard' : '/available-tasks'
+                            })
                         ];
                     }),
                     catchError(error => of(fromAuthActions.failSigningIn(error)))

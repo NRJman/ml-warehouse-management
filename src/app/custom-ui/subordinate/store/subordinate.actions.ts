@@ -3,7 +3,8 @@ import { SubordinateUser } from '../../shared/models/users/subordinate-user.mode
 import * as fromSubordinate from './subordinate.reducer';
 import { ApiResponseError } from '../../shared/models/api/api-response-error.model';
 import { Product } from '../../shared/models/warehouse/product.model';
-import { DataToFetchSpecificProductInfo } from '../../shared/models/warehouse/data-to-fetch-specific-product-info.model';
+import { DataToFetchSpecificProductInfoByText } from '../../shared/models/warehouse/data-to-fetch-specific-product-info-by-text.model';
+import { DataToFetchSpecificProductInfoByPhoto } from '../../shared/models/warehouse/data-to-fetch-specific-product-info-by-photo.model';
 
 export const storeSubordinate = createAction(
     '[Subordinate] Store Subordinate Data',
@@ -15,9 +16,14 @@ export const resetSubordinateState = createAction(
     props<{ payload: fromSubordinate.State }>()
 );
 
-export const fetchSpecificProductInfo = createAction(
-    '[Subordinate] Fetch Specific Product Info',
-    props<{ payload: DataToFetchSpecificProductInfo }>()
+export const fetchSpecificProductInfoByText = createAction(
+    '[Subordinate] Fetch Specific Product Info By Id',
+    props<{ payload: DataToFetchSpecificProductInfoByText }>()
+);
+
+export const fetchSpecificProductInfoByPhoto = createAction(
+    '[Subordinate] Fetch Specific Product Info By Photo',
+    props<{ payload: DataToFetchSpecificProductInfoByPhoto }>()
 );
 
 export const storeSpecificProductInfo = createAction(

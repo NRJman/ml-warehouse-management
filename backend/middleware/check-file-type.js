@@ -4,19 +4,18 @@ const MIME_TYPES_MAP = {
     'image/png': 'png',
     'image/gif': 'gif',
     'image/jpg': 'jpg',
-    'image/jpeg': 'jpeg'
+    'image/jpeg': 'jpeg',
+    'image/jpg': 'jpeg',
+    'image/jpeg': 'jpg'
 };
 
 module.exports = (req, res, next) => {
     const pureFileBase64Code = req.body.fileBase64Code;
     const uint8Array = toUint8Array(pureFileBase64Code);
-    console.log(uint8Array);
     const fileType = getFileType(uint8Array);
-    console.log(fileType);
     const fileMimeType = fileType.mime;
 
-
-    if (!Object(MIME_TYPES_MAP).keys.includes(fileMimeType) ||
+    if (!Object.keys(MIME_TYPES_MAP).includes(fileMimeType) ||
         fileType.ext !== MIME_TYPES_MAP[fileMimeType]) {
 
         res.status(400).json({

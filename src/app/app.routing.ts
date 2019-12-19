@@ -18,6 +18,8 @@ import { SignUpSubordinatesComponent } from './custom-ui/admin/subordinate-manag
 import { CreateTasksComponent } from './custom-ui/admin/warehouse-management/create-tasks/create-tasks.component';
 import { ProductActionsModalComponent } from './custom-ui/subordinate/warehouse-management/product-actions-modal/product-actions-modal.component';
 import { AvailableTasksComponent } from './custom-ui/subordinate/warehouse-management/available-tasks/available-tasks.component';
+import { SubordinateRightsGuard } from './custom-ui/shared/services/subordinate-rights-guard.service';
+import { AdminRightsGuard } from './custom-ui/shared/services/admin-rights-guard.service copy';
 
 export const routes: Routes = [
   {
@@ -63,15 +65,15 @@ export const routes: Routes = [
         data: {
           title: 'Create Warehouse'
         },
-        canActivate: [GenericPagesGuard]
+        canActivate: [GenericPagesGuard, AdminRightsGuard]
       },
       {
         path: 'sign-up-subordinates',
         component: SignUpSubordinatesComponent,
         data: {
-          title: 'Register Subordinates'
+          title: 'Sign Up Subordinates'
         },
-        canActivate: [GenericPagesGuard]
+        canActivate: [GenericPagesGuard, AdminRightsGuard]
       },
       {
         path: 'add-products',
@@ -79,12 +81,12 @@ export const routes: Routes = [
         data: {
           title: 'Add Products'
         },
-        canActivate: [GenericPagesGuard]
+        canActivate: [GenericPagesGuard, AdminRightsGuard]
       },
       {
         path: 'create-tasks',
         component: CreateTasksComponent,
-        canActivate: [GenericPagesGuard],
+        canActivate: [GenericPagesGuard, AdminRightsGuard],
         data: {
           title: 'Create Tasks'
         },
@@ -92,7 +94,7 @@ export const routes: Routes = [
       {
         path: 'management',
         component: SubordinateManagementComponent,
-        canActivate: [GenericPagesGuard],
+        canActivate: [GenericPagesGuard, AdminRightsGuard],
         data: {
           title: 'Management'
         },
@@ -100,7 +102,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent,
-        canActivate: [GenericPagesGuard],
+        canActivate: [GenericPagesGuard, AdminRightsGuard],
         data: {
           title: 'Dashboard'
         }
@@ -108,12 +110,15 @@ export const routes: Routes = [
       {
         path: 'product-actions',
         component: ProductActionsModalComponent,
-        canActivate: [GenericPagesGuard]
+        canActivate: [GenericPagesGuard, SubordinateRightsGuard]
       },
       {
         path: 'available-tasks',
         component: AvailableTasksComponent,
-        canActivate: [GenericPagesGuard]
+        canActivate: [GenericPagesGuard, SubordinateRightsGuard],
+        data: {
+          title: 'Available Tasks'
+        }
       },
       {
         path: 'base',

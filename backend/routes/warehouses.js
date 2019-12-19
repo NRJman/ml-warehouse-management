@@ -13,6 +13,7 @@ module.exports = function (io) {
     const checkFileType = require('./../middleware/check-file-type');
     const googleVision = require('@google-cloud/vision');
     const makeFileBase64CodePure = require('./../middleware/make-file-base64-code-pure');
+    const getProductById = require('./../utils/get-product-by-id');
 
     const router = express.Router();
 
@@ -303,11 +304,10 @@ module.exports = function (io) {
         }
     });
 
-    router.post('/extract', checkAuth, checkFileType, makeFileBase64CodePure, (req, res, next) => {
+    router.post('/extract', checkAuth, makeFileBase64CodePure, checkFileType, (req, res, next) => {
         const pureFileBase64Code = req.body.fileBase64Code;
         const googleVisionClient = new googleVision.ImageAnnotatorClient();
-
-        console.log('EXTRACTING');
+        
 
         googleVisionClient.textDetection({
             "image": {
@@ -322,18 +322,49 @@ module.exports = function (io) {
         });
     });
 
-    router.get('/product/:warehouseId/:productId', checkAuth, (req, res, next) => {
+    router.post('/:warehouseId/product', checkAuth, makeFileBase64CodePure, checkFileType, (req, res, next) => {
+        const warehouseId = req.params.warehouseId;
+        const pureFileBase64Code = req.body.fileBase64Code;
+        let targetWarehouse;
+
+        Warehouse.findById(warehouseId)
+            .then(warehouse => {
+                const googleVisionClient = new googleVision.ImageAnnotatorClient();
+
+                targetWarehouse = warehouse;
+
+                return googleVisionClient.textDetection({
+                    "image": {
+                        "content": pureFileBase64Code
+                    }
+                });
+            })
+            .then(textExtractionResponse => {
+                const productId = (textExtractionResponse[0].fullTextAnnotation.text || '')
+                    .replace(/\s/g, '')
+                    .toLowerCase();
+
+                return res.status(200).json({
+                    message: 'Successfully fetched product info',
+                    result: getProductById(targetWarehouse, productId)
+                });
+            })
+            .catch(error =>
+                res.status(500).json({
+                    message: 'Failed to fetch product info!',
+                    error
+                })
+            );
+    });
+
+    router.get('/:warehouseId/product/:productId', checkAuth, (req, res, next) => {
         const { warehouseId, productId } = req.params;
 
         Warehouse.findById(warehouseId)
             .then(warehouse => {
-                const targetProduct = warehouse.products.find(product => {
-                    return product._id.toString() === productId;
-                });
-
                 res.status(200).json({
                     message: 'Successfully fetched product info',
-                    result: targetProduct
+                    result: getProductById(warehouse, productId)
                 });
             })
             .catch(error =>
