@@ -1,6 +1,6 @@
 # Mock Warehouse Management System powered by Machine Learning Techniques
 
-An app that allows to register as an admin, sign up subordinates, create a mock warehouse and manage items on it. There are to key features here:
+An app that allows to register as an admin, sign up subordinates, create a mock warehouse and manage items on it. There are two key features here.
 
 Unlike the approaches introduced in the existing systems, the system proposes to use a machine learning technique at the stage of a new product registration. It is enough for a user to enter only the name and the manufacturer, so the program could attempt to predict its category by selecting one of already registered in the warehouse using the prepared cloud-based prediction model.
 
