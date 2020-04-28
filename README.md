@@ -1,4 +1,4 @@
-# Mock Warehouse Management System powered by Machine Learning Techniques
+# MlWarehouseManagement
 
 An app that allows to register as an admin, sign up subordinates, create a mock warehouse and manage items on it. There are two key features here.
 
