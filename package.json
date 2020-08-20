@@ -50,7 +50,7 @@
     "@ngrx/store-devtools": "^8.4.0",
     "angular-ng-autocomplete": "^1.1.14",
     "base64-to-uint8array": "^1.0.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.8.0",
     "core-js": "^2.6.9",
